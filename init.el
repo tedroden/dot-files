@@ -227,7 +227,10 @@
 
 ;; w3m
 (add-to-list 'load-path "~/.emacs.d/lisp/w3m")
-(require 'w3m)
+(if (= emacs-major-version 23)
+	(require 'w3m-load)
+	(require 'w3m)
+    )
 
 (add-to-list 'load-path "~/.emacs.d/lisp/org")
 (setq org-fontify-done-headline t)
