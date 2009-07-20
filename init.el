@@ -22,13 +22,12 @@
 
 ;; NO WARRANTY, assume a GPL or BSD license.
 
-
-
-
 ;; all the requires at the top. 
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
 ; (message load-path)
+(require 'textexpander-sync)
+(require 'osx-plist)
 (require 'color-theme)
 (require 'gnus)
 (require 'smtpmail)
