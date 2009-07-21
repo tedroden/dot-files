@@ -100,6 +100,11 @@
   "A user interface for the git versioning system."
   :group 'tools)
 
+(defcustom git--bin-path "git"
+  "The full path to git command (or 'git' if that will work)"
+  :type 'string
+  :group 'git)
+
 (defmacro git--face (name fore1 prop1 fore2 prop2)
   `(defface ,(intern (concat "git--" (symbol-name name) "-face"))
      '((((class color) (background light)) (:foreground ,fore1 ,@prop1))
@@ -179,7 +184,7 @@
   "Execute 'git' clumsily"
 
   (apply #'call-process
-         (concat "git-" cmd)            ; cmd
+         (concat git--bin-path "-" cmd)            ; cmd
          inbuf                          ; in buffer
          outbuf                         ; out buffer
          nil                            ; display

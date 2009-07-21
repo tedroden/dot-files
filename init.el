@@ -208,11 +208,17 @@
 ;; press control-c g to google the selected region
 (global-set-key (kbd "C-c g") 'google-region)
 
+
 ;; abbrev
-(setq abbrev-file-name "~/.emacs.d/abbrev_defs")
-(setq save-abbrevs t)
-(quietly-read-abbrev-file) 
-(setq default-abbrev-mode t)
+(setq abbrev-defs-file "~/.emacs.d/abbrev_defs")
+(if (file-exists-p abbrev-defs-file)
+	((load abbrev-defs-file) 
+	 (setq abbrev-file-name abbrev-defs-file)
+	 (setq save-abbrevs t)
+	 (quietly-read-abbrev-file) 
+	 (setq default-abbrev-mode t))
+  nil)
+
 
 ;; bbdb
 (add-to-list 'load-path "~/.emacs.d/lisp/bbdb")
@@ -282,7 +288,7 @@
 
 (add-hook 'eshell-mode-hook
 		  '(lambda nil
-			 (setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name "~/.sw/bin")))))
+			 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin:" (expand-file-name "~/.sw/bin")))))
 
 ;; git!
 (require 'git-emacs)
@@ -304,3 +310,5 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (if (file-exists-p custom-file)
 	(load custom-file) nil)
+
+(setq ring-bell-function '(lambda () (message "*beep*")))
