@@ -34,7 +34,10 @@
 (require 'utf-8m)
 (set-file-name-coding-system 'utf-8m)
 
+(require 'php-mode)
+
 (require 'iswitchb)
+
 (iswitchb-mode t)
 (add-to-list 'iswitchb-buffer-ignore "^ ")
 ;(add-to-list 'iswitchb-buffer-ignore "*Minibuf*")
@@ -312,3 +315,6 @@
 	(load custom-file) nil)
 
 (setq ring-bell-function '(lambda () (message "*beep*")))
+
+
+
