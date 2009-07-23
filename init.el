@@ -32,6 +32,10 @@
 (require 'gnus)
 (require 'smtpmail)
 
+
+(require 'wdired)
+(define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
+
 (if (string= system-type 'darwin)
 	(progn (require 'utf-8m)
 		   (set-file-name-coding-system 'utf-8m))
@@ -218,10 +222,10 @@
 ;; abbrev FIXME:
 (setq abbrev-file-name "~/.emacs.d/abbrev_defs")
 (if (file-exists-p abbrev-file-name)
-	((load-file abbrev-file-name) 
-	 (setq save-abbrevs t)
-	 (quietly-read-abbrev-file) 
-	 (setq default-abbrev-mode t))
+	(progn (load-file abbrev-file-name) 
+		   (setq save-abbrevs t)
+		   (quietly-read-abbrev-file) 
+		   (setq default-abbrev-mode t))
   nil)
 
 
