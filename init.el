@@ -31,8 +31,11 @@
 (require 'color-theme)
 (require 'gnus)
 (require 'smtpmail)
-(require 'utf-8m)
-(set-file-name-coding-system 'utf-8m)
+
+(if (string= system-type 'darwin)
+	(progn (require 'utf-8m)
+		   (set-file-name-coding-system 'utf-8m))
+	 nil)
 
 (require 'php-mode)
 
@@ -212,11 +215,10 @@
 (global-set-key (kbd "C-c g") 'google-region)
 
 
-;; abbrev
-(setq abbrev-defs-file "~/.emacs.d/abbrev_defs")
-(if (file-exists-p abbrev-defs-file)
-	((load abbrev-defs-file) 
-	 (setq abbrev-file-name abbrev-defs-file)
+;; abbrev FIXME:
+(setq abbrev-file-name "~/.emacs.d/abbrev_defs")
+(if (file-exists-p abbrev-file-name)
+	((load-file abbrev-file-name) 
 	 (setq save-abbrevs t)
 	 (quietly-read-abbrev-file) 
 	 (setq default-abbrev-mode t))
