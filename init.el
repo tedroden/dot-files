@@ -294,9 +294,9 @@
 			 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin:" (expand-file-name "~/.sw/bin")))))
 
 ;; git!
-(require 'git-emacs)
+;; (require 'git-emacs)
+;; (require 'git-modeline)
 (require 'git-blame)
-(require 'git-modeline)
 
 ;; you may want to change these!
 (setq python-mode-hook
