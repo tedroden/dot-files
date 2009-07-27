@@ -31,8 +31,15 @@
 (require 'color-theme)
 (require 'gnus)
 (require 'smtpmail)
-(require 'utf-8m)
-(set-file-name-coding-system 'utf-8m)
+
+
+(require 'wdired)
+(define-key dired-mode-map (kbd "r") 'wdired-change-to-wdired-mode)
+
+(if (string= system-type 'darwin)
+	(progn (require 'utf-8m)
+		   (set-file-name-coding-system 'utf-8m))
+	 nil)
 
 (require 'php-mode)
 
@@ -212,14 +219,13 @@
 (global-set-key (kbd "C-c g") 'google-region)
 
 
-;; abbrev
-(setq abbrev-defs-file "~/.emacs.d/abbrev_defs")
-(if (file-exists-p abbrev-defs-file)
-	((load abbrev-defs-file) 
-	 (setq abbrev-file-name abbrev-defs-file)
-	 (setq save-abbrevs t)
-	 (quietly-read-abbrev-file) 
-	 (setq default-abbrev-mode t))
+;; abbrev FIXME:
+(setq abbrev-file-name "~/.emacs.d/abbrev_defs")
+(if (file-exists-p abbrev-file-name)
+	(progn (load-file abbrev-file-name) 
+		   (setq save-abbrevs t)
+		   (quietly-read-abbrev-file) 
+		   (setq default-abbrev-mode t))
   nil)
 
 
@@ -231,7 +237,10 @@
 
 ;; color theme
 (load-library "color-theme-colorful-obsolescence")
-(color-theme-colorful-obsolescence)
+(load-library "color-theme-hober2")
+(load-library "color-theme-tango")
+; (color-theme-colorful-obsolescence)
+(color-theme-hober2)
 
 ;; w3m
 (add-to-list 'load-path "~/.emacs.d/lisp/w3m")
@@ -274,6 +283,9 @@
 
 ;; for yatk js files (!)
 (add-to-list 'auto-mode-alist '("\\.yjs$" . js2-mode))
+
+
+(add-to-list 'auto-mode-alist '("\\.jsp$" . html-mode))
 
 
 ;;;;;;;;;;;
