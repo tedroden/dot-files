@@ -237,7 +237,10 @@
 
 ;; color theme
 (load-library "color-theme-colorful-obsolescence")
-(color-theme-colorful-obsolescence)
+(load-library "color-theme-hober2")
+(load-library "color-theme-tango")
+; (color-theme-colorful-obsolescence)
+(color-theme-hober2)
 
 ;; w3m
 (add-to-list 'load-path "~/.emacs.d/lisp/w3m")
@@ -280,6 +283,9 @@
 
 ;; for yatk js files (!)
 (add-to-list 'auto-mode-alist '("\\.yjs$" . js2-mode))
+
+
+(add-to-list 'auto-mode-alist '("\\.jsp$" . html-mode))
 
 
 ;;;;;;;;;;;
