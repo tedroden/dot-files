@@ -301,7 +301,7 @@
 ;; you may want to change these!
 (setq python-mode-hook
 	  '(lambda () (progn
-					(set-variable 'python-indent 8)
+					(set-variable 'python-indent 4)
 					(set-variable 'indent-tabs-mode t) )))
 
 (add-hook 'mail-setup-hook 'bbdb-insinuate-sendmail)
