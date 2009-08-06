@@ -239,8 +239,11 @@
 (load-library "color-theme-colorful-obsolescence")
 (load-library "color-theme-hober2")
 (load-library "color-theme-tango")
+(load-library "color-theme-ted")
 ; (color-theme-colorful-obsolescence)
-(color-theme-hober2)
+; (color-theme-hober2)
+(color-theme-ted)
+
 
 ;; w3m
 (add-to-list 'load-path "~/.emacs.d/lisp/w3m")
@@ -309,6 +312,10 @@
 ;; (require 'git-emacs)
 ;; (require 'git-modeline)
 (require 'git-blame)
+
+(require 'yasnippet)
+(setq yas/root-directory "~/.emacs.d/lisp/snippets")
+(yas/load-directory yas/root-directory)
 
 ;; you may want to change these!
 (setq python-mode-hook

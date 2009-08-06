@@ -377,8 +377,8 @@ speedbar, tex, view, viper, w3m, widget, woman"
      (font-lock-builtin-face ((t (:foreground "sandy brown")))) ;%
 	 
      (font-lock-color-constant-face ((t (:foreground "khaki")))) ;%
-     (font-lock-comment-face ((t (:foreground "grey50"))))
-     (font-lock-comment-delimiter-face ((t (:foreground "grey50"))))
+     (font-lock-comment-face ((t (:foreground "grey45"))))
+     (font-lock-comment-delimiter-face ((t (:foreground "grey45"))))
 
      (font-lock-constant-face ((t (:foreground "pale violet red"))))
      (font-lock-doc-face ((t (:foreground "khaki")))) ;%
@@ -593,15 +593,15 @@ speedbar, tex, view, viper, w3m, widget, woman"
                          :foreground "white"))))
 
 
-     (mode-line ((t (:foreground "light gray" :background "DarkOliveGreen" :inverse-video nil :box (:line-width 1 :style released-button)))))
-     (modeline ((t (:foreground "light gray" :background "dark slate blue" :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (mode-line ((t (:foreground "light gray" :background "grey20" :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (modeline ((t (:foreground "light gray" :background "grey20" :inverse-video nil :box (:line-width 1 :style released-button)))))
 
      (mode-line-inactive ((t (:foreground "light gray" :background "gray30"
-                              :inverse-video nil :box (:line-width 2 :style released-button)))))
-     (mode-line-highlight ((t (:foreground "black" :background "light sky blue"
-                               :inverse-video nil :box (:line-width 2 :style released-button)))))
+                              :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (mode-line-highlight ((t (:foreground "white" :background "grey10"
+                               :inverse-video nil :box (:line-width 1 :style released-button)))))
 
-     (modeline-buffer-id ((t (:foreground "khaki" :background "DarkOliveGreen" :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (modeline-buffer-id ((t (:foreground "khaki" :background "grey15" :inverse-video nil :box (:line-width 1 :style released-button)))))
      (modeline-mousable ((t (:foreground "khaki" :background "darkgreen" :inverse-video nil :box (:line-width 1 :style released-button)))))
      (modeline-mousable-minor-mode ((t (:foreground "khaki" :background "darkgreen" :inverse-video nil :box (:line-width 2 :style released-button)))))
      (mouse ((t (:foreground "khaki" :background "gray4"))))
