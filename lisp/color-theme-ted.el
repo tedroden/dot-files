@@ -1,10 +1,10 @@
-;;; color-theme-ted.el --- Edward O'Connor's second color theme.
+;;; color-theme-ted.el --- Ted Roden's first color theme.
 
-;; Copyright (C) 1997 -- 2009 Edward O'Connor <ted@oconnor.cx>
+;; Copyright (C) 1997 -- 2009 Ted Roden <tedroden@gmail.com>>
 
 ;; Author: Ted Roden <tedroden@gmail.com>
-;; Copy and pasted and modified from color-theme-hober2: Edward O'Connor <ted@oconnor.cx>
-;; Keywords: local
+;; Copy and pasted (and then modified) from:
+;;      color-theme-hober2 by Edward O'Connor <ted@oconnor.cx>
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -593,15 +593,15 @@ speedbar, tex, view, viper, w3m, widget, woman"
                          :foreground "white"))))
 
 
-     (mode-line ((t (:foreground "light gray" :background "grey20" :inverse-video nil :box (:line-width 1 :style released-button)))))
-     (modeline ((t (:foreground "light gray" :background "grey20" :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (mode-line ((t (:foreground "light gray" :background "grey30" :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (modeline ((t (:foreground "light gray" :background "grey30" :inverse-video nil :box (:line-width 1 :style released-button)))))
 
-     (mode-line-inactive ((t (:foreground "light gray" :background "gray30"
+     (mode-line-inactive ((t (:foreground "light gray" :background "gray20"
                               :inverse-video nil :box (:line-width 1 :style released-button)))))
      (mode-line-highlight ((t (:foreground "white" :background "grey10"
                                :inverse-video nil :box (:line-width 1 :style released-button)))))
 
-     (modeline-buffer-id ((t (:foreground "khaki" :background "grey15" :inverse-video nil :box (:line-width 1 :style released-button)))))
+     (modeline-buffer-id ((t (:foreground "khaki" :background "grey20" :inverse-video nil :box (:line-width 1 :style released-button)))))
      (modeline-mousable ((t (:foreground "khaki" :background "darkgreen" :inverse-video nil :box (:line-width 1 :style released-button)))))
      (modeline-mousable-minor-mode ((t (:foreground "khaki" :background "darkgreen" :inverse-video nil :box (:line-width 2 :style released-button)))))
      (mouse ((t (:foreground "khaki" :background "gray4"))))
@@ -634,7 +634,7 @@ speedbar, tex, view, viper, w3m, widget, woman"
      (nxml-tag-slash ((t ,ted-insignificant-face)))
      (nxml-element-prefix ((t (:foreground "steel blue")))) ;%
      (nxml-element-colon ((t (:foreground "steel blue"))))
-     (nxml-element-local-name ((t (:foreground "cadet blue"))))
+     (nxml-element-local-name ((t (:foreground "grey20"))))
      (nxml-attribute-prefix ((t (:foreground "sandy brown"))))
      (nxml-attribute-colon ((t (:foreground "sandy brown"))))
      (nxml-attribute-local-name ((t (:foreground "sandy brown"))))
