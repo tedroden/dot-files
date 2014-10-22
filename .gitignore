@@ -4,3 +4,6 @@ auto-save-list
 *.elc
 abbrev_defs 
 custom.el
+personal.el
+elpa
+ido.last
