@@ -16,6 +16,9 @@
 		 (message (concat "Loaded " f)))
 	nil))
 
+;; just for on the mac.
+(setq ns-command-modifier 'meta)
+
 ;; good mode.
 (ido-mode)
 
@@ -29,7 +32,7 @@
 (defvar tedroden/packages
   '(auto-complete
     color-theme
-    color-theme-solarized
+    planet-theme
     ac-js2
     ac-ispell
     go-autocomplete
@@ -41,6 +44,8 @@
 (dolist (p tedroden/packages)
   (when (not (package-installed-p p))
 	(package-install p)))
+
+(load-theme 'planet)
 
 ;; auto complete setup. Is this right?
 (require 'auto-complete-config)
@@ -65,6 +70,7 @@
   (highlight-phrase "todo" 'hi-yellow))
 
 (add-hook 'prog-mode-hook  'tedroden/code-setup)
+(add-hook 'text-mode-hook  'tedroden/code-setup)
 
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
