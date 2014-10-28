@@ -1,0 +1,6 @@
+# just ln this ~/.xinitrc
+# it add xmodmap and starts cinnamon
+
+xmodmap ~/.xmodmap &
+exec cinnamon-session
+

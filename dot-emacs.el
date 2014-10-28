@@ -41,6 +41,10 @@
     )
   "Stuff I like")
 
+(if (file-exists-p package-user-dir)
+    nil
+  (package-refresh-contents))
+
 (dolist (p tedroden/packages)
   (when (not (package-installed-p p))
 	(package-install p)))
