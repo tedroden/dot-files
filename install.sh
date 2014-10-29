@@ -3,6 +3,7 @@
 function log {
 	echo "-> " $1
 }
+
 function emacs {
 	log "Installing .emacs"
 	if [ ! -d "~/.emacs.d" ]; then
@@ -16,12 +17,16 @@ function xmodmap {
 	ln -sv `pwd`/dot-xmodmap  ~/.xmodmap
 }
 
-
 function xinitrc {
 	log "Installing xinitrc"
 	ln -sv `pwd`/dot-xinitrc  ~/.xinitrc
 }
+function zshrc {
+	log "Installing .zshrc"
+	ln -sv `pwd`/dot-zshrc  ~/.zshrc
+}
 
+zshrc
 xinitrc
-# emacs
-# xmodmap
+xmodmap
+emacs
