@@ -19,6 +19,9 @@
 ;; just for on the mac.
 (setq ns-command-modifier 'meta)
 
+;; confirm on exit (i have fat fingers on one of my keyboards)
+(setq confirm-kill-emacs 'yes-or-no-p)
+
 ;; good mode.
 (ido-mode)
 
