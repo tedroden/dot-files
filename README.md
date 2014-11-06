@@ -1,5 +1,8 @@
 # Ted Roden's various dotfiles
 
+This is my collection of dotfiles. I like to use a lot of different computers and his helps keep me sane on all of them.
+
+They *should* have nothing personal, so you can just install and go. If you need personal stuff, the emacs config supports custom.el (for customize mode) and personal.el (for whatever you need that no one else would want). Just put those in the directory and it'll load those. Personally, I store those files in dropbox and `ln -s` them to my (newly created) `~/.emacs.d`
 
 ## .emacs
 
@@ -14,7 +17,7 @@ Let me know what you think.
 
 The first time you install this, it will take a long time. Let me know if something doesn't work!
 
-TODO: Why doesn't magit know that this is a git project when cloned to ~/.emacs.d/
+*TODO*: Why doesn't magit know that this is a git project when cloned to ~/.emacs.d/
 
 ## .xinitrc
 
