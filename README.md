@@ -10,12 +10,11 @@ It allows for two special files:
 1. `custom.el`: will store things set with `custom`
 2. `personal.el`: We'll load this if it exists for things that don't belong in git. 
 
-Let me know what you think
+Let me know what you think.
 
-TODO: only do the mac only stuff on a mac
-TODO: check to see if a package is available before `package-install` ... if not, run `package-refresh-contents` 
+The first time you install this, it will take a long time. Let me know if something doesn't work!
+
 TODO: Why doesn't magit know that this is a git project when cloned to ~/.emacs.d/
-
 
 ## .xinitrc
 
