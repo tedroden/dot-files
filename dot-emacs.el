@@ -38,6 +38,7 @@
     planet-theme
     ac-js2
     ac-ispell
+	go-mode
     go-autocomplete
     magit
     markdown-mode
@@ -100,3 +101,4 @@
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
+(global-set-key "\C-ca" 'org-agenda)
