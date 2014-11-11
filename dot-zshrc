@@ -20,6 +20,9 @@ if [ "$PLATFORM" = "Linux" ]; then
 	alias open="xdg-open"
 fi
 
+# auto completion should be case sensitve
+CASE_SENSITIVE="true"
+
 # User configuration
 
 export GOPATH=~/Documents/Code/go
