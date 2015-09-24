@@ -38,7 +38,7 @@
     planet-theme
     ac-js2
     ac-ispell
-	go-mode
+    go-mode
     go-autocomplete
     magit
     markdown-mode
@@ -53,7 +53,7 @@
   (when (not (package-installed-p p))
 	(package-install p)))
 
-(load-theme 'planet)
+(load-theme 'twilight-bright)
 
 ;; auto complete setup. Is this right?
 (require 'auto-complete-config)
@@ -102,3 +102,38 @@
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
 (global-set-key "\C-ca" 'org-agenda)
+
+
+(defun eshell-here ()
+  "opens up a shell in the same  directory as the current buffer"
+  (interactive)
+  (let* ((parent (if (buffer-file-name)
+					 (file-name-directory (buffer-file-name))
+				   default-directory))
+		 (height (/ (window-total-height) 3))
+		 (name (car (last (split-string parent "/" t)))))
+	(split-window-below (- height))
+	(other-window 1)
+	(eshell "new")
+	(rename-buffer (concat "*eshell: " name "*"))
+	(insert (concat "ls"))
+	(eshell-send-input)))
+(global-set-key (kbd "C-!") 'eshell-here)
+
+(defun eshell/x ()
+  (insert "exit")
+  (eshell-send-input)
+  (other-window 1)
+  (delete-other-windows 1))
+
+
+
+; (require 'ocodo-svg-mode-line)
+
+
+; setup the path
+(defun eshell-mode-hook-func ()
+  (message "setting this up.")
+  (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env)))
+
+(add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
