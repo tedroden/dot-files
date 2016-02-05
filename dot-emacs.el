@@ -1,6 +1,6 @@
 ;; rethinking everything
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
+; (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
 
@@ -22,8 +22,7 @@
 ;; confirm on exit (i have fat fingers on one of my keyboards)
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-;; good mode.
-(ido-mode)
+(set-default-font "Inconsolata 15")
 
 (require 'package)
 (add-to-list 'package-archives
@@ -42,8 +41,15 @@
     go-autocomplete
     magit
     markdown-mode
+	flx-ido
     )
   "Stuff I like")
+
+;; good mode.
+
+(ido-mode t)
+(ido-everywhere t)
+(flx-ido-mode t)
 
 (if (file-exists-p package-user-dir)
     nil
@@ -53,7 +59,10 @@
   (when (not (package-installed-p p))
 	(package-install p)))
 
-(load-theme 'twilight-bright)
+; (load-theme 'twilight-bright)
+(load-theme 'twilight-anti-bright)
+(global-linum-mode t)
+(global-hl-line-mode t)
 
 ;; auto complete setup. Is this right?
 (require 'auto-complete-config)
