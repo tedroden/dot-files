@@ -22,7 +22,7 @@
 ;; confirm on exit (i have fat fingers on one of my keyboards)
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-(set-default-font "Inconsolata 15")
+(set-default-font "Hack 14")
 
 (require 'package)
 (add-to-list 'package-archives
@@ -33,23 +33,27 @@
 ;; a list of packages
 (defvar tedroden/packages
   '(auto-complete
-    color-theme
-    planet-theme
-    ac-js2
-    ac-ispell
-    go-mode
-    go-autocomplete
-    magit
-    markdown-mode
+	color-theme
+	planet-theme
+	ac-js2
+	ac-ispell
+	go-mode
+	go-autocomplete
+	magit
+	markdown-mode
 	flx-ido
+	airline-themes
+	ace-window
+	rainbow-blocks
+	rainbow-delimiters
+	rainbow-mode
+	swiper
+	counsel
+	use-package
+	smooth-scroll
     )
   "Stuff I like")
 
-;; good mode.
-
-(ido-mode t)
-(ido-everywhere t)
-(flx-ido-mode t)
 
 (if (file-exists-p package-user-dir)
     nil
@@ -59,8 +63,48 @@
   (when (not (package-installed-p p))
 	(package-install p)))
 
+
+(require 'use-package)
+; (airline-themes-set-modeline)
+(global-set-key (kbd "M-p") 'ace-window)
+
+(global-set-key (kbd "C-'") 'avy-goto-char-2)
+(ivy-mode t)
+(setq ivy-display-style 'fancy)
+(setq ivy-count-format "(%d/%d) ")
+
+(require 'counsel)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-h f") 'counsel-describe-function)
+(global-set-key (kbd "C-h v") 'counsel-describe-variable)
+(global-set-key (kbd "C-h l") 'counsel-load-library)
+; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+;(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-c l") 'counsel-locate)
+; (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+
+(setq ivy-use-virtual-buffers t)
+
+(use-package smooth-scroll
+  :config
+  (smooth-scroll-mode 1)
+  (setq smooth-scroll/vscroll-step-size 5)
+  )
+
+
+;; good mode.
+
+(ido-mode t)
+(ido-everywhere t)
+(flx-ido-mode t)
+
 ; (load-theme 'twilight-bright)
-(load-theme 'twilight-anti-bright)
+; (load-theme 'twilight-anti-bright)
+(load-theme 'material)
 (global-linum-mode t)
 (global-hl-line-mode t)
 
@@ -88,6 +132,8 @@
 
 (add-hook 'prog-mode-hook  'tedroden/code-setup)
 (add-hook 'text-mode-hook  'tedroden/code-setup)
+
+(add-hook 'css-mode-hook 'rainbow-mode)
 
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
@@ -136,7 +182,6 @@
   (delete-other-windows 1))
 
 
-
 ; (require 'ocodo-svg-mode-line)
 
 
@@ -146,3 +191,5 @@
   (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env)))
 
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
+
+
