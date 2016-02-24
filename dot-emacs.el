@@ -1,4 +1,4 @@
-;; rethinking everything
+;; Rethinking everything
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 ; (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -25,11 +25,13 @@
 (set-default-font "Hack 14")
 
 (require 'package)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+;; (add-to-list 'package-archives
+;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
+
+;; FIXME: migrate all this to use package?
 ;; a list of packages
 (defvar tedroden/packages
   '(auto-complete
@@ -51,6 +53,7 @@
 	counsel
 	use-package
 	smooth-scroll
+	js3-mode
     )
   "Stuff I like")
 
@@ -64,12 +67,15 @@
 	(package-install p)))
 
 
-(require 'use-package)
-; (airline-themes-set-modeline)
-(global-set-key (kbd "M-p") 'ace-window)
+(global-set-key (kbd "M-o") 'ace-window)
 
 (global-set-key (kbd "C-'") 'avy-goto-char-2)
-(ivy-mode t)
+
+(ivy-mode t) ; \#\|\.\#\|\~\|\.pyc$\|\.DS_Store\|__pycache (filefind ignore regexp)
+
+
+(beacon-mode 1)
+
 (setq ivy-display-style 'fancy)
 (setq ivy-count-format "(%d/%d) ")
 
@@ -89,24 +95,32 @@
 
 (setq ivy-use-virtual-buffers t)
 
+(require 'use-package)
 (use-package smooth-scroll
   :config
   (smooth-scroll-mode 1)
   (setq smooth-scroll/vscroll-step-size 5)
   )
 
+(use-package js3-mode
+  :mode ("\\.js\\'" . js3-mode))
 
-;; good mode.
+;; The package is "python" but the mode is "python-mode":
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+  :interpreter ("python" . python-mode))
 
+
+;; ido is a good mode.
 (ido-mode t)
 (ido-everywhere t)
 (flx-ido-mode t)
 
 ; (load-theme 'twilight-bright)
 ; (load-theme 'twilight-anti-bright)
-(load-theme 'material)
+(load-theme 'atom-one-dark)
 (global-linum-mode t)
-(global-hl-line-mode t)
+; (global-hl-line-mode nil)
 
 ;; auto complete setup. Is this right?
 (require 'auto-complete-config)
@@ -137,9 +151,9 @@
 
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
-"go to previous window"
-(interactive)
-(other-window -1))
+  "go to previous window"
+  (interactive)
+  (other-window -1))
 
 ;; what do you think this does?
 (setq-default tab-width 4)
@@ -193,3 +207,15 @@
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
 
 
+;; start the server
+(server-start)
+;; this *should* make it so we don't open new frames
+(setq ns-pop-up-frames nil)
+
+
+(defun  teds/file-newer-than-file-p (file1 file2)
+  
+  (message file1)
+  (message file2)  
+  (not (file-newer-than-file-p file1 file2)))
+  

@@ -30,7 +30,7 @@ if [ "$PLATFORM" = "Linux" ]; then
 	alias open="xdg-open"
 fi
 
-alias e="emacsclient -t"
+alias e="emacsclient -n"
 
 export ANDROID_HOME=~/Library/Android/sdk
 # The next line updates PATH for the Google Cloud SDK.
