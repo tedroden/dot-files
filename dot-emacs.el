@@ -1,6 +1,6 @@
 ;; Rethinking everything
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-; (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
 
@@ -22,7 +22,7 @@
 ;; confirm on exit (i have fat fingers on one of my keyboards)
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-(set-default-font "Hack 14")
+; (set-default-font "Hack 14")
 
 (require 'package)
 ;; (add-to-list 'package-archives
@@ -35,16 +35,12 @@
 ;; a list of packages
 (defvar tedroden/packages
   '(auto-complete
-	color-theme
-	planet-theme
-	ac-js2
 	ac-ispell
 	go-mode
 	go-autocomplete
 	magit
 	markdown-mode
 	flx-ido
-	airline-themes
 	ace-window
 	rainbow-blocks
 	rainbow-delimiters
@@ -54,6 +50,9 @@
 	use-package
 	smooth-scroll
 	js3-mode
+	beacon
+	paradox
+	base16-theme	
     )
   "Stuff I like")
 
@@ -68,13 +67,14 @@
 
 
 (global-set-key (kbd "M-o") 'ace-window)
-
 (global-set-key (kbd "C-'") 'avy-goto-char-2)
 
 (ivy-mode t) ; \#\|\.\#\|\~\|\.pyc$\|\.DS_Store\|__pycache (filefind ignore regexp)
 
 
-(beacon-mode 1)
+;;; highlight the cursor when scrolling or switching buffers
+;; super great for teaching or for someone looking over your shoulder
+(beacon-mode 1) 
 
 (setq ivy-display-style 'fancy)
 (setq ivy-count-format "(%d/%d) ")
@@ -118,7 +118,7 @@
 
 ; (load-theme 'twilight-bright)
 ; (load-theme 'twilight-anti-bright)
-(load-theme 'atom-one-dark)
+(load-theme 'base16-apathy-dark)
 (global-linum-mode t)
 ; (global-hl-line-mode nil)
 
@@ -195,10 +195,6 @@
   (other-window 1)
   (delete-other-windows 1))
 
-
-; (require 'ocodo-svg-mode-line)
-
-
 ; setup the path
 (defun eshell-mode-hook-func ()
   (message "setting this up.")
@@ -206,16 +202,8 @@
 
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
 
-
 ;; start the server
 (server-start)
 ;; this *should* make it so we don't open new frames
 (setq ns-pop-up-frames nil)
 
-
-(defun  teds/file-newer-than-file-p (file1 file2)
-  
-  (message file1)
-  (message file2)  
-  (not (file-newer-than-file-p file1 file2)))
-  
