@@ -118,7 +118,7 @@
 
 ; (load-theme 'twilight-bright)
 ; (load-theme 'twilight-anti-bright)
-(load-theme 'base16-apathy-dark)
+(load-theme 'base16-twilight-dark)
 (global-linum-mode t)
 ; (global-hl-line-mode nil)
 
