@@ -8,6 +8,8 @@
 (setq lisp-dir (concat dotfiles-dir "lisp"))
 (add-to-list 'load-path lisp-dir)
 
+; (info "(eintr) Top") 
+
 ;; FIXME: remove paths to /home/troden
 ;; FIXME: add artbollocks-mode,
 ;; FIXME: flyspell to markdown mode
@@ -26,7 +28,6 @@
 ;; confirm on exit (i have fat fingers on one of my keyboards)
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-;; FIXME: if we're on HiDPI 
 (set-default-font "Hack 14")
 
 (require 'package)
@@ -79,7 +80,8 @@
 
 (use-package markdown-mode
   :init
-  (setq markdown-list-indent-width 2))
+  (setq markdown-list-indent-width 2)
+  (artbollocks-mode 1))
 
 ;; ;;; highlight the cursor when scrolling or switching buffers
 ;; ;; super great for teaching or for someone looking over your shoulder
@@ -155,11 +157,13 @@
     (setq artbollocks-jargon nil)))
 
 ;; ido is a good mode.
-(ido-mode t)
-(ido-everywhere t)
-(flx-ido-mode t)
+;(ido-mode t)
+;(ido-everywhere t)
+; (flx-ido-mode t)
 
-(load-theme 'base16-twilight-dark)
+;; load the theme if we're in xwindows
+(if (string= window-system 'x) 
+    (load-theme 'base16-twilight-dark))
 
 ;; (global-hl-line-mode nil)
 ; (global-linum-mode t) ;; this is good for teaching, but i don't generally want it.
@@ -248,7 +252,7 @@
 
 ;; start the server
 ;; FIXME: can we check to see if it's running first?
-;; (server-start)
+(server-start)
 
 
 ;; this *should* make it so we don't open new frames
@@ -273,13 +277,23 @@
     (helm-push-mark-mode 1)
     (load "/home/troden/code/dot-files/helm-init.el")))
 
-;; 					; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (helm-mode 1)
+(use-package keyfreq
+  :config
+  (progn 
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1)
+    (setq keyfreq-excluded-commands
+      '(self-insert-command
+        abort-recursive-edit
+        forward-char
+        backward-char
+        previous-line
+        next-line))))
 
 
 (defvar quicklisp-path "/home/troden/quicklisp")
 (load (concat quicklisp-path "/slime-helper"))
-
+(setq inferior-lisp-program (executable-find "sbcl"))
 (slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
 	       slime-xref-browser slime-highlight-edits
 	       slime-sprof))
@@ -299,8 +313,7 @@
   :config
   (progn
     (setq hyde-home "/home/troden/code/blog")
-    (setq hyde_images_dir "static")
-    ))
+    (setq hyde_images_dir "static")))
   
 
 
