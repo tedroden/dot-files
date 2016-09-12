@@ -8,6 +8,7 @@
     (helm-adaptive-mode 1)
     (helm-push-mark-mode 1)))
 
+(setq helm-ff-file-name-history-use-recentf t)
 ;;;; Test Sources or new helm code. 
 ;;   !!!WARNING EXPERIMENTAL!!!
 
@@ -78,6 +79,7 @@
 ;;; Global-map
 ;;
 ;;
+(global-set-key (kbd "C-x b") 'helm-mini)
 (global-set-key (kbd "M-x")                          'undefined)
 (global-set-key (kbd "M-x")                          'helm-M-x)
 (global-set-key (kbd "M-y")                          'helm-show-kill-ring)
@@ -97,7 +99,9 @@
 (global-set-key (kbd "<f2>")                         'helm-execute-kmacro)
 (global-set-key (kbd "C-c i")                        'helm-imenu-in-all-buffers)
 
-; (global-set-key (kbd "C-s")                          'helm-occur)
+;; This one creates a new buffer and shortens the window
+;; (global-set-key (kbd "C-s")                          'helm-occur)
+
 (define-key global-map [remap jump-to-register]      'helm-register)
 (define-key global-map [remap list-buffers]          'helm-mini)
 (define-key global-map [remap dabbrev-expand]        'helm-dabbrev)

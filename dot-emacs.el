@@ -53,7 +53,7 @@
 	rainbow-mode
 	use-package
 	smooth-scroll
-	js3-mode
+	js2-mode
 	beacon
 	paradox
 	base16-theme
@@ -73,15 +73,19 @@
 (global-set-key (kbd "M-o") 'ace-window)
 (global-set-key (kbd "C-.") 'avy-goto-char-2)
 
-
+(use-package visual-fill-column-mode
+  :init
+  (visual-fill-column-mode))
 (use-package beacon-mode
   :init
   (beacon-mode 1))
 
 (use-package markdown-mode
   :init
-  (setq markdown-list-indent-width 2)
-  (artbollocks-mode 1))
+  ; (setq markdown-list-indent-width 2)
+  (artbollocks-mode 1)
+					;(add-hook 'markdown-mode-hook 'tedroden/writer-mode)
+  )
 
 ;; ;;; highlight the cursor when scrolling or switching buffers
 ;; ;; super great for teaching or for someone looking over your shoulder
@@ -113,8 +117,8 @@
   (setq smooth-scroll/vscroll-step-size 5)
   )
 
-(use-package js3-mode
-  :mode ("\\.js\\'" . js3-mode))
+(use-package js2-mode
+  :mode ("\\.js\\'" . js2-mode))
 
 ;; The package is "python" but the mode is "python-mode":
 (use-package python
@@ -161,13 +165,18 @@
 ;(ido-everywhere t)
 ; (flx-ido-mode t)
 
-;; load the theme if we're in xwindows
-(if (string= window-system 'x) 
-    (load-theme 'base16-twilight-dark))
 
-;; (global-hl-line-mode nil)
+;; load the theme if we're in xwindows or on a mac
+(if (member window-system '(x ns))
+    (load-theme 'twilight-bright))
+  ; (load-theme 'base16-twilight-dark))
+
+
+; (global-hl-line-mode nil)
 ; (global-linum-mode t) ;; this is good for teaching, but i don't generally want it.
 (column-number-mode t)
+
+
 
 ;; auto complete setup. Is this right?
 (require 'auto-complete-config)
@@ -190,6 +199,12 @@
   (highlight-phrase "TODO" 'hi-yellow)
   (highlight-phrase "Todo" 'hi-yellow)
   (highlight-phrase "todo" 'hi-yellow))
+
+(defun tedroden/writer-mode ()
+  (interactive)
+  (markdown-mode)
+  (visual-line-mode)
+  (visual-fill-column-mode))
 
 (add-hook 'prog-mode-hook  'tedroden/code-setup)
 (add-hook 'text-mode-hook  'tedroden/code-setup)
@@ -263,8 +278,10 @@
 	      tab-width 8
 	      indent-tabs-mode t)
 
-(add-to-list 'load-path "/home/troden/code/emacs-async")
-(add-to-list 'load-path "/home/troden/code/helm")
+
+
+;; (add-to-list 'load-path "/home/troden/code/emacs-async")
+;; (add-to-list 'load-path "/home/troden/code/helm")
 
 ; (require 'helm-config)
 
@@ -272,10 +289,7 @@
 (use-package helm-config
     :config
   (progn
-    (helm-mode 1)
-    (helm-adaptive-mode 1)
-    (helm-push-mark-mode 1)
-    (load "/home/troden/code/dot-files/helm-init.el")))
+    (load (concat dotfiles-dir "helm-init.el"))))
 
 (use-package keyfreq
   :config
@@ -291,8 +305,10 @@
         next-line))))
 
 
-(defvar quicklisp-path "/home/troden/quicklisp")
-(load (concat quicklisp-path "/slime-helper"))
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+
+;; (defvar quicklisp-path "/home/troden/quicklisp")
+;; (load (concat quicklisp-path "/slime-helper"))
 (setq inferior-lisp-program (executable-find "sbcl"))
 (slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
 	       slime-xref-browser slime-highlight-edits
@@ -315,6 +331,50 @@
     (setq hyde-home "/home/troden/code/blog")
     (setq hyde_images_dir "static")))
   
+;    (global-set-key (kbd "M-i") 'helm-swoop)
+; (global-set-key (kbd "C-s") 'isearch-forward)
+(global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
+;; (global-set-key (kbd "M-I") 'helm-multi-swoop-all)
+					;    (global-set-key (kbd "C-r") 'isearch-backward)
+
+;; maybe?
+(add-hook 'eshell-mode-hook
+          (lambda ()
+              (eshell-cmpl-initialize)
+              (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
+              (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
 
 
+;; I know these create problems (with live-reload, etc),
+;; not sure if disabling it will create new ones... 
+(setq create-lockfiles nil)
 
+
+(setq ibuffer-saved-filter-groups
+      '(("Buffers"
+	 ("All This Becomes You" (filename . "_atby"))	 	 
+	 ("Fancy Hands Code" (filename . "Code/fancyhands"))
+	 ("QVP CLI" (filename . "Code/qvp-cli"))
+	 ("QVP Server" (filename . "Code/qvp-server"))
+	 ("QVP Web" (filename . "Code/qvp-web"))	 
+	 ("Emacs" (or (filename . "dot-emacs.el")
+		      (name . "|*GNU Emacs|*")
+		      (name . "|*scratch|*")
+		      (name . "|*Messages|*")
+		      ))
+	 ("Eshell" (mode . eshell-mode))
+	 ("z Helm Garbage" (name . "|*helm"))
+	 )))
+
+(add-hook 'ibuffer-mode-hook
+	  '(lambda ()
+	     (ibuffer-switch-to-saved-filter-groups "Buffers")))
+
+	 ;; ("Web Dev" (or (mode . html-mode)
+	 ;; 		(mode . css-mode)))
+	 ;; ("Subversion" (name . "\*svn"))
+	 ;; ("Magit" (name . "\*magit"))
+	 ;; ("ERC" (mode . erc-mode))
+	 ;; ("Help" (or (name . "\*Help\*")
+	 ;; 	     (name . "\*Apropos\*")
+	 ;; 	     (name . "\*info\*"))))))
