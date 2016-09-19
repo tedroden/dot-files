@@ -28,7 +28,7 @@
 ;; confirm on exit (i have fat fingers on one of my keyboards)
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-(set-default-font "Hack 14")
+; (set-default-font "Hack 14")
 
 (require 'package)
 ;; (add-to-list 'package-archives
@@ -41,22 +41,25 @@
 ;; a list of packages
 (defvar tedroden/packages
   '(auto-complete
-	ac-ispell
-	go-mode
-	go-autocomplete
-	magit
-	markdown-mode
-	flx-ido
-	ace-window
-	rainbow-blocks
-	rainbow-delimiters
-	rainbow-mode
-	use-package
-	smooth-scroll
-	js2-mode
-	beacon
-	paradox
-	base16-theme
+    artbollocks-mode
+    helm
+    visual-fill-column
+    ac-ispell
+    go-mode
+    go-autocomplete
+    magit
+    markdown-mode
+    flx-ido
+    ace-window
+    rainbow-blocks
+    rainbow-delimiters
+    rainbow-mode
+    use-package
+    smooth-scroll
+    js2-mode
+    beacon
+    paradox
+    ;; twilight-bright-theme
     )
   "Stuff I like")
 
@@ -169,11 +172,12 @@
 ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
     (load-theme 'twilight-bright))
-  ; (load-theme 'base16-twilight-dark))
+					; (load-theme 'base16-twilight-dark))
 
 
-; (global-hl-line-mode nil)
-; (global-linum-mode t) ;; this is good for teaching, but i don't generally want it.
+;; I go back and forth on these...
+;; (global-linum-mode t) ;; this is good for teaching, but i don't generally want it.
+(global-hl-line-mode nil)
 (column-number-mode t)
 
 
@@ -305,31 +309,31 @@
         next-line))))
 
 
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
 
-;; (defvar quicklisp-path "/home/troden/quicklisp")
-;; (load (concat quicklisp-path "/slime-helper"))
-(setq inferior-lisp-program (executable-find "sbcl"))
-(slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
-	       slime-xref-browser slime-highlight-edits
-	       slime-sprof))
-;;
-;; Decide where to put a slime scratch file, if you want one, and set
-;; it up with:
-;;
-(setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
+;; ;; (defvar quicklisp-path "/home/troden/quicklisp")
+;; ;; (load (concat quicklisp-path "/slime-helper"))
+;; (setq inferior-lisp-program (executable-find "sbcl"))
+;; (slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
+;; 	       slime-xref-browser slime-highlight-edits
+;; 	       slime-sprof))
+;; ;;
+;; ;; Decide where to put a slime scratch file, if you want one, and set
+;; ;; it up with:
+;; ;;
+;; (setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
 ;;
 
-(defadvice slime-scratch
-    (after slime-scratch-adjust-modes () activate compile)
-  (turn-some-mode-off)
-  (turn-some-other-mode-on))
+;; (defadvice slime-scratch
+;;     (after slime-scratch-adjust-modes () activate compile)
+;;   (turn-some-mode-off)
+;;   (turn-some-other-mode-on))
 
-(use-package hyde
-  :config
-  (progn
-    (setq hyde-home "/home/troden/code/blog")
-    (setq hyde_images_dir "static")))
+;; (use-package hyde
+;;   :config
+;;   (progn
+;;     (setq hyde-home "/home/troden/code/blog")
+;;     (setq hyde_images_dir "static")))
   
 ;    (global-set-key (kbd "M-i") 'helm-swoop)
 ; (global-set-key (kbd "C-s") 'isearch-forward)
