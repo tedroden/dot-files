@@ -59,7 +59,7 @@
     js2-mode
     beacon
     paradox
-    ;; twilight-bright-theme
+    twilight-bright-theme
     )
   "Stuff I like")
 
@@ -68,13 +68,14 @@
     nil
   (package-refresh-contents))
 
+;; i'm fairly sure that use-package can handle this...
 (dolist (p tedroden/packages)
   (when (not (package-installed-p p))
 	(package-install p)))
 
 
 (global-set-key (kbd "M-o") 'ace-window)
-(global-set-key (kbd "C-.") 'avy-goto-char-2)
+(global-set-key (kbd "C-'") 'avy-goto-char-2)
 
 (use-package visual-fill-column-mode
   :init
@@ -83,12 +84,7 @@
   :init
   (beacon-mode 1))
 
-(use-package markdown-mode
-  :init
-  ; (setq markdown-list-indent-width 2)
-  (artbollocks-mode 1)
-					;(add-hook 'markdown-mode-hook 'tedroden/writer-mode)
-  )
+
 
 ;; ;;; highlight the cursor when scrolling or switching buffers
 ;; ;; super great for teaching or for someone looking over your shoulder
@@ -120,8 +116,6 @@
   (setq smooth-scroll/vscroll-step-size 5)
   )
 
-(use-package js2-mode
-  :mode ("\\.js\\'" . js2-mode))
 
 ;; The package is "python" but the mode is "python-mode":
 (use-package python
@@ -163,15 +157,11 @@
     ;; out my own jargon
     (setq artbollocks-jargon nil)))
 
-;; ido is a good mode.
-;(ido-mode t)
-;(ido-everywhere t)
-; (flx-ido-mode t)
-
 
 ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
-    (load-theme 'twilight-bright))
+;    (load-theme 'twilight-bright))
+    (load-theme 'base16-ocean))
 					; (load-theme 'base16-twilight-dark))
 
 
@@ -186,6 +176,8 @@
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories (concat lisp-dir "ac-dict"))
 (ac-config-default)
+
+(setq dired-omit-mode t)
 
 ;; magit setup. Is this right?
 (setq magit-dir (concat dotfiles-dir "external/magit/"))
@@ -238,36 +230,47 @@
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
 (global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-ca" 'org-agenda)
 
 
-(defun eshell-here ()
-  "opens up a shell in the same  directory as the current buffer"
-  (interactive)
-  (let* ((parent (if (buffer-file-name)
-					 (file-name-directory (buffer-file-name))
-				   default-directory))
-		 (height (/ (window-total-height) 3))
-		 (name (car (last (split-string parent "/" t)))))
-	(split-window-below (- height))
-	(other-window 1)
-	(eshell "new")
-	(rename-buffer (concat "*eshell: " name "*"))
-	(insert (concat "ls"))
-	(eshell-send-input)))
-(global-set-key (kbd "C-!") 'eshell-here)
 
-(defun eshell/x ()
-  (insert "exit")
-  (eshell-send-input)
-  (other-window 1)
-  (delete-other-windows 1))
+;; (defun eshell-here ()
+;;   "opens up a shell in the same  directory as the current buffer"
+;;   (interactive)
+;;   (let* ((parent (if (buffer-file-name)
+;; 					 (file-name-directory (buffer-file-name))
+;; 				   default-directory))
+;; 		 (height (/ (window-total-height) 3))
+;; 		 (name (car (last (split-string parent "/" t)))))
+;; 	(split-window-below (- height))
+;; 	(other-window 1)
+;; 	(eshell "new")
+;; 	(rename-buffer (concat "*eshell: " name "*"))
+;; 	(insert (concat "ls"))
+;; 	(eshell-send-input)))
+
+(global-set-key (kbd "C-!") 'eshell)
+
+;; (defun eshell/x ()
+;;   (insert "exit")
+;;   (eshell-send-input)
+;;   (other-window 1)
+;;   (delete-other-windows 1))
 
 ; setup the path
 (defun eshell-mode-hook-func ()
   (message "setting this up.")
   (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env)))
 
-(add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
+(use-package eshell
+  :config
+  (progn
+    (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
+    (add-hook 'eshell-preoutput-filter-functions
+	      'ansi-color-apply)
+    (eshell-git-prompt-use-theme 'powerline)
+    ))
+  
 
 ;; start the server
 ;; FIXME: can we check to see if it's running first?
@@ -282,18 +285,16 @@
 	      tab-width 8
 	      indent-tabs-mode t)
 
-
-
 ;; (add-to-list 'load-path "/home/troden/code/emacs-async")
 ;; (add-to-list 'load-path "/home/troden/code/helm")
 
-; (require 'helm-config)
+;; (use-package ido
+;;   :config
+;;   (progn
+;;     (ido-mode t)
+;;     (ido-everywhere t)
+;;     (flx-ido-mode t)))
 
-
-(use-package helm-config
-    :config
-  (progn
-    (load (concat dotfiles-dir "helm-init.el"))))
 
 (use-package keyfreq
   :config
@@ -308,45 +309,23 @@
         previous-line
         next-line))))
 
+(use-package helm-config
+    :config
+  (progn
+    (load (concat dotfiles-dir "helm-init.el"))))
 
-;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
-
-;; ;; (defvar quicklisp-path "/home/troden/quicklisp")
-;; ;; (load (concat quicklisp-path "/slime-helper"))
-;; (setq inferior-lisp-program (executable-find "sbcl"))
-;; (slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
-;; 	       slime-xref-browser slime-highlight-edits
-;; 	       slime-sprof))
-;; ;;
-;; ;; Decide where to put a slime scratch file, if you want one, and set
-;; ;; it up with:
-;; ;;
-;; (setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
-;;
-
-;; (defadvice slime-scratch
-;;     (after slime-scratch-adjust-modes () activate compile)
-;;   (turn-some-mode-off)
-;;   (turn-some-other-mode-on))
-
-;; (use-package hyde
-;;   :config
-;;   (progn
-;;     (setq hyde-home "/home/troden/code/blog")
-;;     (setq hyde_images_dir "static")))
-  
 ;    (global-set-key (kbd "M-i") 'helm-swoop)
 ; (global-set-key (kbd "C-s") 'isearch-forward)
 (global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
 ;; (global-set-key (kbd "M-I") 'helm-multi-swoop-all)
-					;    (global-set-key (kbd "C-r") 'isearch-backward)
+
 
 ;; maybe?
 (add-hook 'eshell-mode-hook
           (lambda ()
-              (eshell-cmpl-initialize)
-              (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
-              (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
+              (eshell-cmpl-initialize)))	
+              ;; (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
+              ;; (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
 
 
 ;; I know these create problems (with live-reload, etc),
@@ -382,3 +361,50 @@
 	 ;; ("Help" (or (name . "\*Help\*")
 	 ;; 	     (name . "\*Apropos\*")
 	 ;; 	     (name . "\*info\*"))))))
+
+(use-package markdown-mode
+  :init
+  ; (setq markdown-list-indent-width 2)
+  (artbollocks-mode 1)
+  (tedroden/writer-mode)
+					;(add-hook 'markdown-mode-hook (tedroden/writer-mode)
+  )
+
+;; (use-package telephone-line-mode
+;;   :init
+;;   (telephone-line-mode 1))
+
+;; (require 'spaceline-config)
+;; (spaceline-spacemacs-theme)
+(use-package spaceline
+    :config
+    (require 'spaceline-config)
+    (spaceline-spacemacs-theme)
+    (spaceline-toggle-minor-modes-off))
+;; (use-package spaceline-config
+;;   :config
+;;   (progn
+;;     (spaceline-spacemacs-theme)
+;;     ))
+  
+
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
+(use-package js2-mode
+  :mode (("\\.js$" . js2-mode))
+  :interpreter ("node" . js2-mode))
+
+;; i don't know about this sone
+(use-package smartparens
+  :init
+  (progn
+    (use-package smartparens-config)
+    (use-package smartparens-ruby)
+    (use-package smartparens-html)
+    (smartparens-global-mode 1)))
+
+; (use-package mode-icons)
+
+(use-package dired-x
+  :demand t)
