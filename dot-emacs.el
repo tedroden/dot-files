@@ -43,23 +43,29 @@
   '(auto-complete
     artbollocks-mode
     helm
+    helm-swoop
     visual-fill-column
     ac-ispell
+    ;; ac-js2
     go-mode
     go-autocomplete
     magit
     markdown-mode
-    flx-ido
+    ;; flx-ido
     ace-window
-    rainbow-blocks
+    ;; rainbow-blocks
     rainbow-delimiters
-    rainbow-mode
+    rainbow-mode ;; colorify hex colors in css, etc.
     use-package
     smooth-scroll
-    js2-mode
-    beacon
-    paradox
-    twilight-bright-theme
+    keyfreq
+    js2-mode ;; still the best javascript mode as far as I can tell
+    beacon ;; good for when you're skipping around windows
+    paradox ;; package managerrment
+    base16-theme ;; theme
+    web-mode ;; handles django templates (and others)
+    ;; twilight-bright-theme
+    
     )
   "Stuff I like")
 
@@ -167,7 +173,7 @@
 
 ;; I go back and forth on these...
 ;; (global-linum-mode t) ;; this is good for teaching, but i don't generally want it.
-(global-hl-line-mode nil)
+;  (global-hl-line-mode nil)
 (column-number-mode t)
 
 
@@ -180,10 +186,19 @@
 (setq dired-omit-mode t)
 
 ;; magit setup. Is this right?
-(setq magit-dir (concat dotfiles-dir "external/magit/"))
-(add-to-list 'load-path magit-dir)
-(require 'magit)
-(global-set-key (kbd "C-c m") 'magit-status)
+(use-package magit
+  :config
+  (progn
+    (global-set-key (kbd "C-c m") 'magit-status)    
+    (custom-set-variables
+    '(magit-git-global-arguments
+     (quote
+      ("--no-pager" "--literal-pathspecs" "-c" "core.preloadindex=true" "-c" "color.ui=auto"))))))
+
+; (setq magit-dir (concat dotfiles-dir "external/magit/"))
+; (add-to-list 'load-path magit-dir)
+
+
 
 
 (global-hi-lock-mode 1)	  
@@ -312,11 +327,13 @@
 (use-package helm-config
     :config
   (progn
-    (load (concat dotfiles-dir "helm-init.el"))))
+    (load (concat dotfiles-dir "helm-init.el"))
+    (global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
+    (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)))
 
 ;    (global-set-key (kbd "M-i") 'helm-swoop)
 ; (global-set-key (kbd "C-s") 'isearch-forward)
-(global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
+
 ;; (global-set-key (kbd "M-I") 'helm-multi-swoop-all)
 
 
@@ -380,7 +397,7 @@
     :config
     (require 'spaceline-config)
     (spaceline-spacemacs-theme)
-    (spaceline-toggle-minor-modes-off))
+    (spaceline-toggle-minor-modes-on))
 ;; (use-package spaceline-config
 ;;   :config
 ;;   (progn
@@ -388,23 +405,112 @@
 ;;     ))
   
 
+; (use-package pony-mode; )
+(use-package web-mode
+  :init
+  (progn
+    (setq web-mode-engines-alist
+	  '(("django"    . "\\.html\\'"))))
+  :mode
+  ((".*fancyhands/templates/.*\\.html\\'" . web-mode)))
+  
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
 (use-package js2-mode
+  :config
+  (progn
+    (add-hook 'js2-mode-hook 'ac-js2-mode))
   :mode (("\\.js$" . js2-mode))
   :interpreter ("node" . js2-mode))
 
 ;; i don't know about this sone
-(use-package smartparens
-  :init
-  (progn
-    (use-package smartparens-config)
-    (use-package smartparens-ruby)
-    (use-package smartparens-html)
-    (smartparens-global-mode 1)))
+;; (use-package smartparens
+;;   :init
+;;   (progn
+;;     (use-package smartparens-config)
+;;     (use-package smartparens-ruby)
+;;     (use-package smartparens-html)
+;;     (smartparens-global-mode 1)))
 
 ; (use-package mode-icons)
 
 (use-package dired-x
   :demand t)
+
+(use-package notmuch
+  :config
+  (progn
+    
+    (custom-set-variables
+     '(notmuch-archive-tags "-inbox +archived"))
+    
+    ;; ;; some gmail like keybindings
+    ;; (define-key notmuch-search-mode-map "e"
+    ;;   notmuch-search-archive-thread)
+    
+    ;; (define-key notmuch-tree-mode-map "e"
+    ;;   notmuch-tree-archive-message-then-next)
+    
+    ;; (define-key notmuch-show-mode-map "e"
+      
+    ;;   notmuch-show-archive-message-then-next-or-next-thread)
+    
+    (define-key notmuch-common-keymap "g"
+      'notmuch-jump-search)
+    
+    (define-key notmuch-search-mode-map "e"
+      (lambda ()
+	"toggle deleted tag for thread"
+	(interactive)
+	(if (member "archived" (notmuch-search-get-tags))
+	    (notmuch-search-tag '("-archived"))
+	  (progn
+	    (notmuch-search-tag '("+archived" "-inbox" "-unread"))
+	    (notmuch-search-next-thread)))))
+
+    (define-key notmuch-tree-mode-map "e"
+      (lambda ()
+	"toggle deleted tag for message"
+	(interactive)
+	(if (member "archived" (notmuch-tree-get-tags))
+	    (notmuch-tree-tag '("-archived"))
+	  (progn
+	    (notmuch-tree-tag '("+archived" "-inbox"))
+	    (notmuch-tree-next-thread)
+	    ))))
+    
+	  ))
+
+
+
+
+  ;; :config
+  
+  ;; (progn
+
+  ;;   (custom-set-variables
+  ;;    '(notmuch-archive-tags "-inbox -archived")
+  ;;    )
+
+  ;;   ;; some gmail like keybindings
+  ;;   (eval-after-load 'notmuch-search
+  ;;     '(define-key notmuch-search-mode-map "e"
+  ;; 	 'notmuch-search-archive-thread))
+
+  ;;   (eval-after-load 'notmuch-tree
+  ;;     '(define-key notmuch-tree-mode-map "e"
+  ;; 	 'notmuch-tree-archive-message-then-next))
+
+  ;;   (eval-after-load 'notmuch-show
+  ;;     '(define-key notmuch-show-mode-map "e"
+  ;; 	 'notmuch-show-archive-message-then-next-or-next-thread))
+    
+  ;;   (define-key notmuch-common-keymap "g" 'notmuch-jump-search)
+    
+  ;;   (lambda ()
+  ;;     "Toggle deleted tag for thread"
+  ;;     (interactive)
+  ;;     (if (member "archived" (notmuch-search-get-tags))
+  ;; 	  (notmuch-search-tag '("-archived"))
+  ;; 	(notmuch-search-tag '("+archived" "-unread"))))))
