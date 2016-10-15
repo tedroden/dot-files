@@ -20,6 +20,7 @@ function emacs {
     fi
     mkdir ~/.emacs.d
     ln -sv `pwd`/dot-emacs.el ~/.emacs.d/init.el
+    ln -sv `pwd`/helm-init.el ~/.emacs.d/helm-init.el    
 }
 
 function xmodmap {

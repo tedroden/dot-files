@@ -10,9 +10,9 @@
 
 ; (info "(eintr) Top") 
 
-;; FIXME: remove paths to /home/troden
 ;; FIXME: add artbollocks-mode,
 ;; FIXME: flyspell to markdown mode
+
 
 (setq custom-file (concat dotfiles-dir "custom.el"))
 (setq personal-file (concat dotfiles-dir "personal.el"))
@@ -37,6 +37,9 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
+(eval-when-compile
+  (require 'use-package))
+
 ;; FIXME: migrate all this to use package?
 ;; a list of packages
 (defvar tedroden/packages
@@ -44,6 +47,7 @@
     artbollocks-mode
     helm
     helm-swoop
+    helm-flx
     visual-fill-column
     ac-ispell
     ;; ac-js2
@@ -79,43 +83,23 @@
   (when (not (package-installed-p p))
 	(package-install p)))
 
+(use-package ace-window
+  :config
+  (global-set-key (kbd "M-o") 'ace-window))
 
-(global-set-key (kbd "M-o") 'ace-window)
-(global-set-key (kbd "C-'") 'avy-goto-char-2)
+(use-package avy
+  :config
+  (global-set-key (kbd "C-/") 'avy-goto-char-2))
 
 (use-package visual-fill-column-mode
   :init
   (visual-fill-column-mode))
+
 (use-package beacon-mode
   :init
   (beacon-mode 1))
 
-
-
-;; ;;; highlight the cursor when scrolling or switching buffers
-;; ;; super great for teaching or for someone looking over your shoulder
-;; (beacon-mode 1) 
-
-;; ivy was cool. using helm now though
-;; (ivy-mode nil) 
-;; (setq ivy-display-style 'fancy)
-;; (setq ivy-count-format "(%d/%d) ")
-;; (require 'counsel)
-;; (global-set-key (kbd "M-x") 'counsel-M-x)
-;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-;; (global-set-key (kbd "C-h f") 'counsel-describe-function)
-;; (global-set-key (kbd "C-h v") 'counsel-describe-variable)
-;; (global-set-key (kbd "C-h l") 'counsel-load-library)
-;; ; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-;; ;(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-;; (global-set-key (kbd "C-c g") 'counsel-git)
-;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
-;; (global-set-key (kbd "C-c k") 'counsel-ag)
-;; (global-set-key (kbd "C-c l") 'counsel-locate)
-;; ; (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-;; (setq ivy-use-virtual-buffers t)
-
-(require 'use-package)
+; (require 'use-package)
 (use-package smooth-scroll
   :config
   (smooth-scroll-mode 1)
@@ -164,11 +148,13 @@
     (setq artbollocks-jargon nil)))
 
 
-;; load the theme if we're in xwindows or on a mac
+;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
-;    (load-theme 'twilight-bright))
-    (load-theme 'base16-ocean))
-					; (load-theme 'base16-twilight-dark))
+    ;;    (load-theme 'spacemacs-light))
+    (load-theme 'spacemacs-dark))
+;; ;;    (load-theme 'twilight-bright))
+;; ;;    (load-theme 'base16-ocean))
+;; ;; (load-theme 'base16-twilight-dark))
 
 
 ;; I go back and forth on these...
@@ -183,7 +169,7 @@
 (add-to-list 'ac-dictionary-directories (concat lisp-dir "ac-dict"))
 (ac-config-default)
 
-(setq dired-omit-mode t)
+(setq dired-omit-mode nil)
 
 ;; magit setup. Is this right?
 (use-package magit
@@ -244,33 +230,26 @@
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-ca" 'org-agenda)
+
+(use-package org-notmuch)
+(use-package org
+  :bind (("C-c a" . org-agenda)
+	 ("C-c c" . org-capture)
+	 ("C-c l" . org-store-link))
+  :config
+  (progn
+    (setq org-default-notes-file "~/org/todo.org")
+    (setq org-catch-invisible-edits 'show-and-error)    
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+    (setq org-clock-out-when-done t)))
 
 
 
-;; (defun eshell-here ()
-;;   "opens up a shell in the same  directory as the current buffer"
-;;   (interactive)
-;;   (let* ((parent (if (buffer-file-name)
-;; 					 (file-name-directory (buffer-file-name))
-;; 				   default-directory))
-;; 		 (height (/ (window-total-height) 3))
-;; 		 (name (car (last (split-string parent "/" t)))))
-;; 	(split-window-below (- height))
-;; 	(other-window 1)
-;; 	(eshell "new")
-;; 	(rename-buffer (concat "*eshell: " name "*"))
-;; 	(insert (concat "ls"))
-;; 	(eshell-send-input)))
+
 
 (global-set-key (kbd "C-!") 'eshell)
-
-;; (defun eshell/x ()
-;;   (insert "exit")
-;;   (eshell-send-input)
-;;   (other-window 1)
-;;   (delete-other-windows 1))
+(global-set-key (kbd "C-c q") 'ff-find-other-file)
 
 ; setup the path
 (defun eshell-mode-hook-func ()
@@ -300,9 +279,6 @@
 	      tab-width 8
 	      indent-tabs-mode t)
 
-;; (add-to-list 'load-path "/home/troden/code/emacs-async")
-;; (add-to-list 'load-path "/home/troden/code/helm")
-
 ;; (use-package ido
 ;;   :config
 ;;   (progn
@@ -319,6 +295,7 @@
     (setq keyfreq-excluded-commands
       '(self-insert-command
         abort-recursive-edit
+        org-self-insert-command
         forward-char
         backward-char
         previous-line
@@ -327,16 +304,25 @@
 (use-package helm-config
     :config
   (progn
-    (load (concat dotfiles-dir "helm-init.el"))
-    (global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
-    (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)))
-
-;    (global-set-key (kbd "M-i") 'helm-swoop)
-; (global-set-key (kbd "C-s") 'isearch-forward)
-
-;; (global-set-key (kbd "M-I") 'helm-multi-swoop-all)
-
-
+    (helm-flx-mode +1)
+    (helm-mode 1)
+    (helm-adaptive-mode 1)
+    (helm-push-mark-mode 1)
+    (helm-popup-tip-mode 1)
+    (global-set-key (kbd "M-x")     'helm-M-x)
+    (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    (global-set-key (kbd "M-y")     'helm-show-kill-ring)
+    (global-set-key (kbd "C-h a")   'helm-apropos)
+    (global-set-key (kbd "M-i")     'helm-swoop-without-pre-input)
+    (global-set-key (kbd "M-I")     'helm-swoop-back-to-last-point)
+    (global-set-key (kbd "C-x b")     'helm-mini)
+    (define-key global-map [remap list-buffers]          'helm-mini)
+    (define-key global-map [remap jump-to-register]      'helm-register)
+    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+    (setq helm-ff-file-name-history-use-recentf t)
+    ))
+(use-package helm-projectile)
 ;; maybe?
 (add-hook 'eshell-mode-hook
           (lambda ()
@@ -349,26 +335,41 @@
 ;; not sure if disabling it will create new ones... 
 (setq create-lockfiles nil)
 
-
-(setq ibuffer-saved-filter-groups
-      '(("Buffers"
-	 ("All This Becomes You" (filename . "_atby"))	 	 
-	 ("Fancy Hands Code" (filename . "Code/fancyhands"))
-	 ("QVP CLI" (filename . "Code/qvp-cli"))
-	 ("QVP Server" (filename . "Code/qvp-server"))
-	 ("QVP Web" (filename . "Code/qvp-web"))	 
-	 ("Emacs" (or (filename . "dot-emacs.el")
-		      (name . "|*GNU Emacs|*")
-		      (name . "|*scratch|*")
-		      (name . "|*Messages|*")
-		      ))
-	 ("Eshell" (mode . eshell-mode))
-	 ("z Helm Garbage" (name . "|*helm"))
-	 )))
-
-(add-hook 'ibuffer-mode-hook
+(use-package ibuffer
+  :config
+  (progn
+    (setq ibuffer-show-empty-filter-groups nil)
+    (setq ibuffer-saved-filter-groups
+	  '(("Buffers"
+	     ("All This Becomes You" (filename . "_atby"))	 	 
+	     ("Fancy Hands Code" (filename . "Code/fancyhands"))
+	     ("QVP CLI" (filename . "Code/qvp-cli"))
+	     ("QVP Server" (filename . "Code/qvp-server"))
+	     ("QVP Web" (filename . "Code/qvp-web"))	 
+	     ("Emacs" (or (filename . "dot-emacs.el")
+			  (name . "\*GNU Emacs\*")
+			  (name . "\*scratch\*")
+			  (name . "\*Messages\*")
+			  ))
+	     ("Mail" (name . "\*notmuch"))	 
+	     ("Org" (mode . org-mode))
+	     ("Eshell" (mode . eshell-mode))
+	     ("Man" (name . "\*Man"))	 
+	     ("z Helm Garbage" (name . "\*helm"))
+	     ))))
+  :init
+  (add-hook 'ibuffer-mode-hook
 	  '(lambda ()
-	     (ibuffer-switch-to-saved-filter-groups "Buffers")))
+	     (ibuffer-switch-to-saved-filter-groups "Buffers"))))
+  
+;; (use-package ibuffer-vc  
+;;   :ensure t
+;;   :defer t
+;;   :init (add-hook 'ibuffer-hook
+;;                   (lambda ()
+;;                     (ibuffer-vc-set-filter-groups-by-vc-root)
+;;                     (unless (eq ibuffer-sorting-mode 'alphabetic)
+;;                       (ibuffer-do-sort-by-alphabetic)))))
 
 	 ;; ("Web Dev" (or (mode . html-mode)
 	 ;; 		(mode . css-mode)))
@@ -384,26 +385,17 @@
   ; (setq markdown-list-indent-width 2)
   (artbollocks-mode 1)
   (tedroden/writer-mode)
-					;(add-hook 'markdown-mode-hook (tedroden/writer-mode)
+  ;;(add-hook 'markdown-mode-hook (tedroden/writer-mode)
   )
 
-;; (use-package telephone-line-mode
-;;   :init
-;;   (telephone-line-mode 1))
 
-;; (require 'spaceline-config)
-;; (spaceline-spacemacs-theme)
+
 (use-package spaceline
     :config
     (require 'spaceline-config)
     (spaceline-spacemacs-theme)
     (spaceline-toggle-minor-modes-on))
-;; (use-package spaceline-config
-;;   :config
-;;   (progn
-;;     (spaceline-spacemacs-theme)
-;;     ))
-  
+
 
 ; (use-package pony-mode; )
 (use-package web-mode
@@ -424,26 +416,24 @@
   :mode (("\\.js$" . js2-mode))
   :interpreter ("node" . js2-mode))
 
-;; i don't know about this sone
-;; (use-package smartparens
-;;   :init
-;;   (progn
-;;     (use-package smartparens-config)
-;;     (use-package smartparens-ruby)
-;;     (use-package smartparens-html)
-;;     (smartparens-global-mode 1)))
+;; (use-package dired-x
+;;   :demand t)
 
-; (use-package mode-icons)
-
-(use-package dired-x
-  :demand t)
+(defun notmuch-default ()
+  (interactive)
+  (notmuch-tree "tag:inbox"))
 
 (use-package notmuch
   :config
   (progn
-    
-    (custom-set-variables
-     '(notmuch-archive-tags "-inbox +archived"))
+     (setq notmuch-multipart/alternative-discouraged '("text/plain" "text/html"))
+     (global-set-key [f12] 'notmuch-default)
+     (custom-set-variables
+      '(notmuch-archive-tags "-inbox +archived")
+      '(shr-use-fonts nil)
+      '(shr-use-colors nil)
+      '(shr-width 80)
+      )
     
     ;; ;; some gmail like keybindings
     ;; (define-key notmuch-search-mode-map "e"
@@ -458,59 +448,104 @@
     
     (define-key notmuch-common-keymap "g"
       'notmuch-jump-search)
+
+    (setq archived-tags '("-flagged" "+archived" "-inbox"))
+    (setq unarchived-tags '("-archived" "+inbox"))
     
     (define-key notmuch-search-mode-map "e"
       (lambda ()
 	"toggle deleted tag for thread"
 	(interactive)
 	(if (member "archived" (notmuch-search-get-tags))
-	    (notmuch-search-tag '("-archived"))
+	    (notmuch-search-tag unarchived-tags)
 	  (progn
-	    (notmuch-search-tag '("+archived" "-inbox" "-unread"))
+	    (notmuch-search-tag archived-tags)
 	    (notmuch-search-next-thread)))))
+
+    (define-key notmuch-show-mode-map "e"
+      (lambda ()
+	"toggle deleted tag for message"
+	(interactive)
+	(if (member "archived" (notmuch-show-get-tags))
+	    (notmuch-show-tag unarchived-tags)
+	  (progn
+	    (notmuch-show-tag archived-tags)
+	    (notmuch-show-next-message)))))
 
     (define-key notmuch-tree-mode-map "e"
       (lambda ()
 	"toggle deleted tag for message"
 	(interactive)
 	(if (member "archived" (notmuch-tree-get-tags))
-	    (notmuch-tree-tag '("-archived"))
+	    (notmuch-tree-tag-thread unarchived-tags)
 	  (progn
-	    (notmuch-tree-tag '("+archived" "-inbox"))
+	    (notmuch-tree-tag-thread archived-tags)
 	    (notmuch-tree-next-thread)
 	    ))))
-    
-	  ))
+    (define-key notmuch-tree-mode-map "j" 
+      'notmuch-tree-next-matching-message)
+    (define-key notmuch-tree-mode-map "k" 
+      'notmuch-tree-prev-matching-message)))
 
 
+;;Setup User-Agent header
+(setq mail-host-address "girl-michael.queso-victorious.com")
+(setq mail-user-agent 'message-user-agent)
 
+(setq message-kill-buffer-on-exit t) ; kill buffer after sending mail)
+(setq mail-specify-envelope-from t) ; Settings to work with msmtp
 
-  ;; :config
-  
-  ;; (progn
+(setq send-mail-function (quote sendmail-send-it))
+;; (setq message-sendmail-extra-arguments '("-a" "gmail"))
 
-  ;;   (custom-set-variables
-  ;;    '(notmuch-archive-tags "-inbox -archived")
-  ;;    )
+(setq message-send-mail-function 'message-send-mail-with-sendmail)
+(setq sendmail-program "/usr/local/bin/msmtpq"
+      mail-specify-envelope-from t
+;; needed for debians message.el cf. README.Debian.gz 
+      message-sendmail-f-is-evil nil                
+      mail-envelope-from 'header
+      message-sendmail-envelope-from 'header)
 
-  ;;   ;; some gmail like keybindings
-  ;;   (eval-after-load 'notmuch-search
-  ;;     '(define-key notmuch-search-mode-map "e"
-  ;; 	 'notmuch-search-archive-thread))
+;; put the cursor where it was last time you visited a file
+(use-package saveplace
+  :init (save-place-mode 1)
+  :config
+  (progn
+    (setq-default save-place t)
+    (setq save-place-limit nil)))
 
-  ;;   (eval-after-load 'notmuch-tree
-  ;;     '(define-key notmuch-tree-mode-map "e"
-  ;; 	 'notmuch-tree-archive-message-then-next))
+(use-package uniquify)
 
-  ;;   (eval-after-load 'notmuch-show
-  ;;     '(define-key notmuch-show-mode-map "e"
-  ;; 	 'notmuch-show-archive-message-then-next-or-next-thread))
-    
-  ;;   (define-key notmuch-common-keymap "g" 'notmuch-jump-search)
-    
-  ;;   (lambda ()
-  ;;     "Toggle deleted tag for thread"
-  ;;     (interactive)
-  ;;     (if (member "archived" (notmuch-search-get-tags))
-  ;; 	  (notmuch-search-tag '("-archived"))
-  ;; 	(notmuch-search-tag '("+archived" "-unread"))))))
+(use-package neotree
+  :config
+  (global-set-key [f8] 'neotree-toggle)
+  (setq neo-theme (if window-system 'icons 'arrow)))
+
+; (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+; (ql:quickload :swank)
+(setq inferior-lisp-program (executable-find "sbcl"))
+(slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
+	       slime-xref-browser slime-highlight-edits
+	       slime-sprof))
+(setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
+
+(slime-connect "127.0.0.1" "4005")
+
+;; (defun custom-modeline-mode-icon ()
+;;   (format " %s"
+;;     (propertize icon
+;;                 'help-echo (format "Major-mode: `%s`" major-mode)
+;;                 'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))
+
+;; (defun custom-modeline-region-info ()
+;;   (when mark-active
+;;     (let ((words (count-lines (region-beginning) (region-end)))
+;;           (chars (count-words (region-end) (region-beginning))))
+;;       (concat
+;;        (propertize (format "   %s" (all-the-icons-octicon "pencil") words chars)
+;;                    'face `(:family ,(all-the-icons-octicon-family))
+;;                    'display '(raise -0.0))
+;;        (propertize (format " (%s, %s)" words chars)
+;;                    'face `(:height 0.9))))))

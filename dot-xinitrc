@@ -2,6 +2,11 @@
 # it add xmodmap and starts cinnamon
 
 # xmodmap ~/.xmodmap &
-xbindkeys 
-exec gnome-session
 
+# gnome-settings-daemon
+display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
+xbindkeys
+xrandr --output DP1 --primary --right-of eDP1
+gnome-session &
+exec stumpwm 
+# exec i3-gaps
