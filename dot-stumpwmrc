@@ -1,0 +1,92 @@
+;; -*-lisp-*-
+(in-package :stumpwm)
+
+;; control-t is the default
+(set-prefix-key (kbd "C-'"))
+
+(load-module "ttf-fonts")
+(load-module "maildir")
+(load-module "battery")
+(toggle-mode-line (current-screen) (current-head))
+;; (init-mpd-connection) ;; mpd is starting via system service, so should be good.
+;; (setq *mpd-modeline-fmt* "%a - %t (%S)")
+;; Set model-line format
+(setf *screen-mode-line-format* 
+      '("<%n> %W^> "
+	"- %M - " 
+	(:eval (time-format "%m/%d/%Y %l:%M%p"))))
+
+(setf *input-window-gravity* :center
+      *message-window-gravity* :center
+      *mouse-focus-policy* :click) 
+
+;; The Message Window
+(set-fg-color "LightGrey")
+(set-bg-color "Black")
+(set-border-color "SlateGrey")
+
+(set-font (make-instance 'xft:font :family "Hack" :subfamily  "Regular" :size 16))
+; (set-font (make-instance 'xft:font :family "Anonymous Pro" :subfamily "Regular" :size 13))
+
+
+;; C-i ... 
+;; (define-key *root-map* (kbd "C-Right") "move-window right")
+;; (define-key *root-map* (kbd "C-Left") "move-window left")
+;; (define-key *root-map* (kbd "C-Down") "move-window down")
+;; (define-key *root-map* (kbd "C-Up") "move-window up")
+
+;; 
+;; (define-key *root-map* (kbd "C-p") "mpd-toggle-pause")
+
+;; some media keys from the chromebook
+;; (define-key *top-map* (kbd "F8") "exec bash /home/troden/Dropbox/dot-stumpwm/volume.sh toggle")
+;; (define-key *top-map* (kbd "F9") "exec bash /home/troden/Dropbox/dot-stumpwm/volume.sh '2%-'")
+;; (define-key *top-map* (kbd "F10") "exec bash /home/troden/Dropbox/dot-stumpwm/volume.sh '2%+'")
+
+;; FIXME: how do I get a key command to run a lisp function?
+; (define-key *top-map* (kbd "M-F1") "exec xinput set-prop 11 'Device Enabled' 0") 
+; (define-key *top-map* (kbd "M-F2") "exec xinput set-prop 11 'Device Enabled' 1")
+
+; (ql:quickload "swank")
+(defcommand notmuch () ()
+  (emacs)
+  (send-meta-key (current-screen) (kbd "F12")))
+
+(defcommand google-chrome () ()
+  (run-or-raise "google-chrome-stable --password-store=gnome"
+   '(:class "google-chrome")))
+
+(defcommand gnome-terminal () ()
+  (run-or-raise "gnome-terminal"
+   '(:class "Gnome-terminal")))
+
+
+(define-key *root-map* (kbd "w") "windowlist") ; I don't understand why this isn't the default
+(define-key *root-map* (kbd "W") "google-chrome")
+(define-key *root-map* (kbd "c") "gnome-terminal")
+(define-key *root-map* (kbd "M") "notmuch")
+(define-key *root-map* (kbd "n") "move-focus down")
+(define-key *root-map* (kbd "p") "move-focus up")
+(define-key *root-map* (kbd "b") "move-focus left")
+(define-key *root-map* (kbd "f") "move-focus right")
+(define-key *root-map* (kbd "N") "move-window down")
+(define-key *root-map* (kbd "P") "move-window up")
+(define-key *root-map* (kbd "B") "move-window left")
+(define-key *root-map* (kbd "F") "move-window right")
+(define-key *root-map* (kbd "M-f") "curframe")
+(define-key *root-map* (kbd "H") "exec thunar ~/")
+(define-key *root-map* (kbd "D") "exec thunar ~/Downloads")
+; (define-key *root-map* (kbd "F1") "exec xrandr")
+(define-key *root-map* (kbd "F1") "exec xrandr --output DP1 --primary --right-of eDP1")
+(define-key *root-map* (kbd "F2") "exec xrandr --output eDP1 --primary" )
+
+(define-key *top-map* (kbd "XF86AudioLowerVolume") "exec amixer set Master 5%-")
+(define-key *top-map* (kbd "XF86AudioRaiseVolume") "exec amixer set Master 5%+")
+(define-key *top-map* (kbd "XF86AudioMute") "exec amixer set Master toggle")
+
+(stumpwm:run-shell-command "xsetroot -cursor_name left_ptr")
+
+;; do this at the end, most likely to fail
+(require 'swank)
+(swank:create-server)		       
+
