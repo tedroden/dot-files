@@ -61,8 +61,10 @@
    '(:class "Gnome-terminal")))
 
 
-(define-key *root-map* (kbd "w") "windowlist") ; I don't understand why this isn't the default
+(define-key *root-map* (kbd "w") "google-chrome") 
 (define-key *root-map* (kbd "W") "google-chrome")
+(define-key *root-map* (kbd "'") "windowlist")
+
 (define-key *root-map* (kbd "c") "gnome-terminal")
 (define-key *root-map* (kbd "M") "notmuch")
 (define-key *root-map* (kbd "n") "move-focus down")
@@ -79,6 +81,8 @@
 ; (define-key *root-map* (kbd "F1") "exec xrandr")
 (define-key *root-map* (kbd "F1") "exec xrandr --output DP1 --primary --right-of eDP1")
 (define-key *root-map* (kbd "F2") "exec xrandr --output eDP1 --primary" )
+(define-key *root-map* (kbd "|") "hsplit")
+(define-key *root-map* (kbd "-") "vsplit")
 
 (define-key *top-map* (kbd "XF86AudioLowerVolume") "exec amixer set Master 5%-")
 (define-key *top-map* (kbd "XF86AudioRaiseVolume") "exec amixer set Master 5%+")
