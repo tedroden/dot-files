@@ -1,4 +1,5 @@
 ;; Rethinking everything
+
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -12,7 +13,6 @@
 
 ;; FIXME: add artbollocks-mode,
 ;; FIXME: flyspell to markdown mode
-
 
 (setq custom-file (concat dotfiles-dir "custom.el"))
 (setq personal-file (concat dotfiles-dir "personal.el"))
@@ -35,6 +35,11 @@
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
 (package-initialize)
 
 (eval-when-compile
@@ -151,8 +156,8 @@
 ;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
     ;;    (load-theme 'spacemacs-light))
-    (load-theme 'spacemacs-dark))
-;; ;;    (load-theme 'twilight-bright))
+   (load-theme 'base16-ocean))
+   ;; (load-theme 'twilight-bright))
 ;; ;;    (load-theme 'base16-ocean))
 ;; ;; (load-theme 'base16-twilight-dark))
 
@@ -244,12 +249,10 @@
     (setq org-log-into-drawer t)
     (setq org-clock-out-when-done t)))
 
-
-
-
-
 (global-set-key (kbd "C-!") 'eshell)
 (global-set-key (kbd "C-c q") 'ff-find-other-file)
+(global-set-key (kbd "C-c |") 'split-window-right)
+(global-set-key (kbd "C-c -") 'split-window-below)
 
 ; setup the path
 (defun eshell-mode-hook-func ()
@@ -380,16 +383,6 @@
 	 ;; 	     (name . "\*Apropos\*")
 	 ;; 	     (name . "\*info\*"))))))
 
-(use-package markdown-mode
-  :init
-  ; (setq markdown-list-indent-width 2)
-  (artbollocks-mode 1)
-  (tedroden/writer-mode)
-  ;;(add-hook 'markdown-mode-hook (tedroden/writer-mode)
-  )
-
-
-
 (use-package spaceline
     :config
     (require 'spaceline-config)
@@ -438,7 +431,8 @@
     ;; ;; some gmail like keybindings
     ;; (define-key notmuch-search-mode-map "e"
     ;;   notmuch-search-archive-thread)
-    
+
+     
     ;; (define-key notmuch-tree-mode-map "e"
     ;;   notmuch-tree-archive-message-then-next)
     
@@ -523,6 +517,7 @@
 
 ; (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
 
+
 (load (expand-file-name "~/quicklisp/slime-helper.el"))
 ; (ql:quickload :swank)
 (setq inferior-lisp-program (executable-find "sbcl"))
@@ -530,7 +525,6 @@
 	       slime-xref-browser slime-highlight-edits
 	       slime-sprof))
 (setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
-
 (slime-connect "127.0.0.1" "4005")
 
 ;; (defun custom-modeline-mode-icon ()
