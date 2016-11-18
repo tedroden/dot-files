@@ -52,7 +52,7 @@
     artbollocks-mode
     helm
     helm-swoop
-    helm-flx
+;;    helm-flx
     visual-fill-column
     ac-ispell
     ;; ac-js2
@@ -60,6 +60,7 @@
     go-autocomplete
     magit
     markdown-mode
+    expand-region
     ;; flx-ido
     ace-window
     ;; rainbow-blocks
@@ -73,7 +74,7 @@
     paradox ;; package managerrment
     base16-theme ;; theme
     web-mode ;; handles django templates (and others)
-    ;; twilight-bright-theme
+    twilight-bright-theme
     
     )
   "Stuff I like")
@@ -155,9 +156,12 @@
 
 ;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
-    ;;    (load-theme 'spacemacs-light))
-   (load-theme 'base16-ocean))
-   ;; (load-theme 'twilight-bright))
+    (load-theme 'base16-brewer))
+    ;; (load-theme 'spacemacs-light))    
+    
+					;   (load-theme 'base16-ocean))
+;    (load-theme 'ujelly))
+;;  (load-theme 'twilight-anti-bright))
 ;; ;;    (load-theme 'base16-ocean))
 ;; ;; (load-theme 'base16-twilight-dark))
 
@@ -198,9 +202,10 @@
   (highlight-phrase "FIXME" 'hi-yellow)
   (highlight-phrase "Fixme" 'hi-yellow)
   (highlight-phrase "fixme" 'hi-yellow)
-  (highlight-phrase "TODO" 'hi-yellow)
-  (highlight-phrase "Todo" 'hi-yellow)
-  (highlight-phrase "todo" 'hi-yellow))
+  ;; (highlight-phrase "TODO" 'hi-yellow)
+  ;; (highlight-phrase "Todo" 'hi-yellow)
+  ;; (highlight-phrase "todo" 'hi-yellow)
+  )
 
 (defun tedroden/writer-mode ()
   (interactive)
@@ -243,11 +248,19 @@
 	 ("C-c l" . org-store-link))
   :config
   (progn
-    (setq org-default-notes-file "~/org/todo.org")
+    (setq org-default-notes-file "~/Dropbox/org/todo.org")
+    (setq org-agenda-files '("~/Dropbox/org"))
+
     (setq org-catch-invisible-edits 'show-and-error)    
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
-    (setq org-clock-out-when-done t)))
+    (setq org-clock-out-when-done t)
+
+
+    (setq org-refile-targets
+	  '((nil :maxlevel . 1)
+	    (org-agenda-files :maxlevel . 1)))    
+    ))
 
 (global-set-key (kbd "C-!") 'eshell)
 (global-set-key (kbd "C-c q") 'ff-find-other-file)
@@ -265,7 +278,7 @@
     (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
     (add-hook 'eshell-preoutput-filter-functions
 	      'ansi-color-apply)
-    (eshell-git-prompt-use-theme 'powerline)
+    ; (eshell-git-prompt-use-theme 'powerline)
     ))
   
 
@@ -307,7 +320,7 @@
 (use-package helm-config
     :config
   (progn
-    (helm-flx-mode +1)
+    ; (helm-flx-mode nil)
     (helm-mode 1)
     (helm-adaptive-mode 1)
     (helm-push-mark-mode 1)
@@ -320,7 +333,8 @@
     (global-set-key (kbd "M-I")     'helm-swoop-back-to-last-point)
     (global-set-key (kbd "C-x b")     'helm-mini)
     (define-key global-map [remap list-buffers]          'helm-mini)
-    (define-key global-map [remap jump-to-register]      'helm-register)
+    ;; (define-key global-map [remap jump-to-register]      'helm-register)
+    ;; (define-key global-map [remap jump-to-register]      'jump-to-register)    
     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
     (setq helm-ff-file-name-history-use-recentf t)
@@ -345,10 +359,11 @@
     (setq ibuffer-saved-filter-groups
 	  '(("Buffers"
 	     ("All This Becomes You" (filename . "_atby"))	 	 
-	     ("Fancy Hands Code" (filename . "Code/fancyhands"))
-	     ("QVP CLI" (filename . "Code/qvp-cli"))
-	     ("QVP Server" (filename . "Code/qvp-server"))
-	     ("QVP Web" (filename . "Code/qvp-web"))	 
+	     ("Fancy Hands Code" (filename . "code/fancyhands"))
+	     ("wlib" (filename . "code/wlib"))
+	     ("QVP CLI" (filename . "code/qvp-cli"))
+	     ("QVP Server" (filename . "code/qvp-server"))
+	     ("QVP Web" (filename . "code/qvp-web"))	 
 	     ("Emacs" (or (filename . "dot-emacs.el")
 			  (name . "\*GNU Emacs\*")
 			  (name . "\*scratch\*")
@@ -419,8 +434,10 @@
 (use-package notmuch
   :config
   (progn
-     (setq notmuch-multipart/alternative-discouraged '("text/plain" "text/html"))
+    (setq notmuch-multipart/alternative-discouraged '("text/plain" "text/html"))
+
      (global-set-key [f12] 'notmuch-default)
+     
      (custom-set-variables
       '(notmuch-archive-tags "-inbox +archived")
       '(shr-use-fonts nil)
@@ -478,8 +495,17 @@
 	    ))))
     (define-key notmuch-tree-mode-map "j" 
       'notmuch-tree-next-matching-message)
+
+    (define-key notmuch-tree-mode-map "x"
+      'notmuch-refresh-this-buffer)
     (define-key notmuch-tree-mode-map "k" 
-      'notmuch-tree-prev-matching-message)))
+      'notmuch-tree-prev-matching-message)
+    (define-key notmuch-show-mode-map "j" 
+      'notmuch-show-next-message)
+    (define-key notmuch-show-mode-map "k" 
+      'notmuch-show-previous-message)
+    
+    ))
 
 
 ;;Setup User-Agent header
@@ -516,6 +542,17 @@
   (setq neo-theme (if window-system 'icons 'arrow)))
 
 ; (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+
+(use-package erc
+  :config
+  (erc-colorize-mode 1)
+  ;(require 'erc-nicks)
+  (require 'erc-join)
+  (erc-autojoin-mode 1)
+  (setq erc-autojoin-channels-alist
+	'(("freenode.net" "#emacs" "##c" )))
+  )
+  
 
 
 (load (expand-file-name "~/quicklisp/slime-helper.el"))

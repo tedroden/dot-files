@@ -5,8 +5,9 @@
 
 # gnome-settings-daemon
 display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
-xbindkeys
-xrandr --output DP1 --primary --right-of eDP1
 gnome-session &
+xbindkeys
+xmodmap ~/.Xmodmap
+xrandr --output DP1 --primary --left-of eDP1
+
 exec stumpwm 
-# exec i3-gaps

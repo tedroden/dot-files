@@ -4,16 +4,16 @@
 ;; control-t is the default
 (set-prefix-key (kbd "C-'"))
 
-(load-module "ttf-fonts")
-(load-module "maildir")
-(load-module "battery")
+(load-module "ttf-fonts") 
+;(load-module "maildir")
+;(load-module "battery")
 (toggle-mode-line (current-screen) (current-head))
 ;; (init-mpd-connection) ;; mpd is starting via system service, so should be good.
 ;; (setq *mpd-modeline-fmt* "%a - %t (%S)")
 ;; Set model-line format
 (setf *screen-mode-line-format* 
       '("<%n> %W^> "
-	"- %M - " 
+; 	"- %M - " 
 	(:eval (time-format "%m/%d/%Y %l:%M%p"))))
 
 (setf *input-window-gravity* :center
@@ -25,7 +25,7 @@
 (set-bg-color "Black")
 (set-border-color "SlateGrey")
 
-(set-font (make-instance 'xft:font :family "Hack" :subfamily  "Regular" :size 16))
+;(set-font (make-instance 'xft:font :family "Hack" :subfamily  "Regular" :size 16))
 ; (set-font (make-instance 'xft:font :family "Anonymous Pro" :subfamily "Regular" :size 13))
 
 
@@ -53,8 +53,8 @@
   (send-meta-key (current-screen) (kbd "F12")))
 
 (defcommand google-chrome () ()
-  (run-or-raise "google-chrome-stable --password-store=gnome"
-   '(:class "google-chrome")))
+  (run-or-raise "google-chrome-stable --password-store=gnome --force-device-scale-factor=1"
+   '(:class "Google-chrome")))
 
 (defcommand gnome-terminal () ()
   (run-or-raise "gnome-terminal"
@@ -66,7 +66,9 @@
 (define-key *root-map* (kbd "'") "windowlist")
 
 (define-key *root-map* (kbd "c") "gnome-terminal")
-(define-key *root-map* (kbd "M") "notmuch")
+(define-key *root-map* (kbd "!") "exec dmenu_run -l 20 -fn \"Hack-24\"")
+(define-key *root-map* (kbd "m") "notmuch")
+(define-key *root-map* (kbd "M") "mark")
 (define-key *root-map* (kbd "n") "move-focus down")
 (define-key *root-map* (kbd "p") "move-focus up")
 (define-key *root-map* (kbd "b") "move-focus left")
@@ -87,6 +89,9 @@
 (define-key *top-map* (kbd "XF86AudioLowerVolume") "exec amixer set Master 5%-")
 (define-key *top-map* (kbd "XF86AudioRaiseVolume") "exec amixer set Master 5%+")
 (define-key *top-map* (kbd "XF86AudioMute") "exec amixer set Master toggle")
+
+(define-key *top-map* (kbd "XF86MonBrightnessUp") "exec xbacklight -inc 10")
+(define-key *top-map* (kbd "XF86MonBrightnessDown") "exec xbacklight -dec 10")
 
 (stumpwm:run-shell-command "xsetroot -cursor_name left_ptr")
 
