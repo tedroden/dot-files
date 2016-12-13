@@ -31,7 +31,7 @@ This if for my [Chromebook Pixel](http://www.amazon.com/gp/product/B00BM7Y7DQ/re
 
 ## .zshrc
 
-This is basically the stock `[oh-my-zsh]`(https://github.com/robbyrussell/oh-my-zsh/) with `$GOPATH` added.
+This is basically the stock [`oh-my-zsh`](https://github.com/robbyrussell/oh-my-zsh/) with `$GOPATH` added.
 
 
 ## install.sh
