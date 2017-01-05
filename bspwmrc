@@ -1,0 +1,58 @@
+#! /bin/sh
+
+source $(dirname $0)/config
+
+bspc config remove_unplugged_monitors true
+
+bspc config border_width            1
+bspc config window_gap              14
+bspc config top_padding             20
+
+bspc config split_ratio             0.5
+bspc config borderless_monocle      true
+bspc config gapless_monocle         true
+# bspc config focus_by_distance       true
+# bspc config history_aware_focus     true
+bspc config focus_follows_pointer   true
+bspc config click_to_focus           true
+bspc config presel_feedback_color   ${BG}
+
+bspc config focused_border_color "#6666aa"
+
+bspc rule -a emacs state=tiled
+bspc rule -a Pidgin state=floating
+bspc rule -a Gimp  state=floating
+
+
+
+MONITOR_COUNT=`bspc query  -M  | wc -l`
+CONNECTED="eDP1"
+PRIMARY=$CONNECTED
+
+if [ $MONITOR_COUNT -eq 2 ]; then
+    MONITORS=`xrandr| grep -v disconnected | grep connected | cut -d ' '  -f 1`
+    for mon in $MONITORS; do
+	if [ $mon != $CONNECTED ]; then
+	    PRIMARY=$mon
+	fi
+    done
+fi    
+
+if [ $PRIMARY != $CONNECTED ]; then
+    echo "Multiple Monitors"
+    xrandr --output $PRIMARY --primary        
+    xrandr --output $CONNECTED --right-of $PRIMARY
+    bspc monitor $PRIMARY -d 1 2 3 4
+    bspc monitor $CONNECTED -d 5 6 7 8
+else
+    echo "Single monitor"
+    bspc monitor -d 1 2 3 4    
+fi
+
+polybar example &
+
+# bash ~/dzen2/dzen-start.sh &
+
+
+
+# $(dirname $0)/panel &

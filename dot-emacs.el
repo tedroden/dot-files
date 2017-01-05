@@ -89,6 +89,12 @@
   (when (not (package-installed-p p))
 	(package-install p)))
 
+(defun tedroden/no-suspend ()
+  (interactive)
+  (message "Not suspending frame"))
+
+(global-set-key (kbd "C-z") 'tedroden/no-suspend)
+
 (use-package ace-window
   :config
   (global-set-key (kbd "M-o") 'ace-window))
@@ -101,9 +107,9 @@
   :init
   (visual-fill-column-mode))
 
-(use-package beacon-mode
-  :init
-  (beacon-mode 1))
+;; (use-package beacon-mode
+;;   :init
+;;   (beacon-mode t))
 
 ; (require 'use-package)
 (use-package smooth-scroll
@@ -156,10 +162,10 @@
 
 ;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
-    (load-theme 'base16-brewer))
+    (load-theme 'base16-default-dark))
     ;; (load-theme 'spacemacs-light))    
     
-					;   (load-theme 'base16-ocean))
+;; (load-theme 'base16-ocean))
 ;    (load-theme 'ujelly))
 ;;  (load-theme 'twilight-anti-bright))
 ;; ;;    (load-theme 'base16-ocean))
@@ -317,6 +323,15 @@
         previous-line
         next-line))))
 
+;; (use-package counsel
+;;     :config
+;;   (progn
+;;     (global-set-key (kbd "M-x")     'counsel-M-x)
+;;     (global-set-key (kbd "C-x b")     'ivy-switch-buffer)
+;;     (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+
+;;     ))
+
 (use-package helm-config
     :config
   (progn
@@ -339,13 +354,13 @@
     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
     (setq helm-ff-file-name-history-use-recentf t)
     ))
+
 (use-package helm-projectile)
 ;; maybe?
 (add-hook 'eshell-mode-hook
           (lambda ()
-              (eshell-cmpl-initialize)))	
-              ;; (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
-              ;; (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
+              (eshell-cmpl-initialize)))
+
 
 
 ;; I know these create problems (with live-reload, etc),
@@ -553,16 +568,22 @@
 	'(("freenode.net" "#emacs" "##c" )))
   )
   
+(use-package bbdb
+  :init
+  (bbdb-initialize 'message)
+  (bbdb-insinuate-message)
 
 
+  )
 (load (expand-file-name "~/quicklisp/slime-helper.el"))
-; (ql:quickload :swank)
-(setq inferior-lisp-program (executable-find "sbcl"))
-(slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
-	       slime-xref-browser slime-highlight-edits
-	       slime-sprof))
-(setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
-(slime-connect "127.0.0.1" "4005")
+
+;; ; (ql:quickload :swank)
+;; (setq inferior-lisp-program (executable-find "sbcl"))
+;; (slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
+;; 	       slime-xref-browser slime-highlight-edits
+;; 	       slime-sprof))
+;; (setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
+;; (slime-connect "127.0.0.1" "4005")
 
 ;; (defun custom-modeline-mode-icon ()
 ;;   (format " %s"

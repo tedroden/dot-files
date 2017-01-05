@@ -1,13 +1,12 @@
-# just ln this ~/.xinitrc
-# it add xmodmap and starts cinnamon
+# -*- mode: sh -*-
 
-# xmodmap ~/.xmodmap &
-
-# gnome-settings-daemon
+sxhkd &
 display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
-gnome-session &
-xbindkeys
-xmodmap ~/.Xmodmap
-xrandr --output DP1 --primary --left-of eDP1
+xsetroot -cursor_name left_ptr
+mpdscribble &
+mpd &
+emacs --daemon &
+/usr/lib/gnome-settings-daemon/gnome-settings-daemon-localeexec &
+exec bspwm 
+# exec gnome-session 
 
-exec stumpwm 

@@ -6,11 +6,12 @@
 
 (load-module "ttf-fonts") 
 ;(load-module "maildir")
-;(load-module "battery")
 (toggle-mode-line (current-screen) (current-head))
+
 ;; (init-mpd-connection) ;; mpd is starting via system service, so should be good.
 ;; (setq *mpd-modeline-fmt* "%a - %t (%S)")
-;; Set model-line format
+
+;; Set mode-line format
 (setf *screen-mode-line-format* 
       '("<%n> %W^> "
 ; 	"- %M - " 
@@ -18,16 +19,22 @@
 
 (setf *input-window-gravity* :center
       *message-window-gravity* :center
-      *mouse-focus-policy* :click) 
+      *mouse-focus-policy* :click
+      *mode-line-foreground-color* "RoyalBlue"
+      )
+
 
 ;; The Message Window
-(set-fg-color "LightGrey")
-(set-bg-color "Black")
-(set-border-color "SlateGrey")
+(set-fg-color "#aaaaaa")
+(set-bg-color "#002b36")
+(set-border-color "#28545c")
 
-;(set-font (make-instance 'xft:font :family "Hack" :subfamily  "Regular" :size 16))
+(set-focus-color "#28545c")
+(set-unfocus-color "#002b36")
+
+
+(set-font (make-instance 'xft:font :family "Hack" :subfamily  "Regular" :size 16))
 ; (set-font (make-instance 'xft:font :family "Anonymous Pro" :subfamily "Regular" :size 13))
-
 
 ;; C-i ... 
 ;; (define-key *root-map* (kbd "C-Right") "move-window right")
@@ -52,20 +59,33 @@
   (emacs)
   (send-meta-key (current-screen) (kbd "F12")))
 
+(defcommand google-chrome-large-print () ()
+	    (run-or-raise "chromium --password-store=gnome --force-device-scale-factor=1.5"
+			  '(:class "Chromium")))
+
 (defcommand google-chrome () ()
-  (run-or-raise "google-chrome-stable --password-store=gnome --force-device-scale-factor=1"
-   '(:class "Google-chrome")))
+  (run-or-raise "chromium --password-store=gnome"
+		'(:class "Chromium")))
 
 (defcommand gnome-terminal () ()
   (run-or-raise "gnome-terminal"
    '(:class "Gnome-terminal")))
 
+(defcommand termite () ()
+  (run-or-raise "termite"
+   '(:class "Termite")))
+
+(defcommand terminology () ()
+  (run-or-raise "terminology"
+   '(:class "terminology")))
+
 
 (define-key *root-map* (kbd "w") "google-chrome") 
-(define-key *root-map* (kbd "W") "google-chrome")
+(define-key *root-map* (kbd "W") "google-chrome-large-print")
 (define-key *root-map* (kbd "'") "windowlist")
 
-(define-key *root-map* (kbd "c") "gnome-terminal")
+(define-key *root-map* (kbd "c") "terminology")
+(define-key *root-map* (kbd "C") "gnome-terminal")
 (define-key *root-map* (kbd "!") "exec dmenu_run -l 20 -fn \"Hack-24\"")
 (define-key *root-map* (kbd "m") "notmuch")
 (define-key *root-map* (kbd "M") "mark")
