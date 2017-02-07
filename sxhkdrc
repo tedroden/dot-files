@@ -1,0 +1,91 @@
+
+# # terminal emulator
+# super + Return
+# 	terminol
+
+# program launcher
+alt + shift + space
+	rofi -combi-modi window,drun -show combi
+
+# super + space
+# 	rofi -show run
+
+control + apostrophe; {h,j,k,l}
+    bspc node -f {west,south,north,east}
+
+
+# super + shift + {b,n,p,f}
+#     bspc node -f {west,south,north,east}
+
+control + apostrophe; n
+    bspc desktop --bubble next
+
+# super + shift + p
+#     bspc desktop --bubble prev
+
+control + apostrophe; e
+      xdo activate -n emacs || emacsclient -n -c
+
+# the xdo (above) doesn't work after I close the window for some reason
+control + apostrophe; E
+      emacsclient -n -c
+
+control + apostrophe; w
+      xdo activate -n chromium || chromium --password-store=gnome
+
+control + apostrophe; w
+      xdo activate -n chromium || chromium --password-store=gnome
+
+control + apostrophe; c
+      xdo activate -N terminology || terminology -name terminology
+
+control + apostrophe; q
+      bspc node -c
+
+# force tiled window
+control + apostrophe; t
+      bspc node -t tiled
+
+# force tiled window
+control + apostrophe; f
+      bspc node -t floating
+
+control + apostrophe; F
+      bspc node -t fullscreen
+
+super + Escape
+      pkill -USR1 -x sxhkd
+
+control + apostrophe; {_,shift + }{1-9,0}
+      bspc {desktop -f,node -d} {1-9,10}
+
+
+control + apostrophe; {_, shift +} x
+      bspc node -z {left +50 0,left -50 0}
+
+control + apostrophe; {_, shift +} y
+      bspc node -z {top 0 +10,top 0 -10}
+
+
+# control + apostrophe; shift {1,2,3,4}
+#       bspc {node -d} {1,2,3,4}
+
+
+
+XF86Audio{Raise,Lower}Volume
+    amixer sset Master {3%+,3%-} unmute
+
+XF86AudioPlay
+	mpc toggle
+
+XF86AudioNext
+	mpc next
+	
+XF86AudioPrev
+	mpc prev	
+
+XF86MonBrightnessDown
+	xbacklight -dec 5
+
+XF86MonBrightnessUp
+	xbacklight -inc 5
