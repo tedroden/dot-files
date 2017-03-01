@@ -1,9 +1,17 @@
 # -*- mode: sh -*-
 
+# don't set aside part of the trackpad for right click
+synclient RightButtonAreaLeft=0
+synclient RightButtonAreaTop=0
+
 sxhkd &
-display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
+compton &
+# display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
+hsetroot -fill ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
 xsetroot -cursor_name left_ptr
-mpdscribble &
+if [[ ! `ps ax | grep mpdscribble | grep -v grep` ]]; then
+    mpdscribble &
+fi
 mpd &
 emacs --daemon &
 /usr/lib/gnome-settings-daemon/gnome-settings-daemon-localeexec &

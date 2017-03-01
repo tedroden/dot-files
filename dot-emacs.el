@@ -162,7 +162,7 @@
 
 ;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
-    (load-theme 'base16-default-dark))
+    (load-theme 'base16-eighties))
     ;; (load-theme 'spacemacs-light))    
     
 ;; (load-theme 'base16-ocean))
