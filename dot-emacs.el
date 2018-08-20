@@ -160,14 +160,18 @@
 
 ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(x ns))
-;    (load-theme 'twilight-bright))
-    (load-theme 'base16-ocean))
+    (progn
+      (global-hl-line-mode nil)
+      (load-theme 'twilight-bright)
+      ;;  (load-theme 'base16-ocean)
+      )
+  )
 					; (load-theme 'base16-twilight-dark))
 
 
 ;; I go back and forth on these...
 ;; (global-linum-mode t) ;; this is good for teaching, but i don't generally want it.
-(global-hl-line-mode nil)
+
 (column-number-mode t)
 
 
@@ -196,11 +200,15 @@
   (highlight-phrase "Todo" 'hi-yellow)
   (highlight-phrase "todo" 'hi-yellow))
 
+;; (defun tedroden/writer-mode ()
+;;   (interactive)
+;;   (markdown-mode)
+;;   (visual-line-mode)
+;;   (visual-fill-column-mode))
+
 (defun tedroden/writer-mode ()
   (interactive)
-  (markdown-mode)
-  (visual-line-mode)
-  (visual-fill-column-mode))
+  (message "not loading writer-mode"))
 
 (add-hook 'prog-mode-hook  'tedroden/code-setup)
 (add-hook 'text-mode-hook  'tedroden/code-setup)
@@ -274,7 +282,7 @@
 
 ;; start the server
 ;; FIXME: can we check to see if it's running first?
-(server-start)
+;; (server-start)
 
 
 ;; this *should* make it so we don't open new frames
@@ -314,6 +322,8 @@
   (progn
     (load (concat dotfiles-dir "helm-init.el"))))
 
+(load (concat dotfiles-dir "emacs-xcode.el"))
+(global-set-key (kbd "C-c b") 'xcode/build-compile)
 ;    (global-set-key (kbd "M-i") 'helm-swoop)
 ; (global-set-key (kbd "C-s") 'isearch-forward)
 (global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
@@ -336,10 +346,13 @@
 (setq ibuffer-saved-filter-groups
       '(("Buffers"
 	 ("All This Becomes You" (filename . "_atby"))	 	 
-	 ("Fancy Hands Code" (filename . "Code/fancyhands"))
-	 ("QVP CLI" (filename . "Code/qvp-cli"))
-	 ("QVP Server" (filename . "Code/qvp-server"))
-	 ("QVP Web" (filename . "Code/qvp-web"))	 
+	 ("Fancy Hands Code" (filename . "code/fancyhands"))
+	 ("Music Server" (filename . "code/music/server"))
+	 ("Music Web" (filename . "code/music/web"))
+	 ("QVP Web" (filename . "code/qvp-web"))	 	 
+	 ("QVP CLI" (filename . "code/qvp-cli"))
+	 ("QVP Server" (filename . "code/qvp-server"))
+	 ("QVP Web" (filename . "code/qvp-web"))	 
 	 ("Emacs" (or (filename . "dot-emacs.el")
 		      (name . "|*GNU Emacs|*")
 		      (name . "|*scratch|*")
@@ -362,13 +375,13 @@
 	 ;; 	     (name . "\*Apropos\*")
 	 ;; 	     (name . "\*info\*"))))))
 
-(use-package markdown-mode
-  :init
-  ; (setq markdown-list-indent-width 2)
-  (artbollocks-mode 1)
-  (tedroden/writer-mode)
-					;(add-hook 'markdown-mode-hook (tedroden/writer-mode)
-  )
+;; (use-package markdown-mode
+;;   :init
+;;   ; (setq markdown-list-indent-width 2)
+;;   (artbollocks-mode 1)
+;;   (tedroden/writer-mode)
+;; 					;(add-hook 'markdown-mode-hook (tedroden/writer-mode)
+;;   )
 
 ;; (use-package telephone-line-mode
 ;;   :init
@@ -396,13 +409,13 @@
   :interpreter ("node" . js2-mode))
 
 ;; i don't know about this sone
-(use-package smartparens
-  :init
-  (progn
-    (use-package smartparens-config)
-    (use-package smartparens-ruby)
-    (use-package smartparens-html)
-    (smartparens-global-mode 1)))
+;; (use-package smartparens
+;;   :init
+;;   (progn
+;;     (use-package smartparens-config)
+;;     (use-package smartparens-ruby)
+;;     (use-package smartparens-html)
+;;     (smartparens-global-mode 1)))
 
 ; (use-package mode-icons)
 
