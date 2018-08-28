@@ -1,7 +1,20 @@
-# just ln this ~/.xinitrc
-# it add xmodmap and starts cinnamon
+# -*- mode: sh -*-
 
-# xmodmap ~/.xmodmap &
-xbindkeys 
-exec gnome-session
+# don't set aside part of the trackpad for right click
+synclient RightButtonAreaLeft=0
+synclient RightButtonAreaTop=0
+
+sxhkd &
+compton &
+# display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
+hsetroot -fill ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
+xsetroot -cursor_name left_ptr
+if [[ ! `ps ax | grep mpdscribble | grep -v grep` ]]; then
+    mpdscribble &
+fi
+mpd &
+emacs --daemon &
+/usr/lib/gnome-settings-daemon/gnome-settings-daemon-localeexec &
+exec bspwm 
+# exec gnome-session 
 

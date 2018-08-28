@@ -20,6 +20,7 @@ function emacs {
     fi
     mkdir ~/.emacs.d
     ln -sv `pwd`/dot-emacs.el ~/.emacs.d/init.el
+    ln -sv `pwd`/helm-init.el ~/.emacs.d/helm-init.el    
 }
 
 function xmodmap {
@@ -45,9 +46,28 @@ function zshrc {
     ln -sv `pwd`/dot-zshrc  ~/.zshrc
 }
 
+
+function stumpwmrc {
+    log "Installing .stumpwmrc"
+    if [ -f ~/.stumprc ]; then
+		age ~/.stumpwmrc
+    fi
+    ln -sv `pwd`/dot-stumpwmrc  ~/.stumpwmrc
+}
+
+function tmuxconf {
+    log "Installing .tmux.conf"
+    if [ -f ~/.tmux.conf ]; then
+		age ~/.tmux.conf
+    fi
+    ln -sv `pwd`/dot-tmux.conf  ~/.tmux.conf
+}
+
+
 # this happens on mac or linux
 zshrc
 emacs
+tmuxconf
 
 # this stuff only makes sense on linux
 if [ "$PLATFORM" = "Linux" ]; then 
