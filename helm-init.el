@@ -6,7 +6,17 @@
 ;;   (progn
 ;;     (helm-mode 1)
 ;;     (helm-adaptive-mode 1)
-;;     (helm-push-mark-mode 1)))
+;;     (helm-push-mark-mode 1)
+;;     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)    
+;;     (global-set-key (kbd "C-x b") 'helm-mini)    
+;;     (global-set-key (kbd "C-x C-f") 'helm-find-files)
+;;     (global-set-key (kbd "M-x")                          'undefined)
+;;     (global-set-key (kbd "M-x")                          'helm-M-x)
+;;     (global-set-key (kbd "C-h a")                        'helm-apropos)
+;;     (global-set-key (kbd "M-y")                          'helm-show-kill-ring) ;; eh...
+;;     (global-set-key (kbd "C-s")                          'helm-occur)    
+;;     (setq helm-ff-file-name-history-use-recentf t)
+;;     ))
 
 ;; (setq helm-ff-file-name-history-use-recentf t)
 ;; ;;;; Test Sources or new helm code. 

@@ -54,10 +54,10 @@
     helm-swoop
 ;;    helm-flx
     visual-fill-column
-    ac-ispell
+    ;; ac-ispell
     ;; ac-js2
-    go-mode
-    go-autocomplete
+    ;; go-mode
+    ;; go-autocomplete
     magit
     markdown-mode
     expand-region
@@ -91,7 +91,7 @@
 
 (defun tedroden/no-suspend ()
   (interactive)
-  (message "Not suspending frame"))
+  (message "Not suspending frame. You're welcome"))
 
 (global-set-key (kbd "C-z") 'tedroden/no-suspend)
 
@@ -171,9 +171,9 @@
 
 
 ;; auto complete setup. Is this right?
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories (concat lisp-dir "ac-dict"))
-(ac-config-default)
+; (require 'auto-complete-config)
+; (add-to-list 'ac-dictionary-directories (concat lisp-dir "ac-dict"))
+;; (ac-config-default)
 
 (setq dired-omit-mode nil)
 
@@ -220,6 +220,12 @@
 (add-hook 'css-mode-hook 'rainbow-mode)
 (add-hook 'sass-mode-hook 'rainbow-mode)
 
+;; (eval-after-load "auto-complete"
+;;   '(progn
+;;      (ac-ispell-setup)))
+
+;; (add-hook 'text-mode-hook  'ac-ispell-ac-setup)
+
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
   "go to previous window"
@@ -242,26 +248,26 @@
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
 
-;; (use-package org-notmuch)
-(use-package org
-  :bind (("C-c a" . org-agenda)
-	 ("C-c c" . org-capture)
-	 ("C-c l" . org-store-link))
-  :config
-  (progn
-    (setq org-default-notes-file "~/Dropbox/org/todo.org")
-    (setq org-agenda-files '("~/Dropbox/org"))
+;; ;; (use-package org-notmuch)
+;; (use-package org
+;;   :bind (("C-c a" . org-agenda)
+;; 	 ("C-c c" . org-capture)
+;; 	 ("C-c l" . org-store-link))
+;;   :config
+;;   (progn
+;;     (setq org-default-notes-file "~/Dropbox/org/todo.org")
+;;     (setq org-agenda-files '("~/Dropbox/org"))
 
-    (setq org-catch-invisible-edits 'show-and-error)    
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
-    (setq org-clock-out-when-done t)
+;;     (setq org-catch-invisible-edits 'show-and-error)    
+;;     (setq org-log-done 'time)
+;;     (setq org-log-into-drawer t)
+;;     (setq org-clock-out-when-done t)
 
 
-    (setq org-refile-targets
-	  '((nil :maxlevel . 1)
-	    (org-agenda-files :maxlevel . 1)))    
-    ))
+;;     (setq org-refile-targets
+;; 	  '((nil :maxlevel . 1)
+;; 	    (org-agenda-files :maxlevel . 1)))    
+;;     ))
 
 (global-set-key (kbd "C-!") 'eshell)
 (global-set-key (kbd "C-c q") 'ff-find-other-file)
@@ -327,14 +333,33 @@
 
 ;;     ))
 
+;; (use-package helm-config
+;;     :config
+;;   (progn
+
+;;     (load (concat dotfiles-dir "helm-init.el"))))
+
 (use-package helm-config
     :config
   (progn
+    (helm-mode 1)
+    (helm-adaptive-mode 1)
+;    (helm-push-mark-mode 1)
+    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)    
+    (global-set-key (kbd "C-x b") 'helm-mini)    
+    (global-set-key (kbd "C-x C-f") 'helm-find-files)
+    (global-set-key (kbd "M-x")                          'undefined)
+    (global-set-key (kbd "M-x")                          'helm-M-x)
+    (global-set-key (kbd "C-h a")                        'helm-apropos)
+    (global-set-key (kbd "M-y")                          'helm-show-kill-ring) ;; eh...
+    ;; (global-set-key (kbd "C-s")                          'helm-occur)
+    (global-set-key (kbd "M-i") 'helm-swoop)
+;    (global-set-key (kbd "C-s")                          'isearch-forward)    
+    (setq helm-ff-file-name-history-use-recentf t)
+    ))
 
-    (load (concat dotfiles-dir "helm-init.el"))))
-
-(load (concat dotfiles-dir "emacs-xcode.el"))
-(global-set-key (kbd "C-c b") 'xcode/build-compile)
+; (load (concat dotfiles-dir "emacs-xcode.el"))
+; (global-set-key (kbd "C-c b") 'xcode/build-compile)
 ;    (global-set-key (kbd "M-i") 'helm-swoop)
 ; (global-set-key (kbd "C-s") 'isearch-forward)
 (global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
@@ -419,6 +444,8 @@
     :config
     (require 'spaceline-config)
     (spaceline-spacemacs-theme)
+    (spaceline-helm-mode)
+;;    (spaceline-emacs-theme)
     (spaceline-toggle-minor-modes-on))
 
 
@@ -492,7 +519,7 @@
 ;;   (bbdb-insinuate-message)
 ;;   )
 
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+; (load (expand-file-name "~/quicklisp/slime-helper.el"))
 
 ;; ; (ql:quickload :swank)
 ;; (setq inferior-lisp-program (executable-find "sbcl"))
@@ -520,10 +547,20 @@
 ;;                    'face `(:height 0.9))))))
 
 ;; ;; load the theme if we're in xwindows or on a mac
-(if (member window-system '(x ns))
+(if (member window-system '(mac x ns))
     (progn
       (global-hl-line-mode nil)
-      (load-theme 'twilight-bright)
+      (load-theme 'spacemacs-dark)
+      (exec-path-from-shell-initialize)
       ;;  (load-theme 'base16-ocean)
       )
   )
+
+
+;; (custom-set-variables
+;;  '(powerline-default-separator (quote zigzag))
+;;  '(powerline-height 20))
+
+
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)                 ; optional
