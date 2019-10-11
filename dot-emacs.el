@@ -31,10 +31,8 @@
 ; (set-default-font "Hack 14")
 
 (require 'package)
-;; (add-to-list 'package-archives
-;;              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("melpa" . "https://melpa.org/packages/") t)
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -45,49 +43,49 @@
 (eval-when-compile
   (require 'use-package))
 
-;; FIXME: migrate all this to use package?
-;; a list of packages
-(defvar tedroden/packages
-  '(auto-complete
-    artbollocks-mode
-    helm
-    helm-swoop
-;;    helm-flx
-    visual-fill-column
-    ;; ac-ispell
-    ;; ac-js2
-    ;; go-mode
-    ;; go-autocomplete
-    magit
-    markdown-mode
-    expand-region
-    ;; flx-ido
-    ace-window
-    ;; rainbow-blocks
-    rainbow-delimiters
-    rainbow-mode ;; colorify hex colors in css, etc.
-    use-package
-    smooth-scroll
-    keyfreq
-    js2-mode ;; still the best javascript mode as far as I can tell
-    beacon ;; good for when you're skipping around windows
-    paradox ;; package managerrment
-    base16-theme ;; theme
-    web-mode ;; handles django templates (and others)
-    twilight-bright-theme
+;; ;; FIXME: migrate all this to use package?
+;; ;; a list of packages
+;; (defvar tedroden/packages
+;;   '(auto-complete
+;;     artbollocks-mode
+;;     helm
+;;     helm-swoop
+;; ;;    helm-flx
+;;     visual-fill-column
+;;     ;; ac-ispell
+;;     ;; ac-js2
+;;     ;; go-mode
+;;     ;; go-autocomplete
+;;     magit
+;;     markdown-mode
+;;     expand-region
+;;     ;; flx-ido
+;;     ace-window
+;;     ;; rainbow-blocks
+;;     rainbow-delimiters
+;;     rainbow-mode ;; colorify hex colors in css, etc.
+;;     use-package
+;; ;;    smooth-scroll
+;;     keyfreq
+;;     js2-mode ;; still the best javascript mode as far as I can tell
+;;     beacon ;; good for when you're skipping around windows
+;;     paradox ;; package managerrment
+;; ;    base16-theme ;; theme
+;;     web-mode ;; handles django templates (and others)
+;; ;    twilight-bright-theme
     
-    )
-  "Stuff I like")
+;;     )
+;;   "Stuff I like")
 
 
-(if (file-exists-p package-user-dir)
-    nil
-  (package-refresh-contents))
+;; (if (file-exists-p package-user-dir)
+;;     nil
+;;   (package-refresh-contents))
 
-;; i'm fairly sure that use-package can handle this...
-(dolist (p tedroden/packages)
-  (when (not (package-installed-p p))
-	(package-install p)))
+;; ;; i'm fairly sure that use-package can handle this...
+;; (dolist (p tedroden/packages)
+;;   (when (not (package-installed-p p))
+;; 	(package-install p)))
 
 (defun tedroden/no-suspend ()
   (interactive)
@@ -96,10 +94,12 @@
 (global-set-key (kbd "C-z") 'tedroden/no-suspend)
 
 (use-package ace-window
+  :ensure t
   :config
   (global-set-key (kbd "M-o") 'ace-window))
 
 (use-package avy
+  :ensure t  
   :config
   (global-set-key (kbd "C-/") 'avy-goto-char-2))
 
@@ -112,11 +112,11 @@
 ;;   (beacon-mode t))
 
 ; (require 'use-package)
-(use-package smooth-scroll
-  :config
-  (smooth-scroll-mode 1)
-  (setq smooth-scroll/vscroll-step-size 5)
-  )
+;; (use-package smooth-scroll
+;;   :config
+;;   (smooth-scroll-mode 1)
+;;   (setq smooth-scroll/vscroll-step-size 5)
+;;   )
 
 
 ;; The package is "python" but the mode is "python-mode":
@@ -179,6 +179,7 @@
 
 ;; magit setup. Is this right?
 (use-package magit
+  :ensure
   :config
   (progn
     (global-set-key (kbd "C-c m") 'magit-status)    
@@ -311,6 +312,7 @@
 
 
 (use-package keyfreq
+  :ensure t
   :config
   (progn 
     (keyfreq-mode 1)
@@ -339,31 +341,24 @@
 
 ;;     (load (concat dotfiles-dir "helm-init.el"))))
 
-(use-package helm-config
-    :config
-  (progn
-    (helm-mode 1)
-    (helm-adaptive-mode 1)
-;    (helm-push-mark-mode 1)
-    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)    
-    (global-set-key (kbd "C-x b") 'helm-mini)    
-    (global-set-key (kbd "C-x C-f") 'helm-find-files)
-    (global-set-key (kbd "M-x")                          'undefined)
-    (global-set-key (kbd "M-x")                          'helm-M-x)
-    (global-set-key (kbd "C-h a")                        'helm-apropos)
-    (global-set-key (kbd "M-y")                          'helm-show-kill-ring) ;; eh...
-    ;; (global-set-key (kbd "C-s")                          'helm-occur)
-    (global-set-key (kbd "M-i") 'helm-swoop)
-;    (global-set-key (kbd "C-s")                          'isearch-forward)    
-    (setq helm-ff-file-name-history-use-recentf t)
-    ))
 
-; (load (concat dotfiles-dir "emacs-xcode.el"))
-; (global-set-key (kbd "C-c b") 'xcode/build-compile)
-;    (global-set-key (kbd "M-i") 'helm-swoop)
-; (global-set-key (kbd "C-s") 'isearch-forward)
-(global-set-key (kbd "M-i") 'helm-swoop-without-pre-input)
-;; (global-set-key (kbd "M-I") 'helm-multi-swoop-all)
+(use-package helm
+  :ensure t
+  :bind (("C-x C-f" . helm-find-files)
+	 ("<tab>" . helm-execute-persistent-action)
+	 ("C-x b" . helm-mini)
+	 ("M-x" . helm-M-x)
+	 ("C-h a" . helm-apropos)
+	 ("M-y". helm-show-kill-ring) ;; eh...
+	 ("M-i" . helm-swoop-without-pre-input))
+  :config (progn
+	    (setq helm-ff-file-name-history-use-recentf t)
+	    (setq helm-buffers-fuzzy-matching t)
+            (helm-mode 1)))
+
+       
+  
+
 
 
 ; (use-package helm-projectile)
@@ -440,14 +435,25 @@
 ;; (require 'spaceline-config)
 ;; (spaceline-spacemacs-theme)
 
-(use-package spaceline
-    :config
-    (require 'spaceline-config)
-    (spaceline-spacemacs-theme)
-    (spaceline-helm-mode)
-;;    (spaceline-emacs-theme)
-    (spaceline-toggle-minor-modes-on))
+;; (use-package spaceline
+;;     :config
+;;     (require 'spaceline-config)
+;;     (spaceline-spacemacs-theme)
+;;     (spaceline-helm-mode)
+;; ;;    (spaceline-emacs-theme)
+;;     (spaceline-toggle-minor-modes-on))
 
+
+
+
+(use-package doom-themes
+  :ensure t
+  :init
+  (load-theme 'doom-snazzy))
+
+(use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode))
 
 ; (use-package pony-mode; )
 (use-package web-mode
@@ -495,72 +501,20 @@
     (setq save-place-limit nil)))
 
 (use-package uniquify)
-
-;; (use-package neotree
-;;   :config
-;;   (global-set-key [f8] 'neotree-toggle)
-;;   (setq neo-theme (if window-system 'icons 'arrow)))
-
-; (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
-
-(use-package erc
-  :config
-;  (erc-colorize-mode 1)
-  ;(require 'erc-nicks)
-  (require 'erc-join)
-  (erc-autojoin-mode 1)
-  (setq erc-autojoin-channels-alist
-	'(("freenode.net" "#emacs" "##c" )))
-  )
-  
-;; (use-package bbdb
-;;   :init
-;;   (bbdb-initialize 'message)
-;;   (bbdb-insinuate-message)
-;;   )
-
-; (load (expand-file-name "~/quicklisp/slime-helper.el"))
-
-;; ; (ql:quickload :swank)
-;; (setq inferior-lisp-program (executable-find "sbcl"))
-;; (slime-setup '(slime-fancy slime-mrepl slime-banner slime-tramp
-;; 	       slime-xref-browser slime-highlight-edits
-;; 	       slime-sprof))
-;; (setf slime-scratch-file "/home/troden/.slime-scratch.lisp")
-;; (slime-connect "127.0.0.1" "4005")
-
-;; (defun custom-modeline-mode-icon ()
-;;   (format " %s"
-;;     (propertize icon
-;;                 'help-echo (format "Major-mode: `%s`" major-mode)
-;;                 'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))
-
-;; (defun custom-modeline-region-info ()
-;;   (when mark-active
-;;     (let ((words (count-lines (region-beginning) (region-end)))
-;;           (chars (count-words (region-end) (region-beginning))))
-;;       (concat
-;;        (propertize (format "   %s" (all-the-icons-octicon "pencil") words chars)
-;;                    'face `(:family ,(all-the-icons-octicon-family))
-;;                    'display '(raise -0.0))
-;;        (propertize (format " (%s, %s)" words chars)
-;;                    'face `(:height 0.9))))))
-
 ;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(mac x ns))
     (progn
       (global-hl-line-mode nil)
-      (load-theme 'spacemacs-dark)
-      (exec-path-from-shell-initialize)
+;      (load-theme 'doom-dracula)
+;      (exec-path-from-shell-initialize)
       ;;  (load-theme 'base16-ocean)
       )
   )
-
 
 ;; (custom-set-variables
 ;;  '(powerline-default-separator (quote zigzag))
 ;;  '(powerline-height 20))
 
 
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)                 ; optional
+;; (add-hook 'python-mode-hook 'jedi:setup)
+;; (setq jedi:complete-on-dot t)                 ; optional
