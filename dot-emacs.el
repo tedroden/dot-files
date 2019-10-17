@@ -345,7 +345,7 @@
 (use-package helm
   :ensure t
   :bind (("C-x C-f" . helm-find-files)
-	 ("<tab>" . helm-execute-persistent-action)
+;	 ("<tab>" . helm-execute-persistent-action)
 	 ("C-x b" . helm-mini)
 	 ("M-x" . helm-M-x)
 	 ("C-h a" . helm-apropos)
@@ -354,6 +354,9 @@
   :config (progn
 	    (setq helm-ff-file-name-history-use-recentf t)
 	    (setq helm-buffers-fuzzy-matching t)
+	    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+	    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z	    
             (helm-mode 1)))
 
        
