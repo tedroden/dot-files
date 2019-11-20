@@ -359,6 +359,9 @@
   :config (progn
 	    (setq helm-ff-file-name-history-use-recentf t)
 	    (setq helm-buffers-fuzzy-matching t)
+	    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+	    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z	    
             (helm-mode 1)))
 
        
@@ -509,7 +512,7 @@
     (setq-default save-place t)
     (setq save-place-limit nil)))
 
-(use-package uniquify
+(use-package uniquify-files
   :ensure t)
 
 ;; ;; load the theme if we're in xwindows or on a mac
