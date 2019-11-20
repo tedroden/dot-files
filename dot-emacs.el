@@ -103,6 +103,9 @@
   :config
   (global-set-key (kbd "C-/") 'avy-goto-char-2))
 
+
+
+
 ;; (use-package visual-fill-column-mode
 ;;   :init
 ;;   (visual-fill-column-mode))
@@ -345,12 +348,14 @@
 (use-package helm
   :ensure t
   :bind (("C-x C-f" . helm-find-files)
-	 ("<tab>" . helm-execute-persistent-action)
 	 ("C-x b" . helm-mini)
 	 ("M-x" . helm-M-x)
 	 ("C-h a" . helm-apropos)
 	 ("M-y". helm-show-kill-ring) ;; eh...
-	 ("M-i" . helm-swoop-without-pre-input))
+	 ("M-i" . helm-swoop-without-pre-input)
+	 :map helm-map
+	 ("<tab>" . helm-execute-persistent-action)
+	 )
   :config (progn
 	    (setq helm-ff-file-name-history-use-recentf t)
 	    (setq helm-buffers-fuzzy-matching t)
@@ -375,6 +380,7 @@
 
 
 (use-package ibuffer
+  :ensure t
   :config
   (progn
     (setq ibuffer-show-empty-filter-groups nil)
@@ -452,11 +458,12 @@
   (load-theme 'doom-snazzy))
 
 (use-package doom-modeline
-      :ensure t
-      :hook (after-init . doom-modeline-mode))
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
 
 ; (use-package pony-mode; )
 (use-package web-mode
+  :ensure t
   :init
   (progn
     (setq web-mode-engines-alist
@@ -465,6 +472,7 @@
   ((".*fancyhands/templates/.*\\.html\\'" . web-mode)))
   
 (use-package expand-region
+  :ensure t
   :bind ("C-=" . er/expand-region))
 
 (use-package js2-mode
@@ -494,13 +502,16 @@
 
 ;; put the cursor where it was last time you visited a file
 (use-package saveplace
+  :ensure t
   :init (save-place-mode 1)
   :config
   (progn
     (setq-default save-place t)
     (setq save-place-limit nil)))
 
-(use-package uniquify)
+(use-package uniquify
+  :ensure t)
+
 ;; ;; load the theme if we're in xwindows or on a mac
 (if (member window-system '(mac x ns))
     (progn
