@@ -473,7 +473,12 @@
 	  '(("django"    . "\\.html\\'"))))
   :mode
   ((".*fancyhands/templates/.*\\.html\\'" . web-mode)))
-  
+
+
+(use-package pkgbuild-mode
+  :mode
+  (("PKGBUILD$" . pkgbuild-mode)))
+
 (use-package expand-region
   :ensure t
   :bind ("C-=" . er/expand-region))

@@ -65,13 +65,13 @@ function tmuxconf {
 
 
 # this happens on mac or linux
-zshrc
+# zshrc
 emacs
 tmuxconf
 
-# this stuff only makes sense on linux
-if [ "$PLATFORM" = "Linux" ]; then 
-    xinitrc
-    xmodmap
-fi
+# # this stuff only makes sense on linux
+# if [ "$PLATFORM" = "Linux" ]; then 
+#     xinitrc
+#     xmodmap
+# fi
 

@@ -1,0 +1,15 @@
+# if using:
+# https://github.com/gpakosz/.tmux
+
+# pop this at the end:
+
+set -gu prefix2
+unbind C-b
+unbind C-a
+set-option -g prefix C-h
+bind-key C-h send-prefix
+bind | split-window -h
+# bind b previous-window
+# bind f next-window
+unbind '"'
+unbind %
