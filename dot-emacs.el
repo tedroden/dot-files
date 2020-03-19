@@ -34,6 +34,7 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
 
+
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -92,6 +93,9 @@
   (message "Not suspending frame. You're welcome"))
 
 (global-set-key (kbd "C-z") 'tedroden/no-suspend)
+
+;; just for my chromebook!! emacs can do anything.
+(global-set-key (kbd "<deletechar>") 'backward-kill-word)
 
 (use-package ace-window
   :ensure t
