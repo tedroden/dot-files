@@ -9,7 +9,7 @@ unbind C-a
 set-option -g prefix C-h
 bind-key C-h send-prefix
 bind | split-window -h
-# bind b previous-window
-# bind f next-window
+bind p previous-window
+bind n next-window
 unbind '"'
 unbind %
