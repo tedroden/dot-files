@@ -67,7 +67,7 @@ function tmuxconf {
 # this happens on mac or linux
 # zshrc
 emacs
-tmuxconf
+# tmuxconf
 
 # # this stuff only makes sense on linux
 # if [ "$PLATFORM" = "Linux" ]; then 
