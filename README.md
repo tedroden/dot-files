@@ -15,7 +15,7 @@ It allows for two special files:
 
 Let me know what you think.
 
-The first time you install this, it will take a long time. Let me know if something doesn't 
+The first time you run this, it will take a long time. It should be very fast after the first time. Let me know if something doesn't work.
 
 ## .xinitrc
 
