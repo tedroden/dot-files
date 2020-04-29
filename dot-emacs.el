@@ -245,6 +245,7 @@
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
+  :ensure t
   :bind (("C-c e" . eshell-toggle)))
 
 ;;;;
