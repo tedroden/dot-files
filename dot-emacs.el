@@ -58,7 +58,7 @@
 (column-number-mode t)
 
 ;;;; show hidden files in dired?
-(setq dired-omit-mode nil)
+; (setq dired-omit-mode nil)
 
 ;; get package stuff ready
 (require 'package)
