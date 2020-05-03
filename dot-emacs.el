@@ -2,7 +2,6 @@
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")  ; press control-e from here to get the lisp tutorial
 
-
 ; If you aren't using :commands, :bind, :bind*, :bind-keymap, :bind-keymap*, :mode, :interpreter, or :hook (all of which imply :defer;
 																											  
 ;; turn off a lot of the UI
@@ -98,6 +97,15 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
+(use-package battery
+  :ensure t
+  :config
+  (display-battery-mode))
+
+(use-package time
+  :ensure t
+  :config
+  (display-time-mode))
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
@@ -159,6 +167,11 @@
 (use-package all-the-icons-dired
   :ensure t
   :hook ((dired-mode . all-the-icons-dired-mode)))
+
+(use-package all-the-icons-ibuffer
+  :ensure t
+  :init (all-the-icons-ibuffer-mode 1))
+
 
 ;;;;
 ;;;;;; magit setup. Is this right?
@@ -246,6 +259,7 @@
 	;; (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
 	(add-hook 'eshell-preoutput-filter-functions
 			  'ansi-color-apply)
+	;; requires `eshell-git-prompt`
 	(eshell-git-prompt-use-theme 'powerline)
 	))
 
@@ -253,6 +267,7 @@
 (use-package eshell-toggle
   :ensure t
   :bind (("C-c e" . eshell-toggle)))
+
 
 ;;;;
 ;;;;;; start the server
@@ -308,6 +323,7 @@
 ;;;;
 (use-package ibuffer
   :ensure t
+  :bind (("C-x C-b" . ibuffer))
   :config
   (progn
 	(setq ibuffer-show-empty-filter-groups nil)
@@ -400,6 +416,16 @@
 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
 
+
+(use-package mastodon
+  :ensure t
+  :custom
+  (mastodon-instance-url  "https://fosstodon.org"))
+
+(use-package pdf-tools
+  :defer 2
+  :ensure t)
+ 
 ;;;;
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
@@ -409,18 +435,19 @@
 ;;;;
 ;;;;
 ;;;;
-;;;;;; (require 'exwm)
-;;;;;; (require 'exwm-config)
-;;;;;; (exwm-config-default)
-;;;;
-;;;;
-;;;;;; (defun exwm-rename-buffer ()
-;;;;;;   (interactive)
-;;;;;;   (exwm-workspace-rename-buffer
-;;;;;;    (concat exwm-class-name ":"
-;;;;;;            (if (<= (length exwm-title) 30) exwm-title
-;;;;;;              (concat (substring exwm-title 0 29))))))
-;;;;
-;;;;;; (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
-;;;;;; (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+(require 'exwm)
+(require 'exwm-config)
+(exwm-config-default)
+
+
+
+(defun exwm-rename-buffer ()
+  (interactive)
+  (exwm-workspace-rename-buffer
+   (concat exwm-class-name ":"
+           (if (<= (length exwm-title) 30) exwm-title
+             (concat (substring exwm-title 0 29))))))
+
+(add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
+(add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
 
