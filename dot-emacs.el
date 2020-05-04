@@ -12,7 +12,11 @@
 
 ;; setup custom/personal/etc.
 (setq dotfiles-dir "~/.emacs.d/")
+
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "/usr/bin/sbcl")
+
 (setq custom-file (concat dotfiles-dir "custom.el"))
 (setq personal-file (concat dotfiles-dir "personal.el"))
 (dolist (f (list custom-file personal-file))
