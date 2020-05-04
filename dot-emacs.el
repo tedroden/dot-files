@@ -35,6 +35,7 @@
 (global-set-key "\M-g" 'goto-line)	
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
+; (global-set-key (kbd "C-x o") 'other-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
 (global-set-key (kbd "C-c q") 'ff-find-other-file)
@@ -103,9 +104,14 @@
 
 
 ;; great for quickly switching windows if you've got more than 2
-(use-package ace-window
+;; (use-package ace-window
+;;   :ensure t
+;;   :bind ("M-o" . ace-window))
+(use-package switch-window
   :ensure t
-  :bind ("M-o" . ace-window))
+  :bind (("M-o" . switch-window))
+  :custom
+  (switch-window-shortcut-style 'qwerty "use letters instead of numbers"))
 
 ;; super cool search if you can see where you want to go.
 (use-package avy
@@ -399,28 +405,29 @@
 			  (add-to-list 'ac-sources 'ac-source-c-headers)
 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
-
 ;;;;
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
 
-;;;;
-;;;;
-;;;;
-;;;;
-;;;;
-;;;;;; (require 'exwm)
-;;;;;; (require 'exwm-config)
-;;;;;; (exwm-config-default)
-;;;;
-;;;;
-;;;;;; (defun exwm-rename-buffer ()
-;;;;;;   (interactive)
-;;;;;;   (exwm-workspace-rename-buffer
-;;;;;;    (concat exwm-class-name ":"
-;;;;;;            (if (<= (length exwm-title) 30) exwm-title
-;;;;;;              (concat (substring exwm-title 0 29))))))
-;;;;
-;;;;;; (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
-;;;;;; (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
 
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+(require 'exwm)
+(require 'exwm-config)
+(exwm-config-default)
+
+(defun exwm-rename-buffer ()
+  (interactive)
+  (exwm-workspace-rename-buffer
+   (concat exwm-class-name ":"
+           (if (<= (length exwm-title) 30) exwm-title
+             (concat (substring exwm-title 0 29))))))
+
+(add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
+(add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+
+(require 'exwm-systemtray)
+(exwm-systemtray-enable)
