@@ -73,9 +73,13 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-;; not sure?
-(eval-when-compile
-  (require 'use-package))
+;; thanks federico
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(require 'use-package)
+
+;; previously, I did `:ensure t` for every `use-package` module
+(setq use-package-always-ensure t)
 
 (defun tedroden/no-suspend ()
   (interactive)
@@ -90,13 +94,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; theme related stuff
 (use-package doom-themes
- :ensure t
  :init
- (load-theme 'doom-snazzy))
+										;(load-theme 'doom-snazzy)
+ (load-theme 'doom-dark+)
+; (load-theme 'doom-material)
+;   (load-theme 'doom-outrun-electric) 
+ )
 
 
 (use-package doom-modeline
-  :ensure t
   :init (doom-modeline-mode 1))
 
 ;;; end theme related
@@ -108,19 +114,16 @@
 ;;   :ensure t
 ;;   :bind ("M-o" . ace-window))
 (use-package switch-window
-  :ensure t
   :bind (("M-o" . switch-window))
   :custom
   (switch-window-shortcut-style 'qwerty "use letters instead of numbers"))
 
 ;; super cool search if you can see where you want to go.
 (use-package avy
-  :ensure t
   :bind ("C-/" .'avy-goto-char-2))
 
 ;; The package is "python" but the mode is "python-mode":
 (use-package python
-  :ensure t
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode))
 
@@ -163,17 +166,14 @@
 
 ;;;; show icons in dired! (requires all-theicons-dired)
 (use-package all-the-icons-dired
-  :ensure t
   :hook ((dired-mode . all-the-icons-dired-mode)))
 
 ;;;;
 ;;;;;; magit setup. Is this right?
 (use-package magit
-  :ensure t
   :bind (("C-c m" . magit-status)))
 
 (use-package rainbow-mode
-  :ensure t
   :hook ((css-mode . rainbow-mode)
 		 (sass-mode . rainbow-mode)))
 
@@ -257,7 +257,6 @@
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
-  :ensure t
   :bind (("C-c e" . eshell-toggle)))
 
 ;;;;
@@ -277,7 +276,6 @@
 ;;;;
 
 (use-package keyfreq
- :ensure t
  :config
  (progn 
    (keyfreq-mode 1)
@@ -292,13 +290,13 @@
        next-line))))
 
 (use-package helm
-  :ensure t
   :bind (("C-x C-f" . helm-find-files)
 	 ("C-x b" . helm-mini)
 	 ("M-x" . helm-M-x)
 	 ("C-h a" . helm-apropos)
 	 ("M-y". helm-show-kill-ring) ;; eh...
 	 ("M-i" . helm-swoop-without-pre-input)
+	 
 	 :map helm-map
 	 ("<tab>" . helm-execute-persistent-action)
 	 )
@@ -307,13 +305,12 @@
 	    (setq helm-buffers-fuzzy-matching t)
 	    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
 	    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z	    
+	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 		(helm-mode 1)))
 
 ;;;;
 ;;;;
 (use-package ibuffer
-  :ensure t
   :config
   (progn
 	(setq ibuffer-show-empty-filter-groups nil)
@@ -341,27 +338,22 @@
 
 ;;;;;; this is useful if pair programming or working on screen
 (use-package beacon
-  :ensure t
   :init
   (beacon-mode t))
 
 (use-package pkgbuild-mode
-  :ensure t
   :mode
   (("PKGBUILD$" . pkgbuild-mode)))
 
 (use-package expand-region
-  :ensure t
   :bind ("C-=" . er/expand-region))
 
 (use-package js2-mode
-  :ensure t
   :mode (("\\.js$" . js2-mode))
   :interpreter ("node" . js2-mode))
 
 ;; put the cursor where it was last time you visited a file
 (use-package saveplace
-  :ensure t
   :init (save-place-mode 1)
   :config
   (progn
@@ -369,12 +361,10 @@
     (setq save-place-limit nil)))
 
 (use-package rjsx-mode
-  :ensure t
   :defer t)
 
 ;; https://github.com/krgn/emacs.d/blob/master/config/setup-auto-complete.el
 (use-package auto-complete
-  :ensure t
   :commands auto-complete-mode
   :init
   (progn
@@ -398,7 +388,6 @@
 
 ;;
 (use-package ac-c-headers
-  :ensure t
   :hook (c-mode . ac/headers-local)
   :config (defun ac/headers-local()
 			(progn
@@ -409,12 +398,27 @@
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
 
+(use-package winner
+  :init (winner-mode))
+
+
+;; ?
+(use-package diminish
+  :defer 5)
+
+;; move buffers around. neato
+(use-package buffer-move
+  :config
+  (global-set-key (kbd "<C-S-up>")     'buf-move-up)
+  (global-set-key (kbd "<C-S-down>")   'buf-move-down)
+  (global-set-key (kbd "<C-S-left>")   'buf-move-left)
+  (global-set-key (kbd "<C-S-right>")  'buf-move-right))
 
 ;;;;
 ;;;;
 ;;;;
 ;;;;
-;;;;
+;;;;w
 (require 'exwm)
 (require 'exwm-config)
 (exwm-config-default)
