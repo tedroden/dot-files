@@ -1,20 +1,38 @@
-# -*- mode: sh -*-
+xhost +SI:localuser:$USER
 
-# don't set aside part of the trackpad for right click
-synclient RightButtonAreaLeft=0
-synclient RightButtonAreaTop=0
+# gosh.
+eval `gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh`
+export GNOME_KEYRING_CONTROL
+export SSH_AUTH_SOCK
+export GPG_AGENT_INFO
+export GNOME_KEYRING_PID
 
-sxhkd &
-compton &
-# display -window root ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
-hsetroot -fill ~/Dropbox/Backgrounds/NYC/nyc-empire.jpg
+# # enlightenment scaling?
+# export ELM_SCALE=1.5
+
+# Set default cursor.
 xsetroot -cursor_name left_ptr
-if [[ ! `ps ax | grep mpdscribble | grep -v grep` ]]; then
-    mpdscribble &
-fi
-mpd &
-emacs --daemon &
-/usr/lib/gnome-settings-daemon/gnome-settings-daemon-localeexec &
-exec bspwm 
-# exec gnome-session 
 
+# Set keyboard repeat rate.
+xset r rate 200 60
+
+export XDG_SESSION_TYPE=x11
+export GDK_BACKEND=x11
+
+setxkbmap -option ctrl:nocaps
+xbindkeys 
+
+picom -b # was compton
+
+export GDK_CORE_DEVICE_EVENTS=1
+# exec dbus-launch --exit-with-session emacs
+
+# do this if we're not using exwm
+emacs --daemon
+
+# emacsclient &
+
+# exec startplasma-x11
+# exec mate-session
+# exec gnome-session
+exec ssh-agent /usr/local/bin/stumpwm
