@@ -2,8 +2,7 @@
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")  ; press control-e from here to get the lisp tutorial
 
-; If you aren't using :commands, :bind, :bind*, :bind-keymap, :bind-keymap*, :mode, :interpreter, or :hook (all of which imply :defer;
-																											  
+
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
@@ -310,13 +309,18 @@
        previous-line
        next-line))))
 
+;; (use-package ido
+;;   :bind
+;;   ( ("C-x C-f" . ido-find-file) ))
+
 (use-package helm
-  :bind (("C-x C-f" . helm-find-files)
-	 ("C-x b" . helm-mini)
-	 ("M-x" . helm-M-x)
-	 ("C-h a" . helm-apropos)
-	 ("M-y". helm-show-kill-ring) ;; eh...
-	 ("M-i" . helm-swoop-without-pre-input)
+  :bind (
+		 ("C-x C-f" . helm-find-files)
+		 ("C-x b" . helm-mini)
+		 ("M-x" . helm-M-x)
+		 ("C-h a" . helm-apropos)
+		 ("M-y". helm-show-kill-ring) ;; eh...
+		 ("M-i" . helm-swoop-without-pre-input)
 	 
 	 :map helm-map
 	 ("<tab>" . helm-execute-persistent-action)
@@ -393,7 +397,7 @@
 	(auto-complete-mode t))
   :config
   (progn 
-	;; (use-package auto-complete-config)
+	; (use-package auto-complete-config)
 
 	(ac-set-trigger-key "TAB")
 	(ac-config-default)
