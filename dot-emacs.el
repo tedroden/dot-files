@@ -3,7 +3,6 @@
 ;; (info "(eintr) Top")  ; press control-e from here to get the lisp tutorial
 
 
-
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
@@ -12,7 +11,11 @@
 
 ;; setup custom/personal/etc.
 (setq dotfiles-dir "~/.emacs.d/")
+
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "/usr/bin/sbcl")
+
 (setq custom-file (concat dotfiles-dir "custom.el"))
 (setq personal-file (concat dotfiles-dir "personal.el"))
 (dolist (f (list custom-file personal-file))
@@ -34,7 +37,6 @@
 (global-set-key "\M-g" 'goto-line)	
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
-; (global-set-key (kbd "C-x o") 'other-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'tedroden/edit-dot-emacs)
 (global-set-key (kbd "C-c q") 'ff-find-other-file)
@@ -58,7 +60,7 @@
 (column-number-mode t)
 
 ;;;; show hidden files in dired?
-; (setq dired-omit-mode nil)
+(setq dired-omit-mode nil)
 
 ;; get package stuff ready
 (require 'package)
@@ -104,6 +106,15 @@
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
 
+(use-package battery
+  :ensure t
+  :config
+  (display-battery-mode))
+
+(use-package time
+  :ensure t
+  :config
+  (display-time-mode))
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
@@ -166,6 +177,11 @@
 ;;;; show icons in dired! (requires all-theicons-dired)
 (use-package all-the-icons-dired
   :hook ((dired-mode . all-the-icons-dired-mode)))
+
+(use-package all-the-icons-ibuffer
+  :ensure t
+  :init (all-the-icons-ibuffer-mode 1))
+
 
 ;;;;
 ;;;;;; magit setup. Is this right?
@@ -251,12 +267,14 @@
 	;; (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
 	(add-hook 'eshell-preoutput-filter-functions
 			  'ansi-color-apply)
+	;; requires `eshell-git-prompt`
 	(eshell-git-prompt-use-theme 'powerline)
 	))
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
   :bind (("C-c e" . eshell-toggle)))
+
 
 ;;;;
 ;;;;;; start the server
@@ -315,6 +333,7 @@
 ;;;;
 ;;;;
 (use-package ibuffer
+  :bind (("C-x C-b" . ibuffer))
   :config
   (progn
 	(setq ibuffer-show-empty-filter-groups nil)
@@ -398,9 +417,21 @@
 			  (add-to-list 'ac-sources 'ac-source-c-headers)
 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
+
+
+(use-package mastodon
+  :ensure t
+  :custom
+  (mastodon-instance-url  "https://fosstodon.org"))
+
+(use-package pdf-tools
+  :defer 2
+  :ensure t)
+ 
 ;;;;
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
+
 
 (use-package winner
   :init (winner-mode))
@@ -418,6 +449,7 @@
   (global-set-key (kbd "<C-S-left>")   'buf-move-left)
   (global-set-key (kbd "<C-S-right>")  'buf-move-right))
 
+
 ;;;;
 ;;;;
 ;;;;
@@ -426,6 +458,8 @@
 (require 'exwm)
 (require 'exwm-config)
 (exwm-config-default)
+
+
 
 (defun exwm-rename-buffer ()
   (interactive)
@@ -437,5 +471,3 @@
 (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
 (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
 
-(require 'exwm-systemtray)
-(exwm-systemtray-enable)
