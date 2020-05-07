@@ -30,6 +30,13 @@
 
 (global-hi-lock-mode 1)
 
+(setq c-default-style "linux")
+(setq-default c-basic-offset 4
+			  tab-width 4
+			  indent-tabs-mode t)
+
+
+
 (defun tedroden/edit-dot-emacs ()
   (interactive)
   (find-file (concat dotfiles-dir "init.el"))
@@ -286,10 +293,6 @@
 ;;;;;; this *should* make it so we don't open new frames
 
 ;;;;
-;;;;;; (setq c-default-style "linux")
-;;;;(setq-default c-basic-offset 4
-;;;;			  tab-width 4
-;;;;			  indent-tabs-mode t)
 ;;;;
 ;;;;
 
@@ -390,7 +393,7 @@
 	(auto-complete-mode t))
   :config
   (progn 
-	(use-package auto-complete-config)
+	;; (use-package auto-complete-config)
 
 	(ac-set-trigger-key "TAB")
 	(ac-config-default)
@@ -428,10 +431,8 @@
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
 
-
 (use-package winner
   :init (winner-mode))
-
 
 ;; ?
 (use-package diminish
@@ -450,7 +451,7 @@
 ;;;;
 ;;;;
 ;;;;
-;;;;w
+;;;;
 (require 'exwm)
 (require 'exwm-config)
 (exwm-config-default)
