@@ -451,6 +451,61 @@
   (global-set-key (kbd "<C-S-right>")  'buf-move-right))
 
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; some EXWM madness
+
+;; essentially
+
+(push ?\C-' exwm-input-prefix-keys)
+
+;; Visit buffers with specific apps 
+(exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
+(exwm-input-set-key (kbd "C-' c") #'goto-wm-termite)
+(exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+
+;; split windows
+(exwm-input-set-key (kbd "C-' |") #'split-window-right)
+(exwm-input-set-key (kbd "C-' -") #'split-window-below)
+
+;; move focus directionally
+(exwm-input-set-key (kbd "C-' n") #'windmove-down)
+(exwm-input-set-key (kbd "C-' p") #'windmove-up)
+(exwm-input-set-key (kbd "C-' b") #'windmove-left)
+(exwm-input-set-key (kbd "C-' f") #'windmove-right)
+
+;; move visible buffer directionally
+(exwm-input-set-key (kbd "C-' N") #'buf-move-down)
+(exwm-input-set-key (kbd "C-' P") #'buf-move-up)
+(exwm-input-set-key (kbd "C-' B") #'buf-move-left)
+(exwm-input-set-key (kbd "C-' F") #'buf-move-right)
+
+
+(defun goto-wm-window (buffer-prefix)
+  (dolist (buffer (buffer-list))
+	(with-current-buffer buffer
+	  (if (string-prefix-p buffer-prefix (buffer-name))
+	  	  (pop-to-buffer buffer)))))
+
+(defun goto-wm-google ()
+  (interactive)
+  (goto-wm-window "Google-chrome"))
+
+(defun goto-wm-termite ()
+  (interactive)
+  (goto-wm-window "Termite"))
+
+;; untested because I don't have slack on here.
+(defun goto-wm-slack ()
+  (interactive)
+  (goto-wm-window "Slack"))
+
+
+
+
+
+
 ;;;;
 ;;;;
 ;;;;
