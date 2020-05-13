@@ -420,8 +420,6 @@
 			  (add-to-list 'ac-sources 'ac-source-c-headers)
 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
-
-
 (use-package mastodon
   :ensure t
   :custom
@@ -456,31 +454,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; some EXWM madness
 
-;; essentially
-
-(push ?\C-' exwm-input-prefix-keys)
-
-;; Visit buffers with specific apps 
-(exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
-(exwm-input-set-key (kbd "C-' c") #'goto-wm-termite)
-(exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
-
-;; split windows
-(exwm-input-set-key (kbd "C-' |") #'split-window-right)
-(exwm-input-set-key (kbd "C-' -") #'split-window-below)
-
-;; move focus directionally
-(exwm-input-set-key (kbd "C-' n") #'windmove-down)
-(exwm-input-set-key (kbd "C-' p") #'windmove-up)
-(exwm-input-set-key (kbd "C-' b") #'windmove-left)
-(exwm-input-set-key (kbd "C-' f") #'windmove-right)
-
-;; move visible buffer directionally
-(exwm-input-set-key (kbd "C-' N") #'buf-move-down)
-(exwm-input-set-key (kbd "C-' P") #'buf-move-up)
-(exwm-input-set-key (kbd "C-' B") #'buf-move-left)
-(exwm-input-set-key (kbd "C-' F") #'buf-move-right)
-
+;; (use-package exwm-config
+;;   :init
+;;   (require 'exwm-config)  
+;;   (exwm-config-default)
 
 (defun goto-wm-window (buffer-prefix)
   (dolist (buffer (buffer-list))
@@ -502,28 +479,95 @@
   (goto-wm-window "Slack"))
 
 
-
-
-
-
-;;;;
-;;;;
-;;;;
-;;;;
-;;;;
-(require 'exwm)
-(require 'exwm-config)
-(exwm-config-default)
-
-
-
-(defun exwm-rename-buffer ()
+(use-package exwm
+  
+  :config
+  
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
+  
+  ;; (setq exwm-workspace-index-map (lambda (i) (number-to-string (1+ i))))
+  (defun exwm-rename-buffer ()
   (interactive)
   (exwm-workspace-rename-buffer
    (concat exwm-class-name ":"
            (if (<= (length exwm-title) 30) exwm-title
              (concat (substring exwm-title 0 29))))))
+  (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
+  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+  
+  ;; the Control-apostrophe now does a lot of window/buffer related stuff
+  ;; to make it work a bit more like stumpwm
+  (push ?\C-' exwm-input-prefix-keys)
 
-(add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
-(add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+  ;; Visit buffers with specific apps 
+  (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
+  (exwm-input-set-key (kbd "C-' c") #'goto-wm-termite)
+  (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+  
+  ;; split windows
+  (exwm-input-set-key (kbd "C-' |") #'split-window-right)
+  (exwm-input-set-key (kbd "C-' -") #'split-window-below)
+
+  ;; move focus directionally
+  (exwm-input-set-key (kbd "C-' n") #'windmove-down)
+  (exwm-input-set-key (kbd "C-' p") #'windmove-up)
+  (exwm-input-set-key (kbd "C-' b") #'windmove-left)
+  (exwm-input-set-key (kbd "C-' f") #'windmove-right)
+  
+  ;; move visible buffer directionally
+  (exwm-input-set-key (kbd "C-' N") #'buf-move-down)
+  (exwm-input-set-key (kbd "C-' P") #'buf-move-up)
+  (exwm-input-set-key (kbd "C-' B") #'buf-move-left)
+  (exwm-input-set-key (kbd "C-' F") #'buf-move-right)
+  
+  ;; close window
+  (exwm-input-set-key (kbd "C-' k") #'kill-buffer)
+  
+  ;; in stumpwm "e" pulls up emacs,
+  ;; since we're in emacs, let's just assume
+  ;; that i want to switch buffers
+  ;; bring up a list of buffers
+  (exwm-input-set-key (kbd "C-' e") #'ibuffer)
+
+  
+  (setq exwm-input-global-keys
+		`(
+		  ;; Bind "s-r" to exit char-mode and fullscreen mode.
+		  ([?\s-r] . exwm-reset)
+		  ;; Bind "s-w" to switch workspace interactively.
+		  ([?\s-w] . exwm-workspace-switch)
+		  ([f4] . tedroden/edit-dot-emacs)
+		  ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+		  ,@(mapcar (lambda (i)
+					  `(,(kbd (format "s-%d" i)) .
+						(lambda ()
+						  (interactive)
+						  (exwm-workspace-switch-create ,i))))
+					(number-sequence 0 9))
+		  ;; Bind "s-&" to launch applications ('M-&' also works if the output
+		  ;; buffer does not bother you).
+		  ([?\s-s] . (lambda (command)
+					   (interactive (list (read-shell-command "$ ")))
+					   (start-process-shell-command command nil command)))
+
+		  )
+		)
+
+  (setq exwm-input-simulation-keys
+		'(([?\C-b] . [left])
+		  ([?\C-f] . [right])
+		  ([?\C-p] . [up])
+		  ([?\C-n] . [down])
+		  ([?\C-a] . [home])
+		  ([?\C-e] . [end])
+		  ([?\M-v] . [prior])
+		  ([?\C-v] . [next])
+		  ([?\C-d] . [delete])
+		  ([?\C-k] . [S-end delete])))
+  
+  (exwm-enable)
+  )
+  
+
 
