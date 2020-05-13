@@ -104,14 +104,26 @@
 (use-package doom-themes
  :init
 										;(load-theme 'doom-snazzy)
- (load-theme 'doom-dark+)
-; (load-theme 'doom-material)
-;   (load-theme 'doom-outrun-electric) 
+;; (load-theme 'doom-dark+)
+ (load-theme 'doom-material)
+ ;; (load-theme 'doom-outrun-electric)
+ ;; (load-theme 'doom-peacock)
+ ;; (load-theme 'doom-molokai)
+ ;; (load-theme 'doom-nord)
+ ;; (load-theme 'doom-spacegrey)
+ ;; (load-theme 'doom-tomorrow-day)
+ ;; (load-theme 'doom-tomorrow-night)
+ ;; (load-theme 'doom-vibrant)
  )
 
-
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-icon t "icons")
+  (doom-modeline-height 76 "height")
+  (doom-modeline-buffer-encoding nil "don't show UTF-8 everywhere")
+  (doom-modeline-icon (display-graphic-p))
+  )
 
 (use-package battery
   :ensure t
@@ -122,6 +134,7 @@
   :ensure t
   :config
   (display-time-mode))
+
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
@@ -143,18 +156,6 @@
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode))
-
-;;;;
-;;;;(use-package undo-tree;
-;;;  :defer t
-;;;;  :ensure t
-;;;;  :diminish undo-tree-mode
-;;;;  :config
-;;;;  (progn
-;;;;    (global-undo-tree-mode)
-;;;;    (setq undo-tree-visualizer-timestamps t)
-;;;;    (setq undo-tree-visualizer-diff t)))
-;;;;
 
 (use-package artbollocks-mode
   :defer 4 ;; we don't actually need this, so don't load it for a while
@@ -261,12 +262,6 @@
 ;;;;;;     ))
 ;;;;
 
-;;;;
-;;;;; setup the path
-;;;;(defun eshell-mode-hook-func ()
-;;;;  (message "setting this up.")
-;;;;  (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env)))
-;;;;
 (use-package eshell
   :bind  (("C-!" . eshell))
   :config
@@ -281,19 +276,6 @@
 ;; show eshell right under the current window
 (use-package eshell-toggle
   :bind (("C-c e" . eshell-toggle)))
-
-
-;;;;
-;;;;;; start the server
-;;;;;; FIXME: can we check to see if it's running first?
-;;;;;; (server-start)
-;;;;
-;;;;
-;;;;;; this *should* make it so we don't open new frames
-
-;;;;
-;;;;
-;;;;
 
 (use-package keyfreq
  :config
@@ -584,12 +566,10 @@
 	"Go to the prev workspace if it doesn't take us negative"
 	(interactive)
 	(if (> exwm-workspace-current-index 0)
-		(exwm-workspace-switch-create (- 1 exwm-workspace-current-index))
+		(exwm-workspace-switch-create (- exwm-workspace-current-index 1))
 	  (message "Already on first workspace")))
 
   
   (exwm-enable)
   )
   
-
-
