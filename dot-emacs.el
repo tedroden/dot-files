@@ -416,7 +416,14 @@
 (use-package pdf-tools
   :defer 2
   :ensure t)
- 
+
+;; eh?
+(use-package symon
+  :custom
+  (symon-sparkline-type 'boxed "fewer gridlines")
+  :config
+  (symon-mode))
+
 ;;;;
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
