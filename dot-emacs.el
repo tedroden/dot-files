@@ -464,6 +464,8 @@
 (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
 (exwm-input-set-key (kbd "C-' c") #'goto-wm-termite)
 (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+(exwm-input-set-key (kbd "C-' e") #'goto-wm-eshell)
+
 
 ;; split windows
 (exwm-input-set-key (kbd "C-' |") #'split-window-right)
@@ -495,6 +497,12 @@
 (defun goto-wm-termite ()
   (interactive)
   (goto-wm-window "Termite"))
+
+
+(defun goto-wm-eshell ()
+  (interactive)
+  (goto-wm-window "*eshell*"))
+
 
 ;; untested because I don't have slack on here.
 (defun goto-wm-slack ()
