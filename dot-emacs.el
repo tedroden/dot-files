@@ -132,6 +132,9 @@
 
 (use-package time
   :ensure t
+  :custom
+  (display-time-default-load-average nil "Don't show load average")
+
   :config
   (display-time-mode))
 
