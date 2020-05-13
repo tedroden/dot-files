@@ -443,9 +443,6 @@
   (global-set-key (kbd "<C-S-left>")   'buf-move-left)
   (global-set-key (kbd "<C-S-right>")  'buf-move-right))
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; some EXWM madness
 
@@ -507,10 +504,17 @@
   (exwm-input-set-key (kbd "C-' g n") #'goto-wm-next-workspace)
   (exwm-input-set-key (kbd "C-' g p") #'goto-wm-prev-workspace)
 
+  ;; this is weird due to your boy's first defmarco below
+  ;; also, I should be able to do this via dolist, right?
+  (exwm-input-set-key (kbd "C-' g 0") (goto-wm-workspace 0))
+  (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
+  (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
+  (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
+
   ;; in stumpwm "e" pulls up emacs,
   ;; since we're in emacs, let's just assume
-  ;; that i want to switch buffers
-  ;; bring up a list of buffers
+  ;; that i want to switch buffers...
+  ;; not sure what I "mean" when I do this if i'm already in emacs
   (exwm-input-set-key (kbd "C-' e") #'ibuffer)
 
   ;; this is pretty much copied out of exwm-config, with some additions
@@ -579,6 +583,19 @@
 		(exwm-workspace-switch-create (- exwm-workspace-current-index 1))
 	  (message "Already on first workspace")))
 
+
+  (defun goto-wm--workspace (num)
+	"Go to the prev workspace if it doesn't take us negative"
+	(interactive)
+	(if (> exwm-workspace-switch-create-limit num)
+		(exwm-workspace-switch-create num)))
+
+  (defmacro goto-wm-workspace (num)
+	`(lambda ()
+	   (interactive)
+	   (goto-wm--workspace ,num)))
+
+  (goto-wm-workspace 1)
   
   (exwm-enable)
   )
