@@ -337,24 +337,26 @@
 ;;;;
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
-  :config
-  (progn
-	(setq ibuffer-show-empty-filter-groups nil)
-	(setq ibuffer-saved-filter-groups
-		  '(("Buffers"
-			 ("Fancy Hands Code" (filename . "code/fh"))
-			 ("wlib" (filename . "code/wlib"))
-			 ("Emacs" (or (filename . "dot-emacs.el")
-						  (name . "\*GNU Emacs\*")
-						  (name . "\*scratch\*")
-						  (name . "\*Messages\*")
-						  ))
-			 ("Mail" (name . "\*notmuch"))	 
-			 ("Org" (mode . org-mode))
-			 ("Eshell" (mode . eshell-mode))
-			 ("Man" (name . "\*Man"))	 
-			 ("z Helm Garbage" (name . "\*helm")) ;; how do i sort this to the bottom?
-			 ))))
+  :custom
+  (ibuffer-never-show-predicates '("*helm") "don't show helm")
+  (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
+  (ibuffer-saved-filter-groups '(("Buffers"
+								  ("Fancy Hands Code" (filename . "code/fh"))
+								  ("Dot Files" (filename . "dot-files"))								  
+								  ("wlib" (filename . "code/wlib"))
+								  ("Emacs" (or (filename . "dot-emacs.el")
+											   (name . "\*GNU Emacs\*")
+											   (name . "\*scratch\*")
+											   (name . "\*Messages\*")
+											   ))
+								  ("WM" (mode . exwm-mode))
+								  ("GIT" (mode . magit-mode))
+								  ("Mail" (name . "\*notmuch"))	 
+								  ("Org" (mode . org-mode))
+								  ("Eshell" (mode . eshell-mode))
+								  ("Man" (name . "\*Man"))	 
+								  ("z Helm Garbage" (name . "\*helm")) ;; how do i sort this to the bottom?
+								  )))
   :init
   (add-hook 'ibuffer-mode-hook
 			'(lambda ()
@@ -459,50 +461,35 @@
 ;;   (require 'exwm-config)  
 ;;   (exwm-config-default)
 
-(defun goto-wm-window (buffer-prefix)
-  (dolist (buffer (buffer-list))
-	(with-current-buffer buffer
-	  (if (string-prefix-p buffer-prefix (buffer-name))
-	  	  (pop-to-buffer buffer)))))
-
-(defun goto-wm-google ()
-  (interactive)
-  (goto-wm-window "Google-chrome"))
-
-(defun goto-wm-termite ()
-  (interactive)
-  (goto-wm-window "Termite"))
-
-;; untested because I don't have slack on here.
-(defun goto-wm-slack ()
-  (interactive)
-  (goto-wm-window "Slack"))
-
-
 (use-package exwm
-  
+
+  :custom
+  (exwm-workspace-number 4 "default number of workspaces: 4")
+  (exwm-workspace-switch-create-limit 4 "max number of workspaces 4")
   :config
   
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
   
   ;; (setq exwm-workspace-index-map (lambda (i) (number-to-string (1+ i))))
+
+  ;; this renames the buffers. I'll probably change this soon
   (defun exwm-rename-buffer ()
-  (interactive)
-  (exwm-workspace-rename-buffer
-   (concat exwm-class-name ":"
-           (if (<= (length exwm-title) 30) exwm-title
-             (concat (substring exwm-title 0 29))))))
+	(interactive)
+	(exwm-workspace-rename-buffer
+	 (concat exwm-class-name ":"
+			 (if (<= (length exwm-title) 30) exwm-title
+			   (concat (substring exwm-title 0 29))))))
   (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
   (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
   
   ;; the Control-apostrophe now does a lot of window/buffer related stuff
-  ;; to make it work a bit more like stumpwm
+  ;; to make it work a bit more like (the way I use) stumpwm
   (push ?\C-' exwm-input-prefix-keys)
 
   ;; Visit buffers with specific apps 
   (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
-  (exwm-input-set-key (kbd "C-' c") #'goto-wm-termite)
+  (exwm-input-set-key (kbd "C-' c") #'goto-wm-terminator)
   (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
   
   ;; split windows
@@ -520,24 +507,26 @@
   (exwm-input-set-key (kbd "C-' P") #'buf-move-up)
   (exwm-input-set-key (kbd "C-' B") #'buf-move-left)
   (exwm-input-set-key (kbd "C-' F") #'buf-move-right)
-  
+
   ;; close window
   (exwm-input-set-key (kbd "C-' k") #'kill-buffer)
-  
+
+  (exwm-input-set-key (kbd "C-' g n") #'goto-wm-next-workspace)
+  (exwm-input-set-key (kbd "C-' g p") #'goto-wm-prev-workspace)
+
   ;; in stumpwm "e" pulls up emacs,
   ;; since we're in emacs, let's just assume
   ;; that i want to switch buffers
   ;; bring up a list of buffers
   (exwm-input-set-key (kbd "C-' e") #'ibuffer)
 
-  
+  ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
 		`(
 		  ;; Bind "s-r" to exit char-mode and fullscreen mode.
 		  ([?\s-r] . exwm-reset)
 		  ;; Bind "s-w" to switch workspace interactively.
 		  ([?\s-w] . exwm-workspace-switch)
-		  ([f4] . tedroden/edit-dot-emacs)
 		  ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
 		  ,@(mapcar (lambda (i)
 					  `(,(kbd (format "s-%d" i)) .
@@ -545,12 +534,9 @@
 						  (interactive)
 						  (exwm-workspace-switch-create ,i))))
 					(number-sequence 0 9))
-		  ;; Bind "s-&" to launch applications ('M-&' also works if the output
-		  ;; buffer does not bother you).
-		  ([?\s-s] . (lambda (command)
-					   (interactive (list (read-shell-command "$ ")))
-					   (start-process-shell-command command nil command)))
-
+		  
+		  ;; always let me get to the emacs file
+		  ([f4] . tedroden/edit-dot-emacs) 
 		  )
 		)
 
@@ -565,6 +551,42 @@
 		  ([?\C-v] . [next])
 		  ([?\C-d] . [delete])
 		  ([?\C-k] . [S-end delete])))
+
+  (defun goto-wm-window (buffer-prefix)
+	(dolist (buffer (buffer-list))
+	  (with-current-buffer buffer
+		(if (string-prefix-p buffer-prefix (buffer-name))
+			(pop-to-buffer buffer)))))
+
+  (defun goto-wm-google ()
+	(interactive)
+	(goto-wm-window "Google-chrome"))
+
+  (defun goto-wm-terminator ()
+	(interactive)
+	(goto-wm-window "Terminator"))
+
+  ;; untested because I don't have slack on here.
+  (defun goto-wm-slack ()
+	(interactive)
+	(goto-wm-window "Slack"))
+
+  (defun goto-wm-next-workspace ()
+	"Go to the next workspace if 
+we're under the limit of `exwm-workspace-switch-create-limit`"
+	(interactive)
+	(let ((num (+ 1 exwm-workspace-current-index)))
+	  (if (< num exwm-workspace-switch-create-limit)
+		  (exwm-workspace-switch-create num)
+		(message "Too many workspaces"))))
+  
+  (defun goto-wm-prev-workspace ()
+	"Go to the prev workspace if it doesn't take us negative"
+	(interactive)
+	(if (> exwm-workspace-current-index 0)
+		(exwm-workspace-switch-create (- 1 exwm-workspace-current-index))
+	  (message "Already on first workspace")))
+
   
   (exwm-enable)
   )
