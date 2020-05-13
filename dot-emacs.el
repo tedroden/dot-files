@@ -345,6 +345,7 @@
 								  ("Dot Files" (filename . "dot-files"))								  
 								  ("wlib" (filename . "code/wlib"))
 								  ("Emacs" (or (filename . "dot-emacs.el")
+											   (filename . "init.el")
 											   (name . "\*GNU Emacs\*")
 											   (name . "\*scratch\*")
 											   (name . "\*Messages\*")
@@ -572,8 +573,7 @@
 	(goto-wm-window "Slack"))
 
   (defun goto-wm-next-workspace ()
-	"Go to the next workspace if 
-we're under the limit of `exwm-workspace-switch-create-limit`"
+	"Go to the next workspace if we're under the limit"
 	(interactive)
 	(let ((num (+ 1 exwm-workspace-current-index)))
 	  (if (< num exwm-workspace-switch-create-limit)
