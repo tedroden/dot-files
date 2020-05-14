@@ -12,7 +12,10 @@
 ;; setup custom/personal/etc.
 (setq dotfiles-dir "~/.emacs.d/")
 
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+(setq ql-slime-helper (expand-file-name "~/quicklisp/slime-helper.el"))
+(if (file-exists-p ql-slime-helper)
+    (load ql-slime-helper))
+
 ;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "/usr/bin/sbcl")
 
@@ -102,8 +105,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; theme related stuff
 (use-package doom-themes
- :init
-										;(load-theme 'doom-snazzy)
+  :ensure t
+  :init
+ ;; (load-theme 'doom-snazzy)
 ;; (load-theme 'doom-dark+)
  (load-theme 'doom-material)
  ;; (load-theme 'doom-outrun-electric)
