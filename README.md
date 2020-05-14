@@ -1,8 +1,6 @@
 # Ted Roden's various dotfiles
 
-This is my collection of dotfiles. I like to use a lot of different computers and his helps keep me sane on all of them.
-
-They *should* have nothing personal, so you can just install and go. If you need personal stuff, the emacs config supports custom.el (for customize mode) and personal.el (for whatever you need that no one else would want). Just put those in the directory and it'll load those. Personally, I store those files in dropbox and `ln -s` them to my (newly created) `~/.emacs.d`
+This is my collection of dotfiles. But it's really just my .emacs file. 
 
 ## .emacs
 
@@ -19,21 +17,13 @@ The first time you run this, it will take a long time. It should be very fast af
 
 ## .xinitrc
 
-This is pretty basic, probably not usefull to anyone else.
-
-We start `xmodmap` and `cinnamon`
+This is pretty basic, probably not useful to anyone else.
 
 ## .xmodmap
 
-This if for my [Chromebook Pixel](http://www.amazon.com/gp/product/B00BM7Y7DQ/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=B00BM7Y7DQ&linkCode=as2&tag=tedrodcom-20&linkId=SICDVA2IRDFKLAU3). All it does is change the `search` key into a control key.
-
-## .zshrc
-
-This is basically the stock [`oh-my-zsh`](https://github.com/robbyrussell/oh-my-zsh/) with `$GOPATH` added.
-
+~~This if for my [Chromebook Pixel](http://www.amazon.com/gp/product/B00BM7Y7DQ/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=B00BM7Y7DQ&linkCode=as2&tag=tedrodcom-20&linkId=SICDVA2IRDFKLAU3). All it does is change the `search` key into a control key.~~
 
 ## install.sh
 
-This will install the files (it'll write over your existing ones probably). So be careful.
+I wouldn't use `install.sh` if I were  you.
 
-- TODO: make sure it doesn't write over existing files.

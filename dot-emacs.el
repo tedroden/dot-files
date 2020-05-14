@@ -104,14 +104,26 @@
 (use-package doom-themes
  :init
 										;(load-theme 'doom-snazzy)
- (load-theme 'doom-dark+)
-; (load-theme 'doom-material)
-;   (load-theme 'doom-outrun-electric) 
+;; (load-theme 'doom-dark+)
+ (load-theme 'doom-material)
+ ;; (load-theme 'doom-outrun-electric)
+ ;; (load-theme 'doom-peacock)
+ ;; (load-theme 'doom-molokai)
+ ;; (load-theme 'doom-nord)
+ ;; (load-theme 'doom-spacegrey)
+ ;; (load-theme 'doom-tomorrow-day)
+ ;; (load-theme 'doom-tomorrow-night)
+ ;; (load-theme 'doom-vibrant)
  )
 
-
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-icon t "icons")
+  (doom-modeline-height 64 "height")
+  (doom-modeline-buffer-encoding nil "don't show UTF-8 everywhere")
+  (doom-modeline-icon (display-graphic-p))
+  )
 
 (use-package battery
   :ensure t
@@ -120,8 +132,12 @@
 
 (use-package time
   :ensure t
+  :custom
+  (display-time-default-load-average nil "Don't show load average")
+
   :config
   (display-time-mode))
+
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
@@ -143,18 +159,6 @@
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode))
-
-;;;;
-;;;;(use-package undo-tree;
-;;;  :defer t
-;;;;  :ensure t
-;;;;  :diminish undo-tree-mode
-;;;;  :config
-;;;;  (progn
-;;;;    (global-undo-tree-mode)
-;;;;    (setq undo-tree-visualizer-timestamps t)
-;;;;    (setq undo-tree-visualizer-diff t)))
-;;;;
 
 (use-package artbollocks-mode
   :defer 4 ;; we don't actually need this, so don't load it for a while
@@ -261,12 +265,6 @@
 ;;;;;;     ))
 ;;;;
 
-;;;;
-;;;;; setup the path
-;;;;(defun eshell-mode-hook-func ()
-;;;;  (message "setting this up.")
-;;;;  (setq eshell-path-env (concat "/usr/local/bin:" eshell-path-env)))
-;;;;
 (use-package eshell
   :bind  (("C-!" . eshell))
   :config
@@ -281,19 +279,6 @@
 ;; show eshell right under the current window
 (use-package eshell-toggle
   :bind (("C-c e" . eshell-toggle)))
-
-
-;;;;
-;;;;;; start the server
-;;;;;; FIXME: can we check to see if it's running first?
-;;;;;; (server-start)
-;;;;
-;;;;
-;;;;;; this *should* make it so we don't open new frames
-
-;;;;
-;;;;
-;;;;
 
 (use-package keyfreq
  :config
@@ -337,24 +322,27 @@
 ;;;;
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
-  :config
-  (progn
-	(setq ibuffer-show-empty-filter-groups nil)
-	(setq ibuffer-saved-filter-groups
-		  '(("Buffers"
-			 ("Fancy Hands Code" (filename . "code/fh"))
-			 ("wlib" (filename . "code/wlib"))
-			 ("Emacs" (or (filename . "dot-emacs.el")
-						  (name . "\*GNU Emacs\*")
-						  (name . "\*scratch\*")
-						  (name . "\*Messages\*")
-						  ))
-			 ("Mail" (name . "\*notmuch"))	 
-			 ("Org" (mode . org-mode))
-			 ("Eshell" (mode . eshell-mode))
-			 ("Man" (name . "\*Man"))	 
-			 ("z Helm Garbage" (name . "\*helm")) ;; how do i sort this to the bottom?
-			 ))))
+  :custom
+  (ibuffer-never-show-predicates '("*helm") "don't show helm")
+  (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
+  (ibuffer-saved-filter-groups '(("Buffers"
+								  ("Fancy Hands Code" (filename . "code/fh"))
+								  ("Dot Files" (filename . "dot-files"))								  
+								  ("wlib" (filename . "code/wlib"))
+								  ("Emacs" (or (filename . "dot-emacs.el")
+											   (filename . "init.el")
+											   (name . "\*GNU Emacs\*")
+											   (name . "\*scratch\*")
+											   (name . "\*Messages\*")
+											   ))
+								  ("WM" (mode . exwm-mode))
+								  ("GIT" (mode . magit-mode))
+								  ("Mail" (name . "\*notmuch"))	 
+								  ("Org" (mode . org-mode))
+								  ("Eshell" (mode . eshell-mode))
+								  ("Man" (name . "\*Man"))	 
+								  ("z Helm Garbage" (name . "\*helm")) ;; how do i sort this to the bottom?
+								  )))
   :init
   (add-hook 'ibuffer-mode-hook
 			'(lambda ()
@@ -420,8 +408,6 @@
 			  (add-to-list 'ac-sources 'ac-source-c-headers)
 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
-
-
 (use-package mastodon
   :ensure t
   :custom
@@ -430,7 +416,14 @@
 (use-package pdf-tools
   :defer 2
   :ensure t)
- 
+
+;; eh?
+(use-package symon
+  :custom
+  (symon-sparkline-type 'boxed "fewer gridlines")
+  :config
+  (symon-mode))
+
 ;;;;
 ;;;;
 ;;;;;; ;; load the theme if we're in xwindows or on a mac
@@ -450,88 +443,169 @@
   (global-set-key (kbd "<C-S-left>")   'buf-move-left)
   (global-set-key (kbd "<C-S-right>")  'buf-move-right))
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; some EXWM madness
 
-;; essentially
-
-(push ?\C-' exwm-input-prefix-keys)
-
-;; Visit buffers with specific apps 
-(exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
-(exwm-input-set-key (kbd "C-' c") #'goto-wm-termite)
-(exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
-(exwm-input-set-key (kbd "C-' e") #'goto-wm-eshell)
+;; (use-package exwm-config
+;;   :init
+;;   (require 'exwm-config)  
+;;   (exwm-config-default)
 
 
-;; split windows
-(exwm-input-set-key (kbd "C-' |") #'split-window-right)
-(exwm-input-set-key (kbd "C-' -") #'split-window-below)
+(use-package exwm
 
-;; move focus directionally
-(exwm-input-set-key (kbd "C-' n") #'windmove-down)
-(exwm-input-set-key (kbd "C-' p") #'windmove-up)
-(exwm-input-set-key (kbd "C-' b") #'windmove-left)
-(exwm-input-set-key (kbd "C-' f") #'windmove-right)
+  :custom
+  (exwm-workspace-number 4 "default number of workspaces: 4")
+  (exwm-workspace-switch-create-limit 4 "max number of workspaces 4")
+  :config
+  
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
+  
+  ;; (setq exwm-workspace-index-map (lambda (i) (number-to-string (1+ i))))
 
-;; move visible buffer directionally
-(exwm-input-set-key (kbd "C-' N") #'buf-move-down)
-(exwm-input-set-key (kbd "C-' P") #'buf-move-up)
-(exwm-input-set-key (kbd "C-' B") #'buf-move-left)
-(exwm-input-set-key (kbd "C-' F") #'buf-move-right)
+  (defmacro goto-wm-workspace (num)
+	`(lambda ()
+	   (interactive)
+	   (goto-wm--workspace ,num)))
+
+  
+  (defun ted/run-or-raise (buffer-prefix &optional cmd)
+	(let ((popped nil))
+	  (dolist (buffer (buffer-list))
+		(with-current-buffer buffer
+		  (if (string-prefix-p buffer-prefix (buffer-name))
+			  (setq popped (pop-to-buffer buffer)))))
+	  (if (not popped)
+			(start-process-shell-command buffer-prefix nil cmd))))
+  
+
+  (defun goto-wm-google ()
+	(interactive)
+	(ted/run-or-raise "Google-chrome" "/usr/bin/google-chrome-stable --force-device-scale-factor=1.5"))
+
+  (defun goto-wm-terminator ()
+	(interactive)
+	(ted/run-or-raise "Gnome-terminal" "gnome-terminal"))
+
+  ;; untested because I don't have slack on here.
+  (defun goto-wm-slack ()
+	(interactive)
+	(ted/run-or-raise "Slack"))
+
+  (defun goto-wm-next-workspace ()
+	"Go to the next workspace if we're under the limit"
+	(interactive)
+	(let ((num (+ 1 exwm-workspace-current-index)))
+	  (if (< num exwm-workspace-switch-create-limit)
+		  (exwm-workspace-switch-create num)
+		(message "Too many workspaces"))))
+  
+  (defun goto-wm-prev-workspace ()
+	"Go to the prev workspace if it doesn't take us negative"
+	(interactive)
+	(if (> exwm-workspace-current-index 0)
+		(exwm-workspace-switch-create (- exwm-workspace-current-index 1))
+	  (message "Already on first workspace")))
 
 
-(defun goto-wm-window (buffer-prefix)
-  (dolist (buffer (buffer-list))
-	(with-current-buffer buffer
-	  (if (string-prefix-p buffer-prefix (buffer-name))
-	  	  (pop-to-buffer buffer)))))
+  (defun goto-wm--workspace (num)
+	"Go to the prev workspace if it doesn't take us negative"
+	(interactive)
+	(if (> exwm-workspace-switch-create-limit num)
+		(exwm-workspace-switch-create num)))
+  
+  ;; this renames the buffers. I'll probably change this soon
+  (defun exwm-rename-buffer ()
+	(interactive)
+	(exwm-workspace-rename-buffer
+	 (concat exwm-class-name ":"
+			 (if (<= (length exwm-title) 30) exwm-title
+			   (concat (substring exwm-title 0 29))))))
+  
+  (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
+  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+  
+  ;; the Control-apostrophe now does a lot of window/buffer related stuff
+  ;; to make it work a bit more like (the way I use) stumpwm
+  (push ?\C-' exwm-input-prefix-keys)
 
-(defun goto-wm-google ()
-  (interactive)
-  (goto-wm-window "Google-chrome"))
+  ;; Visit buffers with specific apps 
+  (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
+  (exwm-input-set-key (kbd "C-' c") #'goto-wm-terminator)
+  (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+  
+  ;; split windows
+  (exwm-input-set-key (kbd "C-' |") #'split-window-right)
+  (exwm-input-set-key (kbd "C-' -") #'split-window-below)
 
-(defun goto-wm-termite ()
-  (interactive)
-  (goto-wm-window "Termite"))
+  ;; move focus directionally
+  (exwm-input-set-key (kbd "C-' n") #'windmove-down)
+  (exwm-input-set-key (kbd "C-' p") #'windmove-up)
+  (exwm-input-set-key (kbd "C-' b") #'windmove-left)
+  (exwm-input-set-key (kbd "C-' f") #'windmove-right)
+  
+  ;; move visible buffer directionally
+  (exwm-input-set-key (kbd "C-' N") #'buf-move-down)
+  (exwm-input-set-key (kbd "C-' P") #'buf-move-up)
+  (exwm-input-set-key (kbd "C-' B") #'buf-move-left)
+  (exwm-input-set-key (kbd "C-' F") #'buf-move-right)
 
+  ;; close window
+  (exwm-input-set-key (kbd "C-' k") #'kill-buffer)
 
-(defun goto-wm-eshell ()
-  (interactive)
-  (goto-wm-window "*eshell*"))
+  (exwm-input-set-key (kbd "C-' g n") #'goto-wm-next-workspace)
+  (exwm-input-set-key (kbd "C-' g p") #'goto-wm-prev-workspace)
 
+  ;; this is weird due to your boy's first defmarco (above)
+  ;; also, I should be able to do this via dolist, right?
+  (exwm-input-set-key (kbd "C-' g 0") (goto-wm-workspace 0))
+  (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
+  (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
+  (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
 
-;; untested because I don't have slack on here.
-(defun goto-wm-slack ()
-  (interactive)
-  (goto-wm-window "Slack"))
+  ;; (dolist  (num '(number-sequence 0 9))
+  ;; 	(message (format "format: %d" num)))
+  
+  ;; in stumpwm "e" pulls up emacs,
+  ;; since we're in emacs, let's just assume
+  ;; that i want to switch buffers...
+  ;; not sure what I "mean" when I do this if i'm already in emacs
+  (exwm-input-set-key (kbd "C-' e") #'ibuffer)
 
+  ;; this is pretty much copied out of exwm-config, with some additions
+  (setq exwm-input-global-keys
+		`(
+		  ;; Bind "s-r" to exit char-mode and fullscreen mode.
+		  ([?\s-r] . exwm-reset)
+		  ;; Bind "s-w" to switch workspace interactively.
+		  ([?\s-w] . exwm-workspace-switch)
+		  ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+		  ,@(mapcar (lambda (i)
+					  `(,(kbd (format "s-%d" i)) .
+						(lambda ()
+						  (interactive)
+						  (exwm-workspace-switch-create ,i))))
+					(number-sequence 0 9))
+		  
+		  ;; always let me get to the emacs file
+		  ([f4] . tedroden/edit-dot-emacs) 
+		  )
+		)
 
+  (setq exwm-input-simulation-keys
+		'(([?\C-b] . [left])
+		  ([?\C-f] . [right])
+		  ([?\C-p] . [up])
+		  ([?\C-n] . [down])
+		  ([?\C-a] . [home])
+		  ([?\C-e] . [end])
+		  ([?\M-v] . [prior])
+		  ([?\C-v] . [next])
+		  ([?\C-d] . [delete])
+		  ([?\C-k] . [S-end delete])))
 
-
-
-
-;;;;
-;;;;
-;;;;
-;;;;
-;;;;
-(require 'exwm)
-(require 'exwm-config)
-(exwm-config-default)
-
-
-
-(defun exwm-rename-buffer ()
-  (interactive)
-  (exwm-workspace-rename-buffer
-   (concat exwm-class-name ":"
-           (if (<= (length exwm-title) 30) exwm-title
-             (concat (substring exwm-title 0 29))))))
-
-(add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
-(add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+  (exwm-enable)
+  )
+  
 
