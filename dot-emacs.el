@@ -162,7 +162,10 @@
 
 (use-package artbollocks-mode
   :defer 4 ;; we don't actually need this, so don't load it for a while
+  :custom
+  (artbollocks-jargon t)
   :config
+
   (progn
     (setq artbollocks-weasel-words-regex
           (concat "\\b" (regexp-opt
@@ -181,9 +184,8 @@
                            "action"
                            "utilize"
                            "leverage") t) "\\b"))
-    ;; Don't show the art critic words, or at least until I figure
-    ;; out my own jargon
-    (setq artbollocks-jargon nil)))
+	(add-hook 'text-mode-hook 'artbollocks-mode)))
+    
 
 ;;;; show icons in dired! (requires all-theicons-dired)
 (use-package all-the-icons-dired
@@ -287,12 +289,7 @@
    (keyfreq-autosave-mode 1)
    (setq keyfreq-excluded-commands
      '(self-insert-command
-       abort-recursive-edit
-       org-self-insert-command
-       forward-char
-       backward-char
-       previous-line
-       next-line))))
+       abort-recursive-edit))))
 
 ;; (use-package ido
 ;;   :bind
@@ -348,9 +345,8 @@
 			'(lambda ()
 			   (ibuffer-switch-to-saved-filter-groups "Buffers"))))
 
-;;;;
 
-;;;;;; this is useful if pair programming or working on screen
+;;;;;; this is useful if pair programming or demoing
 (use-package beacon
   :init
   (beacon-mode t))
@@ -408,32 +404,21 @@
 			  (add-to-list 'ac-sources 'ac-source-c-headers)
 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
-(use-package mastodon
-  :ensure t
-  :custom
-  (mastodon-instance-url  "https://fosstodon.org"))
-
 (use-package pdf-tools
   :defer 2
   :ensure t)
 
-;; eh?
+;; any good?
 (use-package symon
   :custom
   (symon-sparkline-type 'boxed "fewer gridlines")
   :config
   (symon-mode))
 
-;;;;
-;;;;
-;;;;;; ;; load the theme if we're in xwindows or on a mac
 
 (use-package winner
   :init (winner-mode))
 
-;; ?
-(use-package diminish
-  :defer 5)
 
 ;; move buffers around. neato
 (use-package buffer-move
@@ -445,31 +430,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; some EXWM madness
-
-;; (use-package exwm-config
-;;   :init
-;;   (require 'exwm-config)  
-;;   (exwm-config-default)
-
-
 (use-package exwm
 
   :custom
   (exwm-workspace-number 4 "default number of workspaces: 4")
   (exwm-workspace-switch-create-limit 4 "max number of workspaces 4")
-  :config
   
+  :config
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
   
-  ;; (setq exwm-workspace-index-map (lambda (i) (number-to-string (1+ i))))
-
+  ;; this just lets us go to a single workspace by number (string)
   (defmacro goto-wm-workspace (num)
 	`(lambda ()
 	   (interactive)
 	   (goto-wm--workspace ,num)))
 
-  
+  ;; raise the specified app if it's already started, otherwise start it
+  ;; idea stolen from stumpwm
+  ;; is there better way to do this?
   (defun ted/run-or-raise (buffer-prefix &optional cmd)
 	(let ((popped nil))
 	  (dolist (buffer (buffer-list))
@@ -478,18 +457,20 @@
 			  (setq popped (pop-to-buffer buffer)))))
 	  (if (not popped)
 			(start-process-shell-command buffer-prefix nil cmd))))
-  
 
+  ;; 
   (defun goto-wm-google ()
+	"raise 'Google-chrome' or start it"
 	(interactive)
 	(ted/run-or-raise "Google-chrome" "/usr/bin/google-chrome-stable --force-device-scale-factor=1.5"))
 
-  (defun goto-wm-terminator ()
+  (defun goto-wm-gnome-terminal ()
+	"raise 'Gnome-terminal' or start it"	
 	(interactive)
 	(ted/run-or-raise "Gnome-terminal" "gnome-terminal"))
 
-  ;; untested because I don't have slack on here.
   (defun goto-wm-slack ()
+	"raise 'Slack' "		
 	(interactive)
 	(ted/run-or-raise "Slack"))
 
@@ -500,6 +481,7 @@
 	  (if (< num exwm-workspace-switch-create-limit)
 		  (exwm-workspace-switch-create num)
 		(message "Too many workspaces"))))
+  
   
   (defun goto-wm-prev-workspace ()
 	"Go to the prev workspace if it doesn't take us negative"
@@ -514,8 +496,9 @@
 	(interactive)
 	(if (> exwm-workspace-switch-create-limit num)
 		(exwm-workspace-switch-create num)))
-  
+
   ;; this renames the buffers. I'll probably change this soon
+  ;; i didn't write this...
   (defun exwm-rename-buffer ()
 	(interactive)
 	(exwm-workspace-rename-buffer
@@ -532,7 +515,7 @@
 
   ;; Visit buffers with specific apps 
   (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
-  (exwm-input-set-key (kbd "C-' c") #'goto-wm-terminator)
+  (exwm-input-set-key (kbd "C-' c") #'goto-wm-gnome-terminal)
   (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
   
   ;; split windows
@@ -563,14 +546,11 @@
   (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
-
-  ;; (dolist  (num '(number-sequence 0 9))
-  ;; 	(message (format "format: %d" num)))
+  
   
   ;; in stumpwm "e" pulls up emacs,
-  ;; since we're in emacs, let's just assume
-  ;; that i want to switch buffers...
-  ;; not sure what I "mean" when I do this if i'm already in emacs
+  ;; right now we go to ibuffer
+  ;; FIXME: we should go to most recently used non-X buffer?
   (exwm-input-set-key (kbd "C-' e") #'ibuffer)
 
   ;; this is pretty much copied out of exwm-config, with some additions
@@ -592,7 +572,7 @@
 		  ([f4] . tedroden/edit-dot-emacs) 
 		  )
 		)
-
+  
   (setq exwm-input-simulation-keys
 		'(([?\C-b] . [left])
 		  ([?\C-f] . [right])
