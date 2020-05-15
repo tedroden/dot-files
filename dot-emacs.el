@@ -12,7 +12,10 @@
 ;; setup custom/personal/etc.
 (setq dotfiles-dir "~/.emacs.d/")
 
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
+(setq ql-slime-helper (expand-file-name "~/quicklisp/slime-helper.el"))
+(if (file-exists-p ql-slime-helper)
+    (load ql-slime-helper))
+
 ;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "/usr/bin/sbcl")
 
@@ -102,8 +105,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; theme related stuff
 (use-package doom-themes
- :init
-										;(load-theme 'doom-snazzy)
+  :ensure t
+  :init
+ ;; (load-theme 'doom-snazzy)
 ;; (load-theme 'doom-dark+)
  (load-theme 'doom-material)
  ;; (load-theme 'doom-outrun-electric)
@@ -435,7 +439,7 @@
   :custom
   (exwm-workspace-number 4 "default number of workspaces: 4")
   (exwm-workspace-switch-create-limit 4 "max number of workspaces 4")
-  
+  (exwm-workspace-show-all-buffers t "allow all widnows on each workspace")
   :config
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
@@ -449,16 +453,19 @@
   ;; raise the specified app if it's already started, otherwise start it
   ;; idea stolen from stumpwm
   ;; is there better way to do this?
+  ;; exwm-workspace-switch
   (defun ted/run-or-raise (buffer-prefix &optional cmd)
 	(let ((popped nil))
-	  (dolist (buffer (buffer-list))
+	  (cl-dolist (buffer (buffer-list)) ;; can i do this without "cl-dolist"
 		(with-current-buffer buffer
-		  (if (string-prefix-p buffer-prefix (buffer-name))
-			  (setq popped (pop-to-buffer buffer)))))
+			(if (string-prefix-p buffer-prefix (buffer-name))
+				(progn 
+				  (setq popped t)
+				  (exwm-workspace-switch-to-buffer buffer)
+				  (return)))))
 	  (if (not popped)
-			(start-process-shell-command buffer-prefix nil cmd))))
+		  (start-process-shell-command buffer-prefix nil cmd))))
 
-  ;; 
   (defun goto-wm-google ()
 	"raise 'Google-chrome' or start it"
 	(interactive)
