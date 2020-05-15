@@ -472,7 +472,7 @@
   (defun goto-wm-slack ()
 	"raise 'Slack' "		
 	(interactive)
-	(ted/run-or-raise "Slack"))
+	(ted/run-or-raise "Slack" "/usr/bin/slack --force-device-scale-factor=1.5"))
 
   (defun goto-wm-next-workspace ()
 	"Go to the next workspace if we're under the limit"
