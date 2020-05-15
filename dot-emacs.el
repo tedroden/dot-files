@@ -37,12 +37,11 @@
 			  tab-width 4
 			  indent-tabs-mode t)
 
-
-
 (defun tedroden/edit-dot-emacs ()
   (interactive)
-  (find-file (concat dotfiles-dir "init.el"))
-  )
+  ;; this confuses `magit`, so I'll just use teh full path for nwo
+  ;; (find-file (concat dotfiles-dir "init.el"))
+  (find-file (expand-file-name "~/code/misc/dot-files/dot-emacs.el")))
 
 (global-set-key "\M-g" 'goto-line)	
 (global-set-key "\M-_" 'shrink-window)
@@ -452,20 +451,18 @@
 
   ;; raise the specified app if it's already started, otherwise start it
   ;; idea stolen from stumpwm
-  ;; is there better way to do this?
-  ;; exwm-workspace-switch
+  ;; we're still looping through all the buffers even after we found it
   (defun ted/run-or-raise (buffer-prefix &optional cmd)
-	(let ((popped nil))
-	  (cl-dolist (buffer (buffer-list)) ;; can i do this without "cl-dolist"
-		(with-current-buffer buffer
+	(let ((existing-buffer nil))
+	  (dolist (buffer (buffer-list))
+		(unless existing-buffer ;; don't keep searching if we have one
+		  (with-current-buffer buffer
 			(if (string-prefix-p buffer-prefix (buffer-name))
-				(progn 
-				  (setq popped t)
-				  (exwm-workspace-switch-to-buffer buffer)
-				  (return)))))
-	  (if (not popped)
-		  (start-process-shell-command buffer-prefix nil cmd))))
-
+				(setq existing-buffer buffer)))))
+	  (if existing-buffer
+		  (exwm-workspace-switch-to-buffer existing-buffer)
+		(start-process-shell-command buffer-prefix nil cmd))))
+  
   (defun goto-wm-google ()
 	"raise 'Google-chrome' or start it"
 	(interactive)
