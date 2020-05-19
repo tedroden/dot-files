@@ -85,7 +85,9 @@
 
 ;; thanks federico
 (unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+  (progn
+	(package-refresh-contents)
+	(package-install 'use-package)))
 (require 'use-package)
 
 ;; previously, I did `:ensure t` for every `use-package` module
@@ -278,8 +280,11 @@
 	(add-hook 'eshell-preoutput-filter-functions
 			  'ansi-color-apply)
 	;; requires `eshell-git-prompt`
-	(eshell-git-prompt-use-theme 'powerline)
 	))
+(use-package eshell-git-prompt
+  :config
+  (eshell-git-prompt-use-theme 'powerline))
+
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
