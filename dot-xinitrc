@@ -16,7 +16,7 @@ export GNOME_KEYRING_PID
 xsetroot -cursor_name left_ptr
 
 # Set keyboard repeat rate.
-xset r rate 200 60
+xset r rate 225 60
 
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
@@ -26,6 +26,8 @@ xbindkeys
 
 picom -b # was compton
 
+nm-applet &
+# blueman-applet & 
 export GDK_CORE_DEVICE_EVENTS=1
 exec dbus-launch --exit-with-session /usr/local/bin/emacs
 
