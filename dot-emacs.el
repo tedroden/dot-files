@@ -36,7 +36,7 @@
 			  tab-width 4
 			  indent-tabs-mode t)
 
-(defun tedroden/edit-dot-emacs ()
+(defun ted/edit-dot-emacs ()
   (interactive)
   ;; this confuses `magit`, so I'll just use teh full path for nwo
   ;; (find-file (concat dotfiles-dir "init.el"))
@@ -46,7 +46,7 @@
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
-(global-set-key [f4] 'tedroden/edit-dot-emacs)
+(global-set-key [f4] 'ted/edit-dot-emacs)
 (global-set-key (kbd "C-c q") 'ff-find-other-file)
 (global-set-key (kbd "C-c |") 'split-window-right)
 (global-set-key (kbd "C-c -") 'split-window-below)
@@ -250,10 +250,23 @@
 
 ;;;;
 ;;;;;; ;; (use-package org-notmuch)
-;;;;;; (use-package org
-;;;;;;   :bind (("C-c a" . org-agenda)
-;;;;;; 	 ("C-c c" . org-capture)
-;;;;;; 	 ("C-c l" . org-store-link))
+(use-package org
+  :ensure nil ;; don't make `use-package` go find this, it's part of emacs
+  :bind (
+		 ("C-c a" . org-agenda)
+		 ("C-c c" . org-capture)
+		 ("C-c l" . org-store-link)
+		 :map helm-map
+		 ("C-'" . nil)
+		 )
+  :config
+  (setq org-catch-invisible-edits 'show-and-error
+		org-log-done 'time
+		org-log-into-drawer t
+		org-clock-out-when-done t
+		))
+
+
 ;;;;;;   :config
 ;;;;;;   (progn
 ;;;;;;     (setq org-default-notes-file "~/Dropbox/org/todo.org")
@@ -520,11 +533,24 @@
   (defun goto-emacs-dwim ()
 	"Have EXWM switch to the last regular buffer with a file"
 	(interactive)
-	(cl-dolist (buffer (buffer-list))
+	(let ((opened (cl-dolist (buffer (buffer-list))
 	  (if (buffer-file-name buffer)
 		  (if buffer 
-			  (return (pop-to-buffer buffer))))))
-		
+			  (return (pop-to-buffer buffer)))))))
+	  (unless opened
+		(ted/edit-dot-emacs))))
+
+  (defun goto-dired ()
+	"Have EXWM switch to the last regular buffer with a file"
+	(interactive)
+	(let ((changed (cl-dolist (buffer (buffer-list))
+					 (with-current-buffer buffer
+						 (if (derived-mode-p 'dired-mode)
+							 (if buffer 
+								 (return (pop-to-buffer buffer))))))))
+	  (unless changed
+		(dired default-directory))))
+	
   (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
   (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
   
@@ -573,6 +599,10 @@
   ;; but beats what i had before.
   (exwm-input-set-key (kbd "C-' e") #'goto-emacs-dwim)
 
+  (exwm-input-set-key (kbd "C-' d") #'goto-dired)
+
+;  (exwm-input-set-key (kbd "C-c C-f") '(message "nothing"))
+  
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
 		`(
@@ -589,10 +619,10 @@
 					(number-sequence 0 9))
 		  
 		  ;; always let me get to the emacs file
-		  ([f4] . tedroden/edit-dot-emacs) 
+		  ([f4] . ted/edit-dot-emacs) 
 		  )
 		)
-  
+
   (setq exwm-input-simulation-keys
 		'(([?\C-b] . [left])
 		  ([?\C-f] . [right])
@@ -607,5 +637,8 @@
 
   (exwm-enable)
   )
-  
 
+(use-package dired
+  :ensure nil ;; don't make `use-package` go find this, it's part of emacs
+  :config
+  (put 'dired-find-alternate-file 'disabled nil))
