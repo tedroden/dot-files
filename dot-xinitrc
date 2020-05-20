@@ -1,3 +1,5 @@
+# -*- mode: sh -*-
+
 xhost +SI:localuser:$USER
 
 # gosh.
@@ -25,14 +27,15 @@ xbindkeys
 picom -b # was compton
 
 export GDK_CORE_DEVICE_EVENTS=1
-# exec dbus-launch --exit-with-session emacs
+exec dbus-launch --exit-with-session /usr/local/bin/emacs
 
-# do this if we're not using exwm
-emacs --daemon
-
-# emacsclient &
-
-# exec startplasma-x11
-# exec mate-session
-# exec gnome-session
-exec ssh-agent /usr/local/bin/stumpwm
+### # do this if we're not using exwm
+### emacs --daemon
+### 
+### # emacsclient &
+### 
+### # exec startplasma-x11
+### # exec mate-session
+### # exec gnome-session
+### exec ssh-agent /usr/bin/stumpwm
+### 

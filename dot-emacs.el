@@ -84,7 +84,9 @@
 
 ;; thanks federico
 (unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+  (progn
+	(package-refresh-contents)
+	(package-install 'use-package)))
 (require 'use-package)
 
 ;; previously, I did `:ensure t` for every `use-package` module
@@ -98,7 +100,6 @@
 
 ;; just for my chromebook!! emacs can do anything.
 (global-set-key (kbd "<deletechar>") 'backward-kill-word)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; theme related stuff
@@ -127,6 +128,7 @@
   (doom-modeline-icon (display-graphic-p))
   )
 
+;; fixme: get rid of this if we don't have a battery
 (use-package battery
   :ensure t
   :config
@@ -269,6 +271,8 @@
 ;;;;;;     ))
 ;;;;
 
+; (define-key org-mode-map (kbd "C-'") nil)
+
 (use-package eshell
   :bind  (("C-!" . eshell))
   :config
@@ -277,8 +281,11 @@
 	(add-hook 'eshell-preoutput-filter-functions
 			  'ansi-color-apply)
 	;; requires `eshell-git-prompt`
-	(eshell-git-prompt-use-theme 'powerline)
 	))
+(use-package eshell-git-prompt
+  :config
+  (eshell-git-prompt-use-theme 'powerline))
+
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
@@ -437,6 +444,7 @@
   (exwm-workspace-number 4 "default number of workspaces: 4")
   (exwm-workspace-switch-create-limit 4 "max number of workspaces 4")
   (exwm-workspace-show-all-buffers t "allow all widnows on each workspace")
+  
   :config
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
@@ -449,16 +457,16 @@
 
   ;; raise the specified app if it's already started, otherwise start it
   ;; idea stolen from stumpwm
-  ;; we're still looping through all the buffers even after we found it
   (defun ted/run-or-raise (buffer-prefix &optional cmd)
-	(let ((existing-buffer nil))
-	  (dolist (buffer (buffer-list))
-		(unless existing-buffer ;; don't keep searching if we have one
-		  (with-current-buffer buffer
-			(if (string-prefix-p buffer-prefix (buffer-name))
-				(setq existing-buffer buffer)))))
+	(let ((existing-buffer
+		   (cl-dolist (buffer (buffer-list))
+			 (if (string-prefix-p buffer-prefix (buffer-name buffer))
+				 (return buffer)))))
 	  (if existing-buffer
-		  (exwm-workspace-switch-to-buffer existing-buffer)
+		  ;; it's currently displayed, go to it
+		  (if (get-buffer-window existing-buffer)
+				(message (format "%s" (pop-to-buffer existing-buffer)))
+			(exwm-workspace-switch-to-buffer existing-buffer))
 		(start-process-shell-command buffer-prefix nil cmd))))
   
   (defun goto-wm-google ()
@@ -484,14 +492,12 @@
 		  (exwm-workspace-switch-create num)
 		(message "Too many workspaces"))))
   
-  
   (defun goto-wm-prev-workspace ()
 	"Go to the prev workspace if it doesn't take us negative"
 	(interactive)
 	(if (> exwm-workspace-current-index 0)
 		(exwm-workspace-switch-create (- exwm-workspace-current-index 1))
 	  (message "Already on first workspace")))
-
 
   (defun goto-wm--workspace (num)
 	"Go to the prev workspace if it doesn't take us negative"
@@ -508,6 +514,17 @@
 			 (if (<= (length exwm-title) 30) exwm-title
 			   (concat (substring exwm-title 0 29))))))
   
+  ;; if this doesn't feel right,
+  ;; we could also cehck that `derived-mode-p` isn't `exwm-mode`
+  ;; let me give it a bit.
+  (defun goto-emacs-dwim ()
+	"Have EXWM switch to the last regular buffer with a file"
+	(interactive)
+	(cl-dolist (buffer (buffer-list))
+	  (if (buffer-file-name buffer)
+		  (if buffer 
+			  (return (pop-to-buffer buffer))))))
+		
   (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
   (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
   
@@ -549,11 +566,12 @@
   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
   
-  
-  ;; in stumpwm "e" pulls up emacs,
-  ;; right now we go to ibuffer
-  ;; FIXME: we should go to most recently used non-X buffer?
-  (exwm-input-set-key (kbd "C-' e") #'ibuffer)
+  ;; in stumpwm "e" pulls up emacs, we go to the last
+  ;; buffer we were in that has a file associated with it.
+  ;; meaning: not `ibuffer` or an x11 window.
+  ;; I'm still not sure if that's what I want,
+  ;; but beats what i had before.
+  (exwm-input-set-key (kbd "C-' e") #'goto-emacs-dwim)
 
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
