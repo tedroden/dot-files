@@ -2,7 +2,6 @@
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")  ; press control-e from here to get the lisp tutorial
 
-
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
@@ -335,13 +334,12 @@
 											   (name . "\*scratch\*")
 											   (name . "\*Messages\*")
 											   ))
-								  ("WM" (mode . exwm-mode))
+								  ("exwm" (mode . exwm-mode))
 								  ("GIT" (mode . magit-mode))
 								  ("Mail" (name . "\*notmuch"))	 
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))	 
-								  ("z Helm Garbage" (name . "\*helm")) ;; how do i sort this to the bottom?
 								  )))
   :init
   (add-hook 'ibuffer-mode-hook
