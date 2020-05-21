@@ -260,7 +260,7 @@
 		 ("C-c a" . org-agenda)
 		 ("C-c c" . org-capture)
 		 ("C-c l" . org-store-link)
-		 :map helm-map
+		 :map org-mode-map
 		 ("C-'" . nil)
 		 )
   :config
