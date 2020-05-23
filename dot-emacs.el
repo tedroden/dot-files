@@ -566,7 +566,8 @@
   ;; split windows
   (exwm-input-set-key (kbd "C-' |") #'split-window-right)
   (exwm-input-set-key (kbd "C-' -") #'split-window-below)
-
+  (exwm-input-set-key (kbd "C-' 1") #'delete-other-windows)
+  
   ;; move focus directionally
   (exwm-input-set-key (kbd "C-' n") #'windmove-down)
   (exwm-input-set-key (kbd "C-' p") #'windmove-up)
@@ -600,6 +601,8 @@
   (exwm-input-set-key (kbd "C-' e") #'goto-emacs-dwim)
 
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
+
+
 
 ;  (exwm-input-set-key (kbd "C-c C-f") '(message "nothing"))
   
