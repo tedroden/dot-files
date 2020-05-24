@@ -38,9 +38,13 @@
 
 (defun ted/edit-dot-emacs ()
   (interactive)
-  ;; this confuses `magit`, so I'll just use teh full path for nwo
-  ;; (find-file (concat dotfiles-dir "init.el"))
-  (find-file (expand-file-name "~/code/misc/dot-files/dot-emacs.el")))
+  ;; I use a symlinked file by default, so try to open the OG file
+  (let ((dot-emacs (expand-file-name "~/code/misc/dot-files/dot-emacs.el")))
+	;; if not, just open the standard path
+	(unless (file-exists-p dot-emacs)
+	  (setq dot-emacs (concat dotfiles-dir "init.el")))
+	(find-file dot-emacs)))
+
 
 (global-set-key "\M-g" 'goto-line)	
 (global-set-key "\M-_" 'shrink-window)
@@ -167,7 +171,7 @@
 (use-package artbollocks-mode
   :defer 4 ;; we don't actually need this, so don't load it for a while
   :custom
-  (artbollocks-jargon t)
+  (artbollocks-jargon nil)
   :config
 
   (progn
@@ -189,7 +193,7 @@
                            "utilize"
                            "leverage") t) "\\b"))
 	(add-hook 'text-mode-hook 'artbollocks-mode)))
-    
+
 
 ;;;; show icons in dired! (requires all-theicons-dired)
 (use-package all-the-icons-dired
@@ -256,7 +260,7 @@
 		 ("C-c a" . org-agenda)
 		 ("C-c c" . org-capture)
 		 ("C-c l" . org-store-link)
-		 :map helm-map
+		 :map org-mode-map
 		 ("C-'" . nil)
 		 )
   :config
@@ -295,9 +299,11 @@
 			  'ansi-color-apply)
 	;; requires `eshell-git-prompt`
 	))
-(use-package eshell-git-prompt
-  :config
-  (eshell-git-prompt-use-theme 'powerline))
+
+;; reqiures dash, which requires 'cl'
+;; (use-package eshell-git-prompt
+;;   :config
+;;   (eshell-git-prompt-use-theme 'powerline))
 
 
 ;; show eshell right under the current window
@@ -550,7 +556,18 @@
 								 (return (pop-to-buffer buffer))))))))
 	  (unless changed
 		(dired default-directory))))
-	
+
+  (defun goto-eshell ()
+	"Have EXWM switch to the last regular buffer with a file"
+	(interactive)
+	(let ((changed (cl-dolist (buffer (buffer-list))
+					 (with-current-buffer buffer
+						 (if (derived-mode-p 'eshell-mode)
+							 (if buffer 
+								 (return (pop-to-buffer buffer))))))))
+	  (unless changed
+		(eshell))))
+  
   (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
   (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
   
@@ -601,6 +618,7 @@
   (exwm-input-set-key (kbd "C-' e") #'goto-emacs-dwim)
 
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
+  (exwm-input-set-key (kbd "C-' t") #'goto-eshell)
 
 
 
@@ -645,3 +663,5 @@
   :ensure nil ;; don't make `use-package` go find this, it's part of emacs
   :config
   (put 'dired-find-alternate-file 'disabled nil))
+
+(use-package markdown-mode)

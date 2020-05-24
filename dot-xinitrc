@@ -1,6 +1,6 @@
-# -*- mode: sh -*-
-
 xhost +SI:localuser:$USER
+
+EMACS=/usr/bin/emacs
 
 # gosh.
 eval `gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh`
@@ -22,22 +22,21 @@ export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
 
 setxkbmap -option ctrl:nocaps
-xbindkeys 
+xbindkeys
 
 picom -b # was compton
-
-nm-applet &
-# blueman-applet & 
+# nm-applet & # probably don't need this?
+udiskie --tray --automount &  # auto mount
 export GDK_CORE_DEVICE_EVENTS=1
-exec dbus-launch --exit-with-session /usr/local/bin/emacs
+exec dbus-launch --exit-with-session $EMACS 
 
-### # do this if we're not using exwm
-### emacs --daemon
+# ### # do this if we're not using exwm
+# $EMACS --daemon
+# exec gnome-session
+
 ### 
 ### # emacsclient &
 ### 
 ### # exec startplasma-x11
 ### # exec mate-session
-### # exec gnome-session
-### exec ssh-agent /usr/bin/stumpwm
-### 
+### exec ssh-agent /usr/local/bin/stumpwm
