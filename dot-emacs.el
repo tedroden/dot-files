@@ -620,10 +620,6 @@
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
   (exwm-input-set-key (kbd "C-' t") #'goto-eshell)
 
-
-
-;  (exwm-input-set-key (kbd "C-c C-f") '(message "nothing"))
-  
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
 		`(
