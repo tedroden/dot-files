@@ -268,6 +268,8 @@
 		org-log-done 'time
 		org-log-into-drawer t
 		org-clock-out-when-done t
+		;; don't auto fold org files
+		org-startup-folded nil
 		))
 
 
@@ -435,25 +437,24 @@
   :defer 2
   :ensure t)
 
-;; any good?
+;; RAM/CPU/NET/etc in mini-buffer when idle
 (use-package symon
   :custom
   (symon-sparkline-type 'boxed "fewer gridlines")
   :config
   (symon-mode))
 
-
+										
+;; "control-c left arrow" brings you bakc to your
+;; last window configuration
 (use-package winner
   :init (winner-mode))
 
 
 ;; move buffers around. neato
-(use-package buffer-move
-  :config
-  (global-set-key (kbd "<C-S-up>")     'buf-move-up)
-  (global-set-key (kbd "<C-S-down>")   'buf-move-down)
-  (global-set-key (kbd "<C-S-left>")   'buf-move-left)
-  (global-set-key (kbd "<C-S-right>")  'buf-move-right))
+;; key commands are in exwm config
+(use-package buffer-move)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; some EXWM madness
@@ -503,6 +504,11 @@
 	(interactive)
 	(ted/run-or-raise "Slack" "/usr/bin/slack --force-device-scale-factor=1.5"))
 
+  (defun goto-wm-thunar ()
+	"raise 'Thunar' "		
+	(interactive)
+	(ted/run-or-raise "Thunar" "/usr/bin/thunar"))
+  
   (defun goto-wm-next-workspace ()
 	"Go to the next workspace if we're under the limit"
 	(interactive)
@@ -579,6 +585,7 @@
   (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
   (exwm-input-set-key (kbd "C-' c") #'goto-wm-gnome-terminal)
   (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+  (exwm-input-set-key (kbd "C-' t") #'goto-wm-thunar)
   
   ;; split windows
   (exwm-input-set-key (kbd "C-' |") #'split-window-right)
@@ -608,7 +615,7 @@
   (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
-  
+706cce66df8ecd0e2d0d49b5fb  
   ;; in stumpwm "e" pulls up emacs, we go to the last
   ;; buffer we were in that has a file associated with it.
   ;; meaning: not `ibuffer` or an x11 window.
@@ -616,10 +623,10 @@
   ;; but beats what i had before.
   (exwm-input-set-key (kbd "C-' e") #'goto-emacs-dwim)
 
+  ;; go to various emacs buffers that are probably already open
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
-  (exwm-input-set-key (kbd "C-' t") #'goto-eshell)
+  (exwm-input-set-key (kbd "C-' $") #'goto-eshell)
 
-;  (exwm-input-set-key (kbd "C-c C-f") '(message "nothing"))
   
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
