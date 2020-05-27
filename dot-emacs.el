@@ -615,7 +615,7 @@
   (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
-706cce66df8ecd0e2d0d49b5fb  
+
   ;; in stumpwm "e" pulls up emacs, we go to the last
   ;; buffer we were in that has a file associated with it.
   ;; meaning: not `ibuffer` or an x11 window.
