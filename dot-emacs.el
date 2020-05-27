@@ -168,31 +168,31 @@
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode))
 
-(use-package artbollocks-mode
-  :defer 4 ;; we don't actually need this, so don't load it for a while
-  :custom
-  (artbollocks-jargon nil)
-  :config
+;; (use-package artbollocks-mode
+;;   :defer 4 ;; we don't actually need this, so don't load it for a while
+;;   :custom
+;;   (artbollocks-jargon nil)
+;;   :config
 
-  (progn
-    (setq artbollocks-weasel-words-regex
-          (concat "\\b" (regexp-opt
-                         '("one of the"
-                           "should"
-                           "just"
-                           "sort of"
-                           "a lot"
-                           "probably"
-                           "maybe"
-                           "perhaps"
-                           "I think"
-                           "really"
-                           "pretty"
-                           "nice"
-                           "action"
-                           "utilize"
-                           "leverage") t) "\\b"))
-	(add-hook 'text-mode-hook 'artbollocks-mode)))
+;;   (progn
+;;     (setq artbollocks-weasel-words-regex
+;;           (concat "\\b" (regexp-opt
+;;                          '("one of the"
+;;                            "should"
+;;                            "just"
+;;                            "sort of"
+;;                            "a lot"
+;;                            "probably"
+;;                            "maybe"
+;;                            "perhaps"
+;;                            "I think"
+;;                            "really"
+;;                            "pretty"
+;;                            "nice"
+;;                            "action"
+;;                            "utilize"
+;;                            "leverage") t) "\\b"))
+;; 	(add-hook 'text-mode-hook 'artbollocks-mode)))
 
 
 ;;;; show icons in dired! (requires all-theicons-dired)
@@ -220,9 +220,9 @@
   (highlight-phrase "FIXME" 'hi-yellow)
   (highlight-phrase "Fixme" 'hi-yellow)
   (highlight-phrase "fixme" 'hi-yellow)
-  (highlight-phrase "TODO" 'hi-yellow)
-  (highlight-phrase "Todo" 'hi-yellow)
-  (highlight-phrase "todo" 'hi-yellow)
+  ;; (highlight-phrase "TODO" 'hi-yellow)
+  ;; (highlight-phrase "Todo" 'hi-yellow)
+  ;; (highlight-phrase "todo" 'hi-yellow)
   )
 
 ;;;;;; (defun tedroden/writer-mode ()
@@ -325,25 +325,54 @@
 ;;   :bind
 ;;   ( ("C-x C-f" . ido-find-file) ))
 
-(use-package helm
-  :bind (
-		 ("C-x C-f" . helm-find-files)
-		 ("C-x b" . helm-mini)
-		 ("M-x" . helm-M-x)
-		 ("C-h a" . helm-apropos)
-		 ("M-y". helm-show-kill-ring) ;; eh...
-		 ("M-i" . helm-swoop-without-pre-input)
+;; (use-package helm
+;;   :bind (
+;; 		 ("C-x C-f" . helm-find-files)
+;; 		 ("C-x b" . helm-mini)
+;; 		 ("M-x" . helm-M-x)
+;; 		 ("C-h a" . helm-apropos)
+;; 		 ("M-y". helm-show-kill-ring) ;; eh...
+;; 		 ("M-i" . helm-swoop-without-pre-input)
 	 
-	 :map helm-map
-	 ("<tab>" . helm-execute-persistent-action)
-	 )
-  :config (progn
-	    (setq helm-ff-file-name-history-use-recentf t)
-	    (setq helm-buffers-fuzzy-matching t)
-	    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-	    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-		(helm-mode 1)))
+;; 	 :map helm-map
+;; 	 ("<tab>" . helm-execute-persistent-action)
+;; 	 )
+;;   :config (progn
+;; 	    (setq helm-ff-file-name-history-use-recentf t)
+;; 	    (setq helm-buffers-fuzzy-matching t)
+;; 	    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+;; 	    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;; 	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+;; 		(helm-mode 0)))
+
+
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1))
+
+(use-package ivy-rich
+  :ensure t
+  :init (ivy-rich-mode 1))
+
+(use-package ivy
+  :bind
+  (
+   ("C-s" . 'swiper)
+   ("C-c k" . 'counsel-ag)
+   ("M-x" . 'counsel-M-x)
+   ("C-x C-f" . 'counsel-find-file)
+   ("C-x d" . 'counsel-dired)      
+   ("C-h f" . 'counsel-describe-function)
+   ("C-h v" . 'counsel-describe-variable)
+   ("M-y" . 'counsel-yank-pop) ;; eh...
+   )
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-initial-inputs-alist nil)
+  :config
+  (ivy-mode 1))
+
 
 ;;;;
 ;;;;
@@ -539,18 +568,24 @@
 			 (if (<= (length exwm-title) 30) exwm-title
 			   (concat (substring exwm-title 0 29))))))
   
-  ;; if this doesn't feel right,
-  ;; we could also cehck that `derived-mode-p` isn't `exwm-mode`
-  ;; let me give it a bit.
+  ;; Switch to a buffer is tied to a filename
+  ;; So I can "switch to emacs..." which means text files in my mind
+  ;; this will change to PDFs too though, which is probably not what I want
   (defun goto-emacs-dwim ()
 	"Have EXWM switch to the last regular buffer with a file"
 	(interactive)
 	(let ((opened (cl-dolist (buffer (buffer-list))
-	  (if (buffer-file-name buffer)
+	  (if (buffer-file-name buffer) 
 		  (if buffer 
 			  (return (pop-to-buffer buffer)))))))
 	  (unless opened
 		(ted/edit-dot-emacs))))
+
+  (defun goto-org-notes ()
+	(interactive)
+	;; I use a symlinked file by default, so try to open the OG file
+	(let ((org-file (expand-file-name "~/Sync/org/notes.org")))
+	  (find-file org-file)))
 
   (defun goto-dired ()
 	"Have EXWM switch to the last regular buffer with a file"
@@ -590,7 +625,8 @@
   ;; split windows
   (exwm-input-set-key (kbd "C-' |") #'split-window-right)
   (exwm-input-set-key (kbd "C-' -") #'split-window-below)
-
+  (exwm-input-set-key (kbd "C-' 1") #'delete-other-windows)
+  
   ;; move focus directionally
   (exwm-input-set-key (kbd "C-' n") #'windmove-down)
   (exwm-input-set-key (kbd "C-' p") #'windmove-up)
@@ -627,7 +663,8 @@
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
   (exwm-input-set-key (kbd "C-' $") #'goto-eshell)
 
-  
+  (exwm-input-set-key (kbd "C-' n") #'goto-org-notes)
+
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
 		`(
