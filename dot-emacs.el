@@ -270,8 +270,11 @@
 		org-clock-out-when-done t
 		;; don't auto fold org files
 		org-startup-folded nil
+		org-agenda-files '("~/Sync/org")
 		))
 
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode))
 
 ;;;;;;   :config
 ;;;;;;   (progn
