@@ -357,9 +357,7 @@
 
 (use-package ivy
   :bind
-  (
-   ("C-s" . 'swiper)
-   )
+  (("C-s" . 'swiper))
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-initial-inputs-alist nil)
