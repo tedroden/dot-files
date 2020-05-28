@@ -51,9 +51,9 @@
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'ted/edit-dot-emacs)
-(global-set-key (kbd "C-c q") 'ff-find-other-file)
-(global-set-key (kbd "C-c |") 'split-window-right)
-(global-set-key (kbd "C-c -") 'split-window-below)
+(global-set-key (kbd "C-c |") 'split-window-right) ;; should be removed in favor of exwm?
+(global-set-key (kbd "C-c -") 'split-window-below);; should be removed in favor of exwm?
+(global-set-key (kbd "C-h m") 'man) ;; normally this is describe mode.
 
 
 ;; Command should be META on the mac
@@ -347,31 +347,34 @@
 
 
 
+;; failing
 (use-package all-the-icons-ivy-rich
-  :ensure t
   :init (all-the-icons-ivy-rich-mode 1))
 
 (use-package ivy-rich
-  :ensure t
   :init (ivy-rich-mode 1))
+
 
 (use-package ivy
   :bind
   (
    ("C-s" . 'swiper)
-   ("C-c k" . 'counsel-ag)
-   ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-x d" . 'counsel-dired)      
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
-   ("M-y" . 'counsel-yank-pop) ;; eh...
    )
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-initial-inputs-alist nil)
   :config
   (ivy-mode 1))
+
+(use-package counsel
+  :bind
+  (("C-c k" . 'counsel-ag)
+   ("M-x" . 'counsel-M-x)
+   ("C-x C-f" . 'counsel-find-file)
+   ("C-x d" . 'counsel-dired)      
+   ("C-h f" . 'counsel-describe-function)
+   ("C-h v" . 'counsel-describe-variable)
+   ("M-y" . 'counsel-yank-pop)))
 
 
 ;;;;
@@ -505,7 +508,9 @@
 	   (goto-wm--workspace ,num)))
 
   ;; raise the specified app if it's already started, otherwise start it
-  ;; idea stolen from stumpwm
+  ;; this should ideally raise buffer the previous buffer, not the current one
+  ;; meaning: if I had chrome on the right side and I call this from the left side
+  ;;          it should show up on the right side
   (defun ted/run-or-raise (buffer-prefix &optional cmd)
 	(let ((existing-buffer
 		   (cl-dolist (buffer (buffer-list))
@@ -533,6 +538,11 @@
 	(interactive)
 	(ted/run-or-raise "Slack" "/usr/bin/slack --force-device-scale-factor=1.5"))
 
+  (defun goto-wm-spotify ()
+	"raise 'spotif' "		
+	(interactive)
+	(ted/run-or-raise "Spotify" "spotify --force-device-scale-factor=1.5"))
+  
   (defun goto-wm-thunar ()
 	"raise 'Thunar' "		
 	(interactive)
@@ -620,6 +630,7 @@
   (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
   (exwm-input-set-key (kbd "C-' c") #'goto-wm-gnome-terminal)
   (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+  (exwm-input-set-key (kbd "C-' m") #'goto-wm-spotify)   
   (exwm-input-set-key (kbd "C-' t") #'goto-wm-thunar)
   
   ;; split windows
