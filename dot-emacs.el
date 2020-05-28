@@ -361,7 +361,7 @@
    ("C-s" . 'swiper)
    ("C-c k" . 'counsel-ag)
    ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
+   ("C-x C-f" . 'counsel-find-file) ;; customize `counsel-find-file-ignore-regexp`
    ("C-x d" . 'counsel-dired)      
    ("C-h f" . 'counsel-describe-function)
    ("C-h v" . 'counsel-describe-variable)
