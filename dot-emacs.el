@@ -377,7 +377,6 @@
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
-
 ;;;;
 ;;;;
 (use-package ibuffer
@@ -595,7 +594,7 @@
   (defun goto-org-notes ()
 	(interactive)
 	;; I use a symlinked file by default, so try to open the OG file
-	(let ((org-file (expand-file-name "~/Sync/org/notes.org")))
+	(let ((org-file (expand-file-name "~/org/notes.org")))
 	  (find-file org-file)))
 
   (defun goto-dired ()
@@ -663,6 +662,7 @@
   (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
+  
 
   ;; in stumpwm "e" pulls up emacs, we go to the last
   ;; buffer we were in that has a file associated with it.
@@ -718,3 +718,7 @@
   (put 'dired-find-alternate-file 'disabled nil))
 
 (use-package markdown-mode)
+
+(use-package slime
+  :init
+  (slime-setup '(slime-fancy)))
