@@ -270,7 +270,7 @@
 		org-clock-out-when-done t
 		;; don't auto fold org files
 		org-startup-folded nil
-		org-agenda-files '("~/Sync/org")
+		org-agenda-files '("~/org")
 		))
 
 (use-package org-bullets
@@ -595,7 +595,7 @@
   (defun goto-org-notes ()
 	(interactive)
 	;; I use a symlinked file by default, so try to open the OG file
-	(let ((org-file (expand-file-name "~/Sync/org/notes.org")))
+	(let ((org-file (expand-file-name "~/org/notes.org")))
 	  (find-file org-file)))
 
   (defun goto-dired ()
