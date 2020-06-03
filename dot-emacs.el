@@ -594,7 +594,6 @@
 
   (defun goto-org-notes ()
 	(interactive)
-	;; I use a symlinked file by default, so try to open the OG file
 	(let ((org-file (expand-file-name "~/org/notes.org")))
 	  (find-file org-file)))
 
