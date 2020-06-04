@@ -133,6 +133,7 @@
   )
 
 ;; fixme: get rid of this if we don't have a battery
+
 (use-package battery
   :ensure t
   :config
@@ -145,6 +146,10 @@
 
   :config
   (display-time-mode))
+
+(use-package yaml-mode
+  :mode (("\\.yaml$'" . yaml-mode)
+		 ("\\.yml$'" . yaml-mode)))
 
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -717,3 +722,4 @@
   (put 'dired-find-alternate-file 'disabled nil))
 
 (use-package markdown-mode)
+

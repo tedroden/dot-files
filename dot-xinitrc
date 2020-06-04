@@ -1,6 +1,6 @@
 xhost +SI:localuser:$USER
 
-EMACS=/usr/bin/emacs
+EMACS=/usr/local/bin/emacs
 
 # gosh.
 eval `gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh`
