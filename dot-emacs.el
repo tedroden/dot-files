@@ -679,7 +679,7 @@
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
   (exwm-input-set-key (kbd "C-' $") #'goto-eshell)
 
-  (exwm-input-set-key (kbd "C-' n") #'goto-org-notes)
+  (exwm-input-set-key (kbd "C-' o") #'goto-org-notes)
 
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
