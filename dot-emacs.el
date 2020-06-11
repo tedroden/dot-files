@@ -666,7 +666,8 @@
   (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
-  
+
+  (exwm-input-set-key (kbd "C-' g m") #'exwm-workspace-move-window)
 
   ;; in stumpwm "e" pulls up emacs, we go to the last
   ;; buffer we were in that has a file associated with it.
@@ -680,6 +681,7 @@
   (exwm-input-set-key (kbd "C-' $") #'goto-eshell)
 
   (exwm-input-set-key (kbd "C-' o") #'goto-org-notes)
+
 
   ;; this is pretty much copied out of exwm-config, with some additions
   (setq exwm-input-global-keys
