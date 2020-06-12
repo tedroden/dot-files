@@ -686,6 +686,7 @@
   ;; go to various emacs buffers that are probably already open
   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
   (exwm-input-set-key (kbd "C-' $") #'goto-eshell)
+  (exwm-input-set-key (kbd "C-' #") #'eshell-command)
 
   (exwm-input-set-key (kbd "C-' o") #'goto-org-notes)
 
@@ -724,6 +725,7 @@
 
   (exwm-enable)
   )
+
 
 (use-package dired
   :ensure nil ;; don't make `use-package` go find this, it's part of emacs
