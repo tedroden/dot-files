@@ -31,7 +31,7 @@
 
 (global-hi-lock-mode 1)
 
-(setq c-default-style "linux")
+(setq c-default-style "k&r")
 (setq-default c-basic-offset 4
 			  tab-width 4
 			  indent-tabs-mode t)
@@ -127,8 +127,8 @@
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-icon t "icons")
-  (doom-modeline-height 64 "height")
-  (doom-modeline-buffer-encoding nil "don't show UTF-8 everywhere")
+  (doom-modeline-height 46 "height")
+  (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere")
   (doom-modeline-icon (display-graphic-p))
   )
 
@@ -276,6 +276,7 @@
 		;; don't auto fold org files
 		org-startup-folded nil
 		org-agenda-files '("~/org")
+		org-default-notes-file (concat org-directory "/notes.org")
 		))
 
 (use-package org-bullets
@@ -335,23 +336,23 @@
 
 ;; (use-package helm
 ;;   :bind (
-;; 		 ("C-x C-f" . helm-find-files)
-;; 		 ("C-x b" . helm-mini)
-;; 		 ("M-x" . helm-M-x)
-;; 		 ("C-h a" . helm-apropos)
-;; 		 ("M-y". helm-show-kill-ring) ;; eh...
-;; 		 ("M-i" . helm-swoop-without-pre-input)
+;;   ("C-x C-f" . helm-find-files)
+;;   ("C-x b" . helm-mini)
+;;   ("M-x" . helm-M-x)
+;;   ("C-h a" . helm-apropos)
+;;   ("M-y". helm-show-kill-ring) ;; eh...
+;;   ("M-i" . helm-swoop-without-pre-input)
 	 
 ;; 	 :map helm-map
 ;; 	 ("<tab>" . helm-execute-persistent-action)
 ;; 	 )
-;;   :config (progn
-;; 	    (setq helm-ff-file-name-history-use-recentf t)
-;; 	    (setq helm-buffers-fuzzy-matching t)
-;; 	    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-;; 	    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;; 	    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-;; 		(helm-mode 0)))
+;;   :config 
+;;   (setq helm-ff-file-name-history-use-recentf t)
+;;   (setq helm-buffers-fuzzy-matching t)
+;;   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+;;   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;;   (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+;;   (helm-mode 0))
 
 
 
@@ -543,6 +544,11 @@
 	(interactive)
 	(ted/run-or-raise "Slack" "/usr/bin/slack --force-device-scale-factor=1.5"))
 
+    (defun goto-wm-discord ()
+	"raise 'Discord' "		
+	(interactive)
+	(ted/run-or-raise "discord" "/usr/bin/discord"))
+
   (defun goto-wm-spotify ()
 	"raise 'spotif' "		
 	(interactive)
@@ -634,6 +640,7 @@
   (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
   (exwm-input-set-key (kbd "C-' c") #'goto-wm-gnome-terminal)
   (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
+  (exwm-input-set-key (kbd "C-' D") #'goto-wm-discord)  
   (exwm-input-set-key (kbd "C-' m") #'goto-wm-spotify)   
   (exwm-input-set-key (kbd "C-' t") #'goto-wm-thunar)
   
@@ -729,3 +736,6 @@
 (use-package slime
   :init
   (slime-setup '(slime-fancy)))
+
+(use-package dumb-jump
+  :bind ("C-c j" . dumb-jump-go))
