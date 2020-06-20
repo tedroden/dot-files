@@ -414,9 +414,9 @@
 
 
 ;;;;;; this is useful if pair programming or demoing
-(use-package beacon
-  :init
-  (beacon-mode t))
+;; (use-package beacon
+;;   :init
+;;   (beacon-mode t))
 
 (use-package pkgbuild-mode
   :mode
