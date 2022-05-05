@@ -1,6 +1,9 @@
 
+;; ~/.emacs.d/init.el (this file)
+
 ;; Remember: you can press [F4] to open this file from emacs.
-;; (info "(eintr) Top")  ; press control-e from here to get the lisp tutorial
+
+;; (info "(eintr) Top")   ; lisp tutorial
 
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -12,16 +15,9 @@
 
 ;; setup custom/personal/etc.
 (setq dotfiles-dir "~/.emacs.d/")
-
-(setq ql-slime-helper (expand-file-name "~/quicklisp/slime-helper.el"))
-(if (file-exists-p ql-slime-helper)
-    (load ql-slime-helper))
-
-;; Replace "sbcl" with the path to your implementation
-(setq inferior-lisp-program "/usr/bin/sbcl")
-
 (setq custom-file (concat dotfiles-dir "custom.el"))
 (setq personal-file (concat dotfiles-dir "personal.el"))
+
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
 	  (progn (load f)
@@ -358,7 +354,7 @@
   (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
   (helm-mode t))
 
-;; failing
+;; failing (install the icon files... "m-x icons install" something should get you close
 (use-package all-the-icons-ivy-rich
   :init (all-the-icons-ivy-rich-mode 1))
 
@@ -484,257 +480,12 @@
   :defer 2
   :ensure t)
 
-;; RAM/CPU/NET/etc in mini-buffer when idle
-(use-package symon
-  :custom
-  (symon-sparkline-type 'boxed "fewer gridlines")
-  :config
-  (symon-mode))
 
 										
 ;; "control-c left arrow" brings you bakc to your
 ;; last window configuration
 (use-package winner
   :init (winner-mode))
-
-
-;; move buffers around. neato
-;; key commands are in exwm config
-(use-package buffer-move)
-
-
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; some EXWM madness
-;; (use-package exwm
-
-;;   :custom
-;;   (exwm-workspace-number 4 "default number of workspaces: 4")
-;;   (exwm-workspace-switch-create-limit 4 "max number of workspaces 4")
-;;   (exwm-workspace-show-all-buffers t "allow all widnows on each workspace")
-  
-;;   :config
-;;   (require 'exwm-systemtray)
-;;   (exwm-systemtray-enable)
-  
-;;   ;; this just lets us go to a single workspace by number (string)
-;;   (defmacro goto-wm-workspace (num)
-;; 	`(lambda ()
-;; 	   (interactive)
-;; 	   (goto-wm--workspace ,num)))
-
-;;   ;; raise the specified app if it's already started, otherwise start it
-;;   ;; this should ideally raise buffer the previous buffer, not the current one
-;;   ;; meaning: if I had chrome on the right side and I call this from the left side
-;;   ;;          it should show up on the right side
-;;   (defun ted/run-or-raise (buffer-prefix &optional cmd)
-;; 	(let ((existing-buffer
-;; 		   (cl-dolist (buffer (buffer-list))
-;; 			 (if (string-prefix-p buffer-prefix (buffer-name buffer))
-;; 				 (return buffer)))))
-;; 	  (if existing-buffer
-;; 		  ;; it's currently displayed, go to it
-;; 		  (if (get-buffer-window existing-buffer)
-;; 				(message (format "%s" (pop-to-buffer existing-buffer)))
-;; 			(exwm-workspace-switch-to-buffer existing-buffer))
-;; 		(start-process-shell-command buffer-prefix nil cmd))))
-  
-;;   (defun goto-wm-google ()
-;; 	"raise 'Google-chrome' or start it"
-;; 	(interactive)
-;; 	(ted/run-or-raise "Google-chrome" "/usr/bin/google-chrome-stable --force-device-scale-factor=1.5"))
-
-;;   (defun goto-wm-gnome-terminal ()
-;; 	"raise 'Gnome-terminal' or start it"	
-;; 	(interactive)
-;; 	(ted/run-or-raise "Gnome-terminal" "gnome-terminal"))
-
-;;   (defun goto-wm-slack ()
-;; 	"raise 'Slack' "		
-;; 	(interactive)
-;; 	(ted/run-or-raise "Slack" "/usr/bin/slack --force-device-scale-factor=1.5"))
-
-;;     (defun goto-wm-discord ()
-;; 	"raise 'Discord' "		
-;; 	(interactive)
-;; 	(ted/run-or-raise "discord" "/usr/bin/discord"))
-
-;;   (defun goto-wm-spotify ()
-;; 	"raise 'spotif' "		
-;; 	(interactive)
-;; 	(ted/run-or-raise "Spotify" "spotify --force-device-scale-factor=1.5"))
-  
-;;   (defun goto-wm-thunar ()
-;; 	"raise 'Thunar' "		
-;; 	(interactive)
-;; 	(ted/run-or-raise "Thunar" "/usr/bin/thunar"))
-  
-;;   (defun goto-wm-next-workspace ()
-;; 	"Go to the next workspace if we're under the limit"
-;; 	(interactive)
-;; 	(let ((num (+ 1 exwm-workspace-current-index)))
-;; 	  (if (< num exwm-workspace-switch-create-limit)
-;; 		  (exwm-workspace-switch-create num)
-;; 		(message "Too many workspaces"))))
-  
-;;   (defun goto-wm-prev-workspace ()
-;; 	"Go to the prev workspace if it doesn't take us negative"
-;; 	(interactive)
-;; 	(if (> exwm-workspace-current-index 0)
-;; 		(exwm-workspace-switch-create (- exwm-workspace-current-index 1))
-;; 	  (message "Already on first workspace")))
-
-;;   (defun goto-wm--workspace (num)
-;; 	"Go to the prev workspace if it doesn't take us negative"
-;; 	(interactive)
-;; 	(if (> exwm-workspace-switch-create-limit num)
-;; 		(exwm-workspace-switch-create num)))
-
-;;   ;; this renames the buffers. I'll probably change this soon
-;;   ;; i didn't write this...
-;;   (defun exwm-rename-buffer ()
-;; 	(interactive)
-;; 	(exwm-workspace-rename-buffer
-;; 	 (concat exwm-class-name ":"
-;; 			 (if (<= (length exwm-title) 30) exwm-title
-;; 			   (concat (substring exwm-title 0 29))))))
-  
-;;   ;; Switch to a buffer is tied to a filename
-;;   ;; So I can "switch to emacs..." which means text files in my mind
-;;   ;; this will change to PDFs too though, which is probably not what I want
-;;   (defun goto-emacs-dwim ()
-;; 	"Have EXWM switch to the last regular buffer with a file"
-;; 	(interactive)
-;; 	(let ((opened (cl-dolist (buffer (buffer-list))
-;; 	  (if (buffer-file-name buffer) 
-;; 		  (if buffer 
-;; 			  (return (pop-to-buffer buffer)))))))
-;; 	  (unless opened
-;; 		(ted/edit-dot-emacs))))
-
-;;   (defun goto-org-notes ()
-;; 	(interactive)
-;; 	(let ((org-file (expand-file-name "~/org/notes.org")))
-;; 	  (find-file org-file)))
-
-;;   (defun goto-dired ()
-;; 	"Have EXWM switch to the last regular buffer with a file"
-;; 	(interactive)
-;; 	(let ((changed (cl-dolist (buffer (buffer-list))
-;; 					 (with-current-buffer buffer
-;; 						 (if (derived-mode-p 'dired-mode)
-;; 							 (if buffer 
-;; 								 (return (pop-to-buffer buffer))))))))
-;; 	  (unless changed
-;; 		(dired default-directory))))
-
-;;   (defun goto-eshell ()
-;; 	"Have EXWM switch to the last regular buffer with a file"
-;; 	(interactive)
-;; 	(let ((changed (cl-dolist (buffer (buffer-list))
-;; 					 (with-current-buffer buffer
-;; 						 (if (derived-mode-p 'eshell-mode)
-;; 							 (if buffer 
-;; 								 (return (pop-to-buffer buffer))))))))
-;; 	  (unless changed
-;; 		(eshell))))
-  
-;;   (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
-;;   (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
-  
-;;   ;; the Control-apostrophe now does a lot of window/buffer related stuff
-;;   ;; to make it work a bit more like (the way I use) stumpwm
-;;   (push ?\C-' exwm-input-prefix-keys)
-
-;;   ;; Visit buffers with specific apps 
-;;   (exwm-input-set-key (kbd "C-' w") #'goto-wm-google)
-;;   (exwm-input-set-key (kbd "C-' c") #'goto-wm-gnome-terminal)
-;;   (exwm-input-set-key (kbd "C-' s") #'goto-wm-slack)
-;;   (exwm-input-set-key (kbd "C-' D") #'goto-wm-discord)  
-;;   (exwm-input-set-key (kbd "C-' m") #'goto-wm-spotify)   
-;;   (exwm-input-set-key (kbd "C-' t") #'goto-wm-thunar)
-  
-;;   ;; split windows
-;;   (exwm-input-set-key (kbd "C-' |") #'split-window-right)
-;;   (exwm-input-set-key (kbd "C-' -") #'split-window-below)
-;;   (exwm-input-set-key (kbd "C-' 1") #'delete-other-windows)
-  
-;;   ;; move focus directionally
-;;   (exwm-input-set-key (kbd "C-' n") #'windmove-down)
-;;   (exwm-input-set-key (kbd "C-' p") #'windmove-up)
-;;   (exwm-input-set-key (kbd "C-' b") #'windmove-left)
-;;   (exwm-input-set-key (kbd "C-' f") #'windmove-right)
-  
-;;   ;; move visible buffer directionally
-;;   (exwm-input-set-key (kbd "C-' N") #'buf-move-down)
-;;   (exwm-input-set-key (kbd "C-' P") #'buf-move-up)
-;;   (exwm-input-set-key (kbd "C-' B") #'buf-move-left)
-;;   (exwm-input-set-key (kbd "C-' F") #'buf-move-right)
-
-;;   ;; close window
-;;   (exwm-input-set-key (kbd "C-' k") #'kill-buffer)
-
-;;   (exwm-input-set-key (kbd "C-' g n") #'goto-wm-next-workspace)
-;;   (exwm-input-set-key (kbd "C-' g p") #'goto-wm-prev-workspace)
-
-;;   ;; this is weird due to your boy's first defmarco (above)
-;;   ;; also, I should be able to do this via dolist, right?
-;;   (exwm-input-set-key (kbd "C-' g 0") (goto-wm-workspace 0))
-;;   (exwm-input-set-key (kbd "C-' g 1") (goto-wm-workspace 1))
-;;   (exwm-input-set-key (kbd "C-' g 2") (goto-wm-workspace 2))
-;;   (exwm-input-set-key (kbd "C-' g 3") (goto-wm-workspace 3))
-
-;;   (exwm-input-set-key (kbd "C-' g m") #'exwm-workspace-move-window)
-
-;;   ;; in stumpwm "e" pulls up emacs, we go to the last
-;;   ;; buffer we were in that has a file associated with it.
-;;   ;; meaning: not `ibuffer` or an x11 window.
-;;   ;; I'm still not sure if that's what I want,
-;;   ;; but beats what i had before.
-;;   (exwm-input-set-key (kbd "C-' e") #'goto-emacs-dwim)
-
-;;   ;; go to various emacs buffers that are probably already open
-;;   (exwm-input-set-key (kbd "C-' d") #'goto-dired)
-;;   (exwm-input-set-key (kbd "C-' $") #'goto-eshell)
-;;   (exwm-input-set-key (kbd "C-' #") #'eshell-command)
-
-;;   (exwm-input-set-key (kbd "C-' o") #'goto-org-notes)
-
-
-;;   ;; this is pretty much copied out of exwm-config, with some additions
-;;   (setq exwm-input-global-keys
-;; 		`(
-;; 		  ;; Bind "s-r" to exit char-mode and fullscreen mode.
-;; 		  ([?\s-r] . exwm-reset)
-;; 		  ;; Bind "s-w" to switch workspace interactively.
-;; 		  ([?\s-w] . exwm-workspace-switch)
-;; 		  ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-;; 		  ,@(mapcar (lambda (i)
-;; 					  `(,(kbd (format "s-%d" i)) .
-;; 						(lambda ()
-;; 						  (interactive)
-;; 						  (exwm-workspace-switch-create ,i))))
-;; 					(number-sequence 0 9))
-		  
-;; 		  ;; always let me get to the emacs file
-;; 		  ([f4] . ted/edit-dot-emacs) 
-;; 		  )
-;; 		)
-
-;;   (setq exwm-input-simulation-keys
-;; 		'(([?\C-b] . [left])
-;; 		  ([?\C-f] . [right])
-;; 		  ([?\C-p] . [up])
-;; 		  ([?\C-n] . [down])
-;; 		  ([?\C-a] . [home])
-;; 		  ([?\C-e] . [end])
-;; 		  ([?\M-v] . [prior])
-;; 		  ([?\C-v] . [next])
-;; 		  ([?\C-d] . [delete])
-;; 		  ([?\C-k] . [S-end delete])))
-
-;;   (exwm-enable)
-;;   )
-
 
 (use-package dired
   :ensure nil ;; don't make `use-package` go find this, it's part of emacs
@@ -743,10 +494,4 @@
 
 (use-package markdown-mode)
 
-
-(use-package slime
-  :init
-  (slime-setup '(slime-fancy)))
-
-(use-package dumb-jump
-  :bind ("C-c j" . dumb-jump-go))
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
