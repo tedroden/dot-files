@@ -1,4 +1,3 @@
-
 ;; ~/.emacs.d/init.el (this file)
 
 ;; Remember: you can press [F4] to open this file from emacs.
@@ -494,4 +493,6 @@
 
 (use-package markdown-mode)
 
+
+(use-package dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
