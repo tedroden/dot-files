@@ -55,6 +55,9 @@
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
 
 ;; confirm on exit
 (setq confirm-kill-emacs 'yes-or-no-p)
@@ -370,11 +373,19 @@
   :config
   (ivy-mode nil))
 
+
+(use-package projectile
+  :init
+  (setq projectile-keymap-prefix (kbd "M-p"))
+  :config
+  (projectile-mode t))
+  
 (use-package counsel
   :bind
   (("C-c k" . 'counsel-projectile-ag)
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
+   ("C-c C-f" . 'counsel-projectile-find-file)   
    ("C-x d" . 'counsel-dired)      
    ("C-h f" . 'counsel-describe-function)
    ("C-h v" . 'counsel-describe-variable)
