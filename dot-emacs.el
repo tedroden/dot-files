@@ -97,6 +97,11 @@
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
 
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))  
+
+
 (defun tedroden/no-suspend ()
   (interactive)
   (message "Not suspending frame. You're welcome"))
@@ -391,13 +396,22 @@
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
+(use-package flycheck
+  :init (global-flycheck-mode))
 
-(use-package smooth-scroll
-  :init
-  ;; why is this required?
-  (require 'smooth-scroll)
-  (smooth-scroll-mode t))
-  
+; (use-package 'exec-path-from-shell)
+
+; (use-package 'google-this)
+(google-this-mode 1)
+
+;; (use-package smooth-sctroll
+;;   :init
+;;   ;; why is this required?
+;;   (require 'smooth-scroll)
+;;   (smooth-scroll-mode t))
+
+
+
 ;;;;
 ;;;;
 (use-package ibuffer
