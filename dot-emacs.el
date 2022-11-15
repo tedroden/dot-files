@@ -1,4 +1,4 @@
-;; ~/.emacs.d/init.el (this file)
+;;; ~/.emacs.d/init.el --- (this file)
 
 ;; Remember: you can press [F4] to open this file from emacs.
 
@@ -6,7 +6,7 @@
 
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1)) 
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
 
@@ -97,12 +97,12 @@
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
 
-
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))  
 
 
 (defun tedroden/no-suspend ()
+  "Don't minimize the frame if we hit control-z."
   (interactive)
   (message "Not suspending frame. You're welcome"))
 
@@ -118,7 +118,13 @@
   :init
  ;; (load-theme 'doom-snazzy)
 ;; (load-theme 'doom-dark+)
- (load-theme 'doom-material)
+;;  (load-theme 'doom-material)
+  ;; (load-theme 'doom-1337)
+  ;; (load-theme 'doom-badger)
+;;  (load-theme 'doom-dracula)
+;  (load-theme 'doom-rouge)
+  (load-theme 'doom-molokai)
+;  (load-theme 'doom-ephemeral)
  ;; (load-theme 'doom-outrun-electric)
  ;; (load-theme 'doom-peacock)
  ;; (load-theme 'doom-molokai)
@@ -227,13 +233,11 @@
 
 
 (defun tedroden/code-setup ()
+  "Highlight certain phrases."
   (interactive)
-  (highlight-phrase "FIXME" 'hi-yellow)
-  (highlight-phrase "Fixme" 'hi-yellow)
-  (highlight-phrase "fixme" 'hi-yellow)
-  ;; (highlight-phrase "TODO" 'hi-yellow)
-  ;; (highlight-phrase "Todo" 'hi-yellow)
-  ;; (highlight-phrase "todo" 'hi-yellow)
+  (highlight-phrase "FIXME" 'black)
+  (highlight-phrase "Fixme" 'black)
+  (highlight-phrase "fixme" 'black)
   )
 
 ;;;;;; (defun tedroden/writer-mode ()
@@ -278,7 +282,6 @@
   (setq org-catch-invisible-edits 'show-and-error
 		org-log-done 'time
 		org-log-into-drawer t
-		org-clock-out-when-done t
 		;; don't auto fold org files
 		org-startup-folded nil
 		org-agenda-files '("~/org")
@@ -340,26 +343,26 @@
 ;;   :bind
 ;;   ( ("C-x C-f" . ido-find-file) ))
 
-(use-package helm
-  :bind (
-  ("C-x C-f" . helm-find-files)
-  ("C-x b" . helm-mini)
-  ("M-x" . helm-M-x)
-  ("C-h a" . helm-apropos)
-  ("M-y". helm-show-kill-ring) ;; eh...
-  ("M-i" . helm-swoop-without-pre-input)
-  ("C-s" . isearch-forward)
+;; (use-package helm
+;;   :bind (
+;;   ("C-x C-f" . helm-find-files)
+;;   ("C-x b" . helm-mini)
+;;   ("M-x" . helm-M-x)
+;;   ("C-h a" . helm-apropos)
+;;   ("M-y". helm-show-kill-ring) ;; eh...
+;;   ("M-i" . helm-swoop-without-pre-input)
+;;   ("C-s" . isearch-forward)
 	 
-	 :map helm-map
-	 ("<tab>" . helm-execute-persistent-action)
-	 )
-  :config 
-  (setq helm-ff-file-name-history-use-recentf t)
-  (setq helm-buffers-fuzzy-matching t)
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-  (helm-mode t))
+;; 	 :map helm-map
+;; 	 ("<tab>" . helm-execute-persistent-action)
+;; 	 )
+;;   :config 
+;; ;  (setq helm-ff-file-name-history-use-recentf t)
+;; ;  (setq helm-buffers-fuzzy-matching t)
+;;   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
+;;   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+;;   (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+;;   (helm-mode t))
 
 ;; failing (install the icon files... "m-x icons install" something should get you close
 (use-package all-the-icons-ivy-rich
@@ -380,8 +383,6 @@
 
 
 (use-package projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "M-p"))
   :config
   (projectile-mode t))
   
