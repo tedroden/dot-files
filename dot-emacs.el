@@ -57,6 +57,8 @@
 (setq ns-command-modifier 'meta)
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
+;;(add-to-list 'default-frame-alist '(undecorated . t))
+(add-to-list 'default-frame-alist '(undecorated-round . t))
 
 
 ;; confirm on exit
@@ -385,10 +387,11 @@
 (use-package projectile
   :config
   (projectile-mode t))
-  
+
 (use-package counsel
   :bind
   (("C-c k" . 'counsel-projectile-ag)
+   ("C-x b" . 'counsel-switch-buffer)
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
    ("C-c C-f" . 'counsel-projectile-find-file)   
@@ -522,3 +525,5 @@
 
 (use-package dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+
+
