@@ -12,6 +12,19 @@
 
 (setq inhibit-startup-screen t)
 
+;;; add this to your zshrc
+;; # If I call emacs proper, I probably want emacs proper
+;; alias emacs="emacs -nw"
+
+;; # this doesn't work because of the alias? so it's a function
+;; # alias e="emacsclient -c -n ${1:-.}"
+;; unalias e
+
+;; function e() {
+;; 	emacsclient -c -n "${1:-.}"
+;; }
+
+
 ;; setup custom/personal/etc.
 (setq dotfiles-dir "~/.emacs.d/")
 (setq custom-file (concat dotfiles-dir "custom.el"))
@@ -57,8 +70,10 @@
 (setq ns-command-modifier 'meta)
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+;;;; not great on a mac
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
-(add-to-list 'default-frame-alist '(undecorated-round . t))
+;; (add-to-list 'default-frame-alist '(undecorated-round . t))
 
 
 ;; confirm on exit
@@ -266,51 +281,6 @@
 ;; not sure when this is actually used.
 (setq-default tab-width 4)
 
-;;;;
-;;;;;; set up some key bindings (setq default-tab-width 4)
-
-;;;;
-;;;;;; ;; (use-package org-notmuch)
-(use-package org
-  :ensure nil ;; don't make `use-package` go find this, it's part of emacs
-  :bind (
-		 ("C-c a" . org-agenda)
-		 ("C-c c" . org-capture)
-		 ("C-c l" . org-store-link)
-		 :map org-mode-map
-		 ("C-'" . nil)
-		 )
-  :config
-  (setq org-catch-invisible-edits 'show-and-error
-		org-log-done 'time
-		org-log-into-drawer t
-		;; don't auto fold org files
-		org-startup-folded nil
-		org-agenda-files '("~/org")
-		org-default-notes-file (concat org-directory "/notes.org")
-		))
-
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode))
-
-;;;;;;   :config
-;;;;;;   (progn
-;;;;;;     (setq org-default-notes-file "~/Dropbox/org/todo.org")
-;;;;;;     (setq org-agenda-files '("~/Dropbox/org"))
-;;;;
-;;;;;;     (setq org-catch-invisible-edits 'show-and-error)    
-;;;;;;     (setq org-log-done 'time)
-;;;;;;     (setq org-log-into-drawer t)
-;;;;;;     (setq org-clock-out-when-done t)
-;;;;
-;;;;
-;;;;;;     (setq org-refile-targets
-;;;;;; 	  '((nil :maxlevel . 1)
-;;;;;; 	    (org-agenda-files :maxlevel . 1)))    
-;;;;;;     ))
-;;;;
-
-; (define-key org-mode-map (kbd "C-'") nil)
 
 (use-package eshell
   :bind  (("C-!" . eshell))
@@ -322,24 +292,10 @@
 	;; requires `eshell-git-prompt`
 	))
 
-;; reqiures dash, which requires 'cl'
-;; (use-package eshell-git-prompt
-;;   :config
-;;   (eshell-git-prompt-use-theme 'powerline))
-
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
   :bind (("C-c e" . eshell-toggle)))
-
-(use-package keyfreq
- :config
- (progn 
-   (keyfreq-mode 1)
-   (keyfreq-autosave-mode 1)
-   (setq keyfreq-excluded-commands
-     '(self-insert-command
-       abort-recursive-edit))))
 
 ;; (use-package ido
 ;;   :bind
@@ -451,10 +407,6 @@
 ;;   :init
 ;;   (beacon-mode t))
 
-(use-package pkgbuild-mode
-  :mode
-  (("PKGBUILD$" . pkgbuild-mode)))
-
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
@@ -496,17 +448,17 @@
 	(setq ac-fuzzy-enable t)
 	))
 
-;;
-(use-package ac-c-headers
-  :hook (c-mode . ac/headers-local)
-  :config (defun ac/headers-local()
-			(progn
-			  (add-to-list 'ac-sources 'ac-source-c-headers)
-			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
+;; ;;
+;; (use-package ac-c-headers
+;;   :hook (c-mode . ac/headers-local)
+;;   :config (defun ac/headers-local()
+;; 			(progn
+;; 			  (add-to-list 'ac-sources 'ac-source-c-headers)
+;; 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
 
-(use-package pdf-tools
-  :defer 2
-  :ensure t)
+;; (use-package pdf-tools
+;;   :defer 2
+;;   :ensure t)
 
 
 										
