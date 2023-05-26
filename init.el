@@ -58,7 +58,7 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
-(add-to-list 'default-frame-alist '(undecorated-round . t))
+; (add-to-list 'default-frame-alist '(undecorated-round . t))
 
 
 ;; confirm on exit
@@ -406,7 +406,7 @@
 ; (use-package 'exec-path-from-shell)
 
 ; (use-package 'google-this)
-(google-this-mode 1)
+; (google-this-mode 1)
 
 ;; (use-package smooth-sctroll
 ;;   :init

@@ -1,6 +1,7 @@
 auto-save-list
 *~
 \#*
+.\#*
 *.elc
 abbrev_defs 
 custom.el

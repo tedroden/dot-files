@@ -1,0 +1,19 @@
+# USE THIS:
+# https://github.com/gpakosz/.tmux
+
+##### 
+# Pop this at the end of .tmux.conf**.local**
+# Everything else can be defaults:
+###
+
+set -gu prefix2
+unbind C-b
+unbind C-a
+set-option -g prefix C-h
+bind-key C-h send-prefix
+bind | split-window -h
+bind p previous-window
+bind n next-window
+unbind '"'
+unbind %
+
