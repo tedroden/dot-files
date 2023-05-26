@@ -520,8 +520,13 @@
   :config
   (put 'dired-find-alternate-file 'disabled nil))
 
-(use-package markdown-mode)
 
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-hide-markup-in-view-modes t)
+  :bind (:map markdown-mode-map
+         ("C-c C-e" . markdown-do)))
 
 (use-package dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
