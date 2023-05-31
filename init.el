@@ -1,9 +1,9 @@
-;;; ~/.emacs.d/init.el --- (this file)
 
+;; ~/.emacs.d/init.el --- (this file)
 ;; Remember: you can press [F4] to open this file from emacs.
-
 ;; (info "(eintr) Top")   ; lisp tutorial
 
+;;; Code:
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -114,9 +114,6 @@
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
 
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))  
-
 
 (defun tedroden/no-suspend ()
   "Don't minimize the frame if we hit control-z."
@@ -140,8 +137,8 @@
   ;; (load-theme 'doom-badger)
 ;;  (load-theme 'doom-dracula)
 ;  (load-theme 'doom-rouge)
-  (load-theme 'doom-molokai)
-;  (load-theme 'doom-ephemeral)
+  ;(load-theme 'doom-molokai)
+  (load-theme 'doom-ephemeral)
  ;; (load-theme 'doom-outrun-electric)
  ;; (load-theme 'doom-peacock)
  ;; (load-theme 'doom-molokai)
@@ -323,13 +320,11 @@
 ;;   (helm-mode t))
 
 ;; failing (install the icon files... "m-x icons install" something should get you close
-(use-package all-the-icons-ivy-rich
-  :init (all-the-icons-ivy-rich-mode 1))
+;; (use-package all-the-icons-ivy-rich
+;;   :init (all-the-icons-ivy-rich-mode 1))
 
-(use-package ivy-rich
-  :init (ivy-rich-mode 1))
-
-
+;(use-package ivy-rich
+;  :init (ivy-rich-mode 1))
 (use-package ivy
   ;; :bind
   ;; (("C-o" . 'swiper))

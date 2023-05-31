@@ -13,3 +13,4 @@ ac-comphist.dat
 .vscode
 __pycache__
 venv
+.coverage
