@@ -12,21 +12,6 @@
 
 (setq inhibit-startup-screen t)
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-(setq package-enable-at-startup nil)
-
-
 
 ;;; add this to your zshrc
 ;; # If I call emacs proper, I probably want emacs proper
@@ -108,20 +93,44 @@
 (setq dired-omit-mode nil)
 
 ;; get package stuff ready
-;; (require 'package)
-;; (add-to-list 'package-archives
-;;              '("melpa" . "https://melpa.org/packages/") t)
-;; (package-initialize)
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 
 
 
 
-;; ;; thanks federico
+;; ;; ;; thanks federico
 (unless (package-installed-p 'use-package)
   (progn
 	(package-refresh-contents)
 	(package-install 'use-package)))
 (require 'use-package)
+
+
+(use-package quelpa-use-package)
+
+
+(use-package copilot
+  :quelpa (copilot :fetcher github
+                   :repo "zerolfx/copilot.el"
+                   :branch "main"
+                   :files ("dist" "*.el"))
+  
+:hook (prog-mode . copilot-mode)
+
+  :bind (("<tab>" . copilot-accept-completion)
+		 ("TAB" .  copilot-accept-completion)
+		 ("C-TAB" . copilot-accept-completion-by-word)
+("C-TAB" . copilot-accept-completion-by-word)))
+
+
+
+
+
+
+
 
 
 ;; previously, I did `:ensure t` for every `use-package` module
@@ -140,6 +149,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; theme related stuff
+
 (use-package doom-themes
   :ensure t
   :init

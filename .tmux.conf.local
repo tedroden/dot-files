@@ -17,3 +17,14 @@ bind n next-window
 unbind '"'
 unbind %
 
+# Enable tmux plugins
+# git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'erikw/tmux-powerline'
+
+set -g @plugin 'tmux-plugins/aw-watcher-tmux'
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
