@@ -374,13 +374,15 @@
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
+
+; built in
+(require 'treesit)
+
 (use-package flycheck
   :init (global-flycheck-mode))
 
 ; (use-package 'exec-path-from-shell)
 
-; (use-package 'google-this)
-; (google-this-mode 1)
 
 ;; (use-package smooth-sctroll
 ;;   :init
