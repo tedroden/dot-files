@@ -12,6 +12,22 @@
 
 (setq inhibit-startup-screen t)
 
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq package-enable-at-startup nil)
+
+
+
 ;;; add this to your zshrc
 ;; # If I call emacs proper, I probably want emacs proper
 ;; alias emacs="emacs -nw"
@@ -92,18 +108,15 @@
 (setq dired-omit-mode nil)
 
 ;; get package stuff ready
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+;; (require 'package)
+;; (add-to-list 'package-archives
+;;              '("melpa" . "https://melpa.org/packages/") t)
+;; (package-initialize)
 
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
 
-;; thanks federico
+
+;; ;; thanks federico
 (unless (package-installed-p 'use-package)
   (progn
 	(package-refresh-contents)
