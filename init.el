@@ -1,4 +1,3 @@
-
 ;; ~/.emacs.d/init.el --- (this file)
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
@@ -27,9 +26,9 @@
 
 
 ;; setup custom/personal/etc.
-(setq dotfiles-dir "~/.emacs.d/")
-(setq custom-file (concat dotfiles-dir "custom.el"))
-(setq personal-file (concat dotfiles-dir "personal.el"))
+(setq-default dotfiles-dir "~/.emacs.d/"
+	      custom-file (concat dotfiles-dir "custom.el")
+	      personal-file (concat dotfiles-dir "personal.el"))
 
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
@@ -42,22 +41,23 @@
 
 (global-hi-lock-mode 1)
 
-(setq c-default-style "k&r")
-(setq-default c-basic-offset 4
+(setq-default c-default-style "k&r"
+			  c-basic-offset 4
 			  tab-width 4
 			  indent-tabs-mode t)
 
 (defun ted/edit-dot-emacs ()
+  "Quickly edit my dot Emacs file."
   (interactive)
   ;; I use a symlinked file by default, so try to open the OG file
-  (let ((dot-emacs (expand-file-name "~/code/misc/dot-files/dot-emacs.el")))
+  (let ((dot-emacs (expand-file-name "~/code/dot-files/init.el")))
 	;; if not, just open the standard path
 	(unless (file-exists-p dot-emacs)
 	  (setq dot-emacs (concat dotfiles-dir "init.el")))
 	(find-file dot-emacs)))
 
 
-(global-set-key "\M-g" 'goto-line)	
+(global-set-key "\M-g" 'goto-line)
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
@@ -89,8 +89,6 @@
 ;; column number (lives in mode line)
 (column-number-mode t)
 
-;;;; show hidden files in dired?
-(setq dired-omit-mode nil)
 
 ;; get package stuff ready
 (require 'package)
@@ -111,27 +109,18 @@
 
 (use-package quelpa-use-package)
 
-
 (use-package copilot
   :quelpa (copilot :fetcher github
                    :repo "zerolfx/copilot.el"
                    :branch "main"
                    :files ("dist" "*.el"))
   
-:hook (prog-mode . copilot-mode)
-
+  :hook (prog-mode . copilot-mode)
+  
   :bind (("<tab>" . copilot-accept-completion)
-		 ("TAB" .  copilot-accept-completion)
-		 ("C-TAB" . copilot-accept-completion-by-word)
-("C-TAB" . copilot-accept-completion-by-word)))
-
-
-
-
-
-
-
-
+	 ("TAB" .  copilot-accept-completion)
+	 ("C-TAB" . copilot-accept-completion-by-word)
+	 ("C-TAB" . copilot-accept-completion-by-word)))
 
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
@@ -153,17 +142,17 @@
 (use-package doom-themes
   :ensure t
   :init
- ;; (load-theme 'doom-snazzy)
-;; (load-theme 'doom-dark+)
-;;  (load-theme 'doom-material)
+  ;; (load-theme 'doom-snazzy)
+  ;; (load-theme 'doom-dark+)
+  ;;  (load-theme 'doom-material)
   ;; (load-theme 'doom-1337)
   ;; (load-theme 'doom-badger)
-;;  (load-theme 'doom-dracula)
-;  (load-theme 'doom-rouge)
-  ;(load-theme 'doom-molokai)
+  ;;  (load-theme 'doom-dracula)
+  ;;  (load-theme 'doom-rouge)
+  ;;  (load-theme 'doom-molokai)
   (load-theme 'doom-ephemeral)
- ;; (load-theme 'doom-outrun-electric)
- ;; (load-theme 'doom-peacock)
+  ;; (load-theme 'doom-outrun-electric)
+  ;; (load-theme 'doom-peacock)
  ;; (load-theme 'doom-molokai)
  ;; (load-theme 'doom-nord)
  ;; (load-theme 'doom-spacegrey)
@@ -198,7 +187,7 @@
 
 (use-package yaml-mode
   :mode (("\\.yaml$'" . yaml-mode)
-		 ("\\.yml$'" . yaml-mode)))
+	 ("\\.yml$'" . yaml-mode)))
 
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -250,8 +239,8 @@
 
 
 ;;;; show icons in dired! (requires all-theicons-dired)
-(use-package all-the-icons-dired
-  :hook ((dired-mode . all-the-icons-dired-mode)))
+;; (use-package all-the-icons-dired
+;; :hook ((dired-mode . all-the-icons-dired-mode)))
 
 (use-package all-the-icons-ibuffer
   :ensure t
@@ -322,8 +311,7 @@
 ;;   ( ("C-x C-f" . ido-find-file) ))
 
 ;; (use-package helm
-;;   :bind (
-;;   ("C-x C-f" . helm-find-files)
+;;   :bind (("C-x C-f" . helm-find-files)
 ;;   ("C-x b" . helm-mini)
 ;;   ("M-x" . helm-M-x)
 ;;   ("C-h a" . helm-apropos)
@@ -331,9 +319,7 @@
 ;;   ("M-i" . helm-swoop-without-pre-input)
 ;;   ("C-s" . isearch-forward)
 	 
-;; 	 :map helm-map
-;; 	 ("<tab>" . helm-execute-persistent-action)
-;; 	 )
+;; 	 :map helm-map ("<tab>" . helm-execute-persistent-action))
 ;;   :config 
 ;; ;  (setq helm-ff-file-name-history-use-recentf t)
 ;; ;  (setq helm-buffers-fuzzy-matching t)
@@ -346,21 +332,37 @@
 ;; (use-package all-the-icons-ivy-rich
 ;;   :init (all-the-icons-ivy-rich-mode 1))
 
-;(use-package ivy-rich
-;  :init (ivy-rich-mode 1))
+ (set-frame-font "Monaco 14")
+
+
+(use-package ivy-rich)
+
+(use-package nerd-icons-ivy-rich
+  :ensure t
+  :init
+  (nerd-icons-ivy-rich-mode 1)
+  (ivy-rich-mode 1))
+
+
+(use-package nerd-icons-ibuffer
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+(use-package nerd-icons-dired
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
+
+
+
 (use-package ivy
-  ;; :bind
-  ;; (("C-o" . 'swiper))
+  :bind
+  (("C-o" . 'swiper))
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-initial-inputs-alist nil)
   :config
   (ivy-mode nil))
-
-
-(use-package projectile
-  :config
-  (projectile-mode t))
 
 (use-package counsel
   :bind
@@ -375,6 +377,13 @@
    ("M-y" . 'counsel-yank-pop)))
 
 
+(use-package projectile
+  :config
+  (projectile-mode t)
+  :bind (("C-c p" . projectile-command-map)))
+
+(use-package npm-mode)
+
 ; built in
 (require 'treesit)
 
@@ -382,15 +391,6 @@
   :init (global-flycheck-mode))
 
 ; (use-package 'exec-path-from-shell)
-
-
-;; (use-package smooth-sctroll
-;;   :init
-;;   ;; why is this required?
-;;   (require 'smooth-scroll)
-;;   (smooth-scroll-mode t))
-
-
 
 ;;;;
 ;;;;
@@ -400,9 +400,10 @@
   (ibuffer-never-show-predicates '("*helm") "don't show helm")
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
   (ibuffer-saved-filter-groups '(("Buffers"
-								  ("Fancy Hands Code" (filename . "code/fh"))
+								  ("FANCY" (filename . "code/fh/fancy"))
+								  ("HANDS" (filename . "code/fh/hands"))
+								  ("Fancy Hands Code" (filename . "code/fh/fancyhands"))
 								  ("Dot Files" (filename . "dot-files"))								  
-								  ("wlib" (filename . "code/wlib"))
 								  ("Emacs" (or (filename . "dot-emacs.el")
 											   (filename . "init.el")
 											   (name . "\*GNU Emacs\*")
@@ -445,51 +446,40 @@
 (use-package rjsx-mode
   :defer t)
 
-;; https://github.com/krgn/emacs.d/blob/master/config/setup-auto-complete.el
-(use-package auto-complete
-  :commands auto-complete-mode
-  :init
-  (progn
-	(auto-complete-mode t))
-  :config
-  (progn 
-	; (use-package auto-complete-config)
+;; ;; https://github.com/krgn/emacs.d/blob/master/config/setup-auto-complete.el
+;; (use-package auto-complete
+;;   :commands auto-complete-mode
+;;   :init
+;;   (progn
+;; 	(auto-complete-mode t))
+;;   :config
+;;   (progn 
+;; 	; (use-package auto-complete-config)
 
-	(ac-set-trigger-key "TAB")
-	(ac-config-default)
+;; 	(ac-set-trigger-key "TAB")
+;; 	(ac-config-default)
 
-	(setq ac-delay 0.02)
-	(setq ac-use-menu-map t)
-	(setq ac-menu-height 50)
-	(setq ac-use-quick-help nil) 
-	(setq ac-comphist-file  "~/.emacs.d/ac-comphist.dat")
-	(setq ac-ignore-case nil)
-	(setq ac-dwim  t)
-	(setq ac-fuzzy-enable t)
-	))
+;; 	(setq ac-delay 0.02)
+;; 	(setq ac-use-menu-map t)
+;; 	(setq ac-menu-height 50)
+;; 	(setq ac-use-quick-help nil) 
+;; 	(setq ac-comphist-file  "~/.emacs.d/ac-comphist.dat")
+;; 	(setq ac-ignore-case nil)
+;; 	(setq ac-dwim  t)
+;; 	(setq ac-fuzzy-enable t)
+;; 	))
 
-;; ;;
-;; (use-package ac-c-headers
-;;   :hook (c-mode . ac/headers-local)
-;;   :config (defun ac/headers-local()
-;; 			(progn
-;; 			  (add-to-list 'ac-sources 'ac-source-c-headers)
-;; 			  (add-to-list 'ac-sources 'ac-source-c-header-symbols t))))
-
-;; (use-package pdf-tools
-;;   :defer 2
-;;   :ensure t)
-
-
-										
 ;; "control-c left arrow" brings you bakc to your
 ;; last window configuration
 (use-package winner
   :init (winner-mode))
 
+
 (use-package dired
   :ensure nil ;; don't make `use-package` go find this, it's part of emacs
   :config
+  ;;;; show hidden files in dired?
+
   (put 'dired-find-alternate-file 'disabled nil))
 
 
