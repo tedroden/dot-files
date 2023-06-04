@@ -479,12 +479,8 @@
         (auth-source-pass-get 'secret "openai-key")))))
 
 (use-package multiple-cursors
-  :bind (("C-c d" . 'mc/mark-next-like-this)
-		 ("C-c u d" . 'mc/unmark-next-like-this)))
-
-(use-package zone
-  :config
-  (zone-when-idle 30))
+  :bind (("C-\-" . 'mc/mark-next-like-this)
+		 ("C-0" . 'mc/unmark-next-like-this)))
 
 (use-package hide-mode-line
   :hook
