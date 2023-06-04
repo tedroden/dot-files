@@ -118,8 +118,6 @@
   :hook (prog-mode . copilot-mode)
   
   :bind (("<tab>" . copilot-accept-completion)
-	 ("TAB" .  copilot-accept-completion)
-	 ("C-TAB" . copilot-accept-completion-by-word)
 	 ("C-TAB" . copilot-accept-completion-by-word)))
 
 ;; previously, I did `:ensure t` for every `use-package` module
@@ -150,14 +148,14 @@
   ;;  (load-theme 'doom-dracula)
   ;;  (load-theme 'doom-rouge)
   ;;  (load-theme 'doom-molokai)
-  (load-theme 'doom-ephemeral)
+;;  (load-theme 'doom-ephemeral)
   ;; (load-theme 'doom-outrun-electric)
-  ;; (load-theme 'doom-peacock)
+;;   (load-theme 'doom-peacock)
  ;; (load-theme 'doom-molokai)
  ;; (load-theme 'doom-nord)
  ;; (load-theme 'doom-spacegrey)
  ;; (load-theme 'doom-tomorrow-day)
- ;; (load-theme 'doom-tomorrow-night)
+  (load-theme 'doom-tomorrow-night)
  ;; (load-theme 'doom-vibrant)
  )
 
@@ -165,7 +163,7 @@
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-icon t "icons")
-  (doom-modeline-height 46 "height")
+  (doom-modeline-height 32 "height")
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere")
   (doom-modeline-icon (display-graphic-p))
   )
@@ -446,29 +444,6 @@
 (use-package rjsx-mode
   :defer t)
 
-;; ;; https://github.com/krgn/emacs.d/blob/master/config/setup-auto-complete.el
-;; (use-package auto-complete
-;;   :commands auto-complete-mode
-;;   :init
-;;   (progn
-;; 	(auto-complete-mode t))
-;;   :config
-;;   (progn 
-;; 	; (use-package auto-complete-config)
-
-;; 	(ac-set-trigger-key "TAB")
-;; 	(ac-config-default)
-
-;; 	(setq ac-delay 0.02)
-;; 	(setq ac-use-menu-map t)
-;; 	(setq ac-menu-height 50)
-;; 	(setq ac-use-quick-help nil) 
-;; 	(setq ac-comphist-file  "~/.emacs.d/ac-comphist.dat")
-;; 	(setq ac-ignore-case nil)
-;; 	(setq ac-dwim  t)
-;; 	(setq ac-fuzzy-enable t)
-;; 	))
-
 ;; "control-c left arrow" brings you bakc to your
 ;; last window configuration
 (use-package winner
@@ -493,4 +468,27 @@
 (use-package dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
+(use-package google-this
+  :bind (("C-x g" . google-this)))
 
+(use-package chatgpt-shell
+    :ensure t
+    :custom
+    ((chatgpt-shell-openai-key
+      (lambda ()
+        (auth-source-pass-get 'secret "openai-key")))))
+
+(use-package multiple-cursors
+  :bind (("C-c d" . 'mc/mark-next-like-this)
+		 ("C-c u d" . 'mc/unmark-next-like-this)))
+
+(use-package zone
+  :config
+  (zone-when-idle 30))
+
+(use-package hide-mode-line
+  :hook
+  ((eshell-mode . hide-mode-line-mode)
+   (dired-mode . hide-mode-line-mode)))
+
+;;; init.el ends here
