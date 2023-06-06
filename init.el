@@ -488,3 +488,4 @@
    (dired-mode . hide-mode-line-mode)))
 
 ;;; init.el ends here
+
