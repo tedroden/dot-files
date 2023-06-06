@@ -1,4 +1,15 @@
 ;; ~/.emacs.d/init.el --- (this file)
+
+
+;; Disable the splash screen (to enable it agin, replace the t with 0)
+(setq inhibit-splash-screen t)
+
+;; Enable transient mark mode
+(transient-mark-mode 1)
+
+
+;;
+
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
@@ -9,7 +20,15 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
 
+
 (setq inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+
+;; Enable transient mark mode
+(transient-mark-mode 1)
+
+
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
 
 ;;; add this to your zshrc
@@ -487,5 +506,34 @@
   ((eshell-mode . hide-mode-line-mode)
    (dired-mode . hide-mode-line-mode)))
 
-;;; init.el ends here
 
+(use-package org
+  :ensure t
+  :demand t
+  :init
+  (setq org-directory "~/Dropbox/Org")
+  (setq org-agenda-files (list org-directory))
+
+  ;; Helper function to generate templates
+  (defun my-org-template (type headline)
+    `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
+			"* %?\n  %i\n  %a"))
+
+  :config
+  (setq org-capture-templates
+        (list (my-org-template "t" "Tasks")
+              (my-org-template "n" "Notes")
+              (my-org-template "i" "Ideas")			  
+              ))
+  (setq org-startup-folded 'showall)
+  (require 'org-agenda))  ;; Ensure org-agenda is loaded
+
+(global-set-key (kbd "C-c a") 'org-agenda)  ;; Bind C-c a to org-agenda
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c t") 'org-todo)
+(global-set-key (kbd "M-p") 'org-backward-heading-same-level)
+(global-set-key (kbd "M-n") 'org-forward-heading-same-level)
+
+
+
+;; ;;; init.el ends here
