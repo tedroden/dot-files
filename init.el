@@ -534,6 +534,14 @@
 (global-set-key (kbd "M-p") 'org-backward-heading-same-level)
 (global-set-key (kbd "M-n") 'org-forward-heading-same-level)
 
+(use-package auth-source-1password
+  :ensure t
+  :config
+  (auth-source-pass-enable))
 
+(use-package activity-watch-mode
+  :ensure t
+  :config
+  (global-activity-watch-mode t))
 
 ;; ;;; init.el ends here
