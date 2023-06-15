@@ -225,6 +225,10 @@
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package ws-butler
+  :ensure t
+  :config
+  (ws-butler-global-mode))
 
 ;; great for quickly switching windows if you've got more than 2
 ;; (use-package ace-window
