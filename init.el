@@ -1,5 +1,10 @@
+
 ;; ~/.emacs.d/init.el --- (this file)
 
+;;;;  currently intalling this emacs:
+;; brew tap d12frosted/emacs-plus
+;; brew install emacs-plus@29 --with-native-comp
+;; 
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -7,9 +12,11 @@
 ;; Enable transient mark mode
 (transient-mark-mode 1)
 
-
-;;
-
+;; Start the server if it's not already started.
+(require 'server)
+(unless (server-running-p)
+    (server-start))
+   
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
@@ -116,6 +123,12 @@
 (package-initialize)
 
 
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
 
 
 ;; ;; ;; thanks federico
@@ -123,10 +136,13 @@
   (progn
 	(package-refresh-contents)
 	(package-install 'use-package)))
+
+
 (require 'use-package)
 
 
-(use-package quelpa-use-package)
+(use-package quelpa-use-package
+  :ensure t)
 
 (use-package copilot
   :quelpa (copilot :fetcher github
@@ -353,6 +369,13 @@
 
 
 (use-package ivy-rich)
+(use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
 
 (use-package nerd-icons-ivy-rich
   :ensure t
@@ -368,6 +391,10 @@
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-completion
+  :config
+  (nerd-icons-completion-mode))
 
 
 
@@ -407,6 +434,7 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
+
 ; (use-package 'exec-path-from-shell)
 
 ;;;;
@@ -433,11 +461,7 @@
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))	 
-								  )))
-  :init
-  (add-hook 'ibuffer-mode-hook
-			'(lambda ()
-			   (ibuffer-switch-to-saved-filter-groups "Buffers"))))
+								  ))))
 
 
 ;;;;;; this is useful if pair programming or demoing
@@ -490,21 +514,21 @@
 (use-package google-this
   :bind (("C-x g" . google-this)))
 
+;; FIXME: You can just use `customize-variable` to set the key for now
+;;        I would love to get auth-source-pass working though
 (use-package chatgpt-shell
-    :ensure t
-    :custom
-    ((chatgpt-shell-openai-key
-      (lambda ()
-        (auth-source-pass-get 'secret "openai-key")))))
+    :ensure t)
+    ;; :custom
+    ;; ((chatgpt-shell-openai-key
+    ;;   (lambda ()
+    ;;     (auth-source-pass-get 'secret "openai-key")))))
+
 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-(use-package hide-mode-line
-  :hook
-  ((eshell-mode . hide-mode-line-mode)
-   (dired-mode . hide-mode-line-mode)))
+
 
 
 (use-package org
@@ -513,20 +537,26 @@
   :init
   (setq org-directory "~/Dropbox/Org")
   (setq org-agenda-files (list org-directory))
-
-  ;; Helper function to generate templates
-  (defun my-org-template (type headline)
-    `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
-			"* %?\n  %i\n  %a"))
+  ;; default notes file
+  (setq org-default-notes-file (concat org-directory "/Notes.org"))
+  ;; default todo file
+  (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
 
   :config
+  (defun my-org-template (type headline)
+    (let ((template "* %?\n  %i\n  %a"))
+      (when (string= type "t")
+        (setq template (concat "* TODO %?\n  %i\n  %a")))
+      `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
+         ,template)))
+
   (setq org-capture-templates
         (list (my-org-template "t" "Tasks")
               (my-org-template "n" "Notes")
-              (my-org-template "i" "Ideas")			  
-              ))
+              (my-org-template "i" "Ideas")))
+  
   (setq org-startup-folded 'showall)
-  (require 'org-agenda))  ;; Ensure org-agenda is loaded
+  (require 'org-agenda))
 
 (global-set-key (kbd "C-c a") 'org-agenda)  ;; Bind C-c a to org-agenda
 (global-set-key (kbd "C-c c") 'org-capture)
@@ -543,5 +573,17 @@
   :ensure t
   :config
   (global-activity-watch-mode t))
+
+(use-package dotenv-mode)
+
+(use-package dired-narrow
+  :bind (("C-c C-n" . dired-narrow)))
+
+
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 
 ;; ;;; init.el ends here
