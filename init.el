@@ -1,5 +1,8 @@
 ;; ~/.emacs.d/init.el --- (this file)
 
+;;; add this to your zshrc
+;; export EDITOR="emacsclient -nw"
+
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -29,19 +32,6 @@
 
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-
-
-;;; add this to your zshrc
-;; # If I call emacs proper, I probably want emacs proper
-;; alias emacs="emacs -nw"
-
-;; # this doesn't work because of the alias? so it's a function
-;; # alias e="emacsclient -c -n ${1:-.}"
-;; unalias e
-
-;; function e() {
-;; 	emacsclient -c -n "${1:-.}"
-;; }
 
 
 ;; setup custom/personal/etc.
@@ -95,7 +85,6 @@
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
 ;;(add-to-list 'default-frame-alist '(undecorated-round . t))
 
-
 ;; confirm on exit
 (setq confirm-kill-emacs 'yes-or-no-p)
 
@@ -103,11 +92,10 @@
 ;; (global-linum-mode t) ;; Line numbersthis is good for teaching, but i don't generally want it.
 
 ;;;; highlight the current line?
-;; (global-hl-line-mode nil)
+; (global-hl-line-mode t)
 
 ;; column number (lives in mode line)
 (column-number-mode t)
-
 
 ;; get package stuff ready
 (require 'package)
@@ -115,10 +103,6 @@
              '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-
-
-
-;; ;; ;; thanks federico
 (unless (package-installed-p 'use-package)
   (progn
 	(package-refresh-contents)
@@ -126,6 +110,7 @@
 (require 'use-package)
 
 
+(use-package quelpa)
 (use-package quelpa-use-package)
 
 (use-package copilot
@@ -151,7 +136,7 @@
 (global-set-key (kbd "C-z") 'tedroden/no-suspend)
 
 ;; just for my chromebook!! emacs can do anything.
-(global-set-key (kbd "<deletechar>") 'backward-kill-word)
+;; (global-set-key (kbd "<deletechar>") 'backward-kill-word)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; theme related stuff
@@ -181,18 +166,16 @@
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom
-  (doom-modeline-icon t "icons")
+  (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
   (doom-modeline-height 32 "height")
-  (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere")
-  (doom-modeline-icon (display-graphic-p))
-  )
+  (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
-;; fixme: get rid of this if we don't have a battery
 
-;; (use-package battery
-;;   :ensure t
-;;   :config
-;;   (display-battery-mode))
+;; FIXME: get rid of this if we don't have a battery
+(use-package battery
+  :ensure t
+  :config
+  (display-battery-mode))
 
 (use-package time
   :ensure t
@@ -223,36 +206,11 @@
 (use-package avy
   :bind ("C-/" .'avy-goto-char-2))
 
-;; The package is "python" but the mode is "python-mode":
+;; Is this how I should do this? I'm not 
 (use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode))
+  :mode ("\\.py\\'" . python-ts-mode)
+  :interpreter ("python" . python-ts-mode))
 
-;; (use-package artbollocks-mode
-;;   :defer 4 ;; we don't actually need this, so don't load it for a while
-;;   :custom
-;;   (artbollocks-jargon nil)
-;;   :config
-
-;;   (progn
-;;     (setq artbollocks-weasel-words-regex
-;;           (concat "\\b" (regexp-opt
-;;                          '("one of the"
-;;                            "should"
-;;                            "just"
-;;                            "sort of"
-;;                            "a lot"
-;;                            "probably"
-;;                            "maybe"
-;;                            "perhaps"
-;;                            "I think"
-;;                            "really"
-;;                            "pretty"
-;;                            "nice"
-;;                            "action"
-;;                            "utilize"
-;;                            "leverage") t) "\\b"))
-;; 	(add-hook 'text-mode-hook 'artbollocks-mode)))
 
 
 ;;;; show icons in dired! (requires all-theicons-dired)
@@ -484,8 +442,9 @@
   :bind (:map markdown-mode-map
          ("C-c C-e" . markdown-do)))
 
-(use-package dumb-jump)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+(use-package dumb-jump
+  :init
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package google-this
   :bind (("C-x g" . google-this)))
@@ -496,6 +455,33 @@
     ((chatgpt-shell-openai-key
       (lambda ()
         (auth-source-pass-get 'secret "openai-key")))))
+
+(use-package pinentry
+  :ensure t
+  :config
+  (pinentry-start))
+
+
+(use-package emms
+  :ensure t
+  :config
+  (emms-all)
+
+  (emms-default-players)
+
+  ;; covers
+  (setq emms-browser-covers #'emms-browser-cache-thumbnail-async)
+  (setq emms-browser-thumbnail-small-size 64)
+  (setq emms-browser-thumbnail-medium-size 128)
+  
+  (setq emms-source-file-default-directory "~/Dropbox/SoundCloud")  
+  (setq emms-playlist-buffer-name "*Music*")
+  (setq emms-info-asynchronously t)
+  
+  :bind (("C-c b" . emms-browser)))
+
+  
+  
 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
@@ -528,6 +514,8 @@
   (setq org-startup-folded 'showall)
   (require 'org-agenda))  ;; Ensure org-agenda is loaded
 
+
+
 (global-set-key (kbd "C-c a") 'org-agenda)  ;; Bind C-c a to org-agenda
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c t") 'org-todo)
@@ -543,5 +531,8 @@
   :ensure t
   :config
   (global-activity-watch-mode t))
+
+
+(server-start)
 
 ;; ;;; init.el ends here

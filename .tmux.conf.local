@@ -12,10 +12,11 @@ unbind C-a
 set-option -g prefix C-h
 bind-key C-h send-prefix
 bind | split-window -h
+bind - split-window -v
 bind p previous-window
 bind n next-window
-unbind '"'
-unbind %
+unbind '"' # previously horizontal split
+unbind % # previously vertical split
 
 # Enable tmux plugins
 # git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
