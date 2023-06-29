@@ -427,13 +427,16 @@
   :init (winner-mode))
 
 
-(use-package dired
-  :ensure nil ;; don't make `use-package` go find this, it's part of emacs
+
+(use-package dired-narrow
+  :bind (:map dired-mode-map
+              ("F" . dired-narrow))  
   :config
   ;;;; show hidden files in dired?
 
   (put 'dired-find-alternate-file 'disabled nil))
 
+(use-package vterm)
 
 (use-package markdown-mode
   :ensure t
@@ -462,36 +465,15 @@
   (pinentry-start))
 
 
-(use-package emms
-  :ensure t
-  :config
-  (emms-all)
 
-  (emms-default-players)
-
-  ;; covers
-  (setq emms-browser-covers #'emms-browser-cache-thumbnail-async)
-  (setq emms-browser-thumbnail-small-size 64)
-  (setq emms-browser-thumbnail-medium-size 128)
-  
-  (setq emms-source-file-default-directory "~/Dropbox/SoundCloud")  
-  (setq emms-playlist-buffer-name "*Music*")
-  (setq emms-info-asynchronously t)
-  
-  :bind (("C-c b" . emms-browser)))
-
-  
-  
-
+;; mpd client, not great. use ncmpcpp
+;; (use-package mpdel
+;;   :config
+;;   (mpdel-mode))
+ 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
-
-(use-package hide-mode-line
-  :hook
-  ((eshell-mode . hide-mode-line-mode)
-   (dired-mode . hide-mode-line-mode)))
-
 
 (use-package org
   :ensure t
