@@ -458,8 +458,6 @@
 (use-package winner
   :init (winner-mode))
 
-(use-package vterm)
-
 (use-package markdown-mode
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
