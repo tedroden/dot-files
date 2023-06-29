@@ -1,8 +1,14 @@
+
 ;; ~/.emacs.d/init.el --- (this file)
+
 
 ;;; add this to your zshrc
 ;; export EDITOR="emacsclient -nw"
 
+;;;;  currently intalling this emacs:
+;; brew tap d12frosted/emacs-plus
+;; brew install emacs-plus@29 --with-native-comp
+;; 
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -10,9 +16,11 @@
 ;; Enable transient mark mode
 (transient-mark-mode 1)
 
-
-;;
-
+;; Start the server if it's not already started.
+(require 'server)
+(unless (server-running-p)
+    (server-start))
+   
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
@@ -103,15 +111,27 @@
              '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+
+;; ;; see if we can get away with just the use-package below
+;; ;; this is how they say to do it. 
+;; (unless (package-installed-p 'quelpa)
+;;   (with-temp-buffer
+;;     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+;;     (eval-buffer)
+;;     (quelpa-self-upgrade)))
+
+;; ;; ;; thanks federico
 (unless (package-installed-p 'use-package)
   (progn
 	(package-refresh-contents)
 	(package-install 'use-package)))
+
+
 (require 'use-package)
 
-
 (use-package quelpa)
-(use-package quelpa-use-package)
+(use-package quelpa-use-package
+  :ensure t)
 
 (use-package copilot
   :quelpa (copilot :fetcher github
@@ -192,6 +212,10 @@
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package ws-butler
+  :ensure t
+  :config
+  (ws-butler-global-mode))
 
 ;; great for quickly switching windows if you've got more than 2
 ;; (use-package ace-window
@@ -311,6 +335,13 @@
 
 
 (use-package ivy-rich)
+(use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
 
 (use-package nerd-icons-ivy-rich
   :ensure t
@@ -326,6 +357,10 @@
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-completion
+  :config
+  (nerd-icons-completion-mode))
 
 
 
@@ -365,6 +400,7 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
+
 ; (use-package 'exec-path-from-shell)
 
 ;;;;
@@ -391,11 +427,7 @@
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))	 
-								  )))
-  :init
-  (add-hook 'ibuffer-mode-hook
-			'(lambda ()
-			   (ibuffer-switch-to-saved-filter-groups "Buffers"))))
+								  ))))
 
 
 ;;;;;; this is useful if pair programming or demoing
@@ -426,16 +458,6 @@
 (use-package winner
   :init (winner-mode))
 
-
-
-(use-package dired-narrow
-  :bind (:map dired-mode-map
-              ("F" . dired-narrow))  
-  :config
-  ;;;; show hidden files in dired?
-
-  (put 'dired-find-alternate-file 'disabled nil))
-
 (use-package vterm)
 
 (use-package markdown-mode
@@ -452,12 +474,15 @@
 (use-package google-this
   :bind (("C-x g" . google-this)))
 
+;; FIXME: You can just use `customize-variable` to set the key for now
+;;        I would love to get auth-source-pass working though
 (use-package chatgpt-shell
-    :ensure t
-    :custom
-    ((chatgpt-shell-openai-key
-      (lambda ()
-        (auth-source-pass-get 'secret "openai-key")))))
+    :ensure t)
+    ;; :custom
+    ;; ((chatgpt-shell-openai-key
+    ;;   (lambda ()
+    ;;     (auth-source-pass-get 'secret "openai-key")))))
+
 
 (use-package pinentry
   :ensure t
@@ -475,26 +500,38 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 97e80bbaa78974ec1d92d73d411a288e3c1da448
 (use-package org
   :ensure t
   :demand t
   :init
   (setq org-directory "~/Dropbox/Org")
   (setq org-agenda-files (list org-directory))
-
-  ;; Helper function to generate templates
-  (defun my-org-template (type headline)
-    `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
-			"* %?\n  %i\n  %a"))
+  ;; default notes file
+  (setq org-default-notes-file (concat org-directory "/Notes.org"))
+  ;; default todo file
+  (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
 
   :config
+  (defun my-org-template (type headline)
+    (let ((template "* %?\n  %i\n  %a"))
+      (when (string= type "t")
+        (setq template (concat "* TODO %?\n  %i\n  %a")))
+      `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
+         ,template)))
+
   (setq org-capture-templates
         (list (my-org-template "t" "Tasks")
               (my-org-template "n" "Notes")
-              (my-org-template "i" "Ideas")			  
-              ))
+              (my-org-template "i" "Ideas")))
+  
   (setq org-startup-folded 'showall)
-  (require 'org-agenda))  ;; Ensure org-agenda is loaded
+  (require 'org-agenda))
 
 
 
@@ -514,6 +551,19 @@
   :config
   (global-activity-watch-mode t))
 
+(use-package dotenv-mode)
+
+(use-package dired-narrow
+  :bind (:map dired-mode-map
+              ("F" . dired-narrow))
+  :config
+  (put 'dired-find-alternate-file 'disabled nil))
+
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 
 (server-start)
 
