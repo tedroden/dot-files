@@ -500,12 +500,7 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-<<<<<<< HEAD
-=======
 
-
-
->>>>>>> 97e80bbaa78974ec1d92d73d411a288e3c1da448
 (use-package org
   :ensure t
   :demand t
