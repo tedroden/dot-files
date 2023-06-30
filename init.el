@@ -2,10 +2,10 @@
 ;; ~/.emacs.d/init.el --- (this file)
 
 
-;;; add this to your zshrc
+;;; add this to your .bashrc or .zshrc
 ;; export EDITOR="emacsclient -nw"
 
-;;;;  currently intalling this emacs:
+;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
 ;; brew install emacs-plus@29 --with-native-comp
 ;; 
@@ -120,14 +120,8 @@
 ;;     (eval-buffer)
 ;;     (quelpa-self-upgrade)))
 
-;; ;; ;; thanks federico
-(unless (package-installed-p 'use-package)
-  (progn
-	(package-refresh-contents)
-	(package-install 'use-package)))
 
-
-(require 'use-package)
+;; (require 'use-package)
 
 (use-package quelpa)
 (use-package quelpa-use-package
@@ -177,9 +171,9 @@
 ;;   (load-theme 'doom-peacock)
  ;; (load-theme 'doom-molokai)
  ;; (load-theme 'doom-nord)
- ;; (load-theme 'doom-spacegrey)
- ;; (load-theme 'doom-tomorrow-day)
-  (load-theme 'doom-tomorrow-night)
+ (load-theme 'doom-spacegrey)
+; (load-theme 'doom-tomorrow-day)
+;;  (load-theme 'doom-tomorrow-night)
  ;; (load-theme 'doom-vibrant)
  )
 
@@ -187,15 +181,16 @@
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
+  ;; set the height
   (doom-modeline-height 32 "height")
+(doom-modeline-battery t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
-
 ;; FIXME: get rid of this if we don't have a battery
-(use-package battery
-  :ensure t
-  :config
-  (display-battery-mode))
+;; (use-package battery
+;;   :ensure t
+;;   :config
+;;   (display-battery-mode nil))
 
 (use-package time
   :ensure t
@@ -386,12 +381,6 @@
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
-
-(use-package projectile
-  :config
-  (projectile-mode t)
-  :bind (("C-c p" . projectile-command-map)))
-
 (use-package npm-mode)
 
 ; built in
@@ -472,8 +461,6 @@
 (use-package google-this
   :bind (("C-x g" . google-this)))
 
-;; FIXME: You can just use `customize-variable` to set the key for now
-;;        I would love to get auth-source-pass working though
 (use-package chatgpt-shell
     :ensure t)
     ;; :custom
@@ -498,12 +485,7 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-<<<<<<< HEAD
-=======
 
-
-
->>>>>>> 97e80bbaa78974ec1d92d73d411a288e3c1da448
 (use-package org
   :ensure t
   :demand t
@@ -557,11 +539,23 @@
   :config
   (put 'dired-find-alternate-file 'disabled nil))
 
+;; (use-package editorconfig
+;;   :ensure t
+;;   :config
+;;   (editorconfig-mode 1))
 
-(use-package editorconfig
+(use-package typescript-ts-mode
+  :ensure t)
+
+(use-package projectile
   :ensure t
   :config
-  (editorconfig-mode 1))
+  (projectile-mode +1)
+  (setq projectile-project-search-path '("~/code/fh")))
+
+(use-package ag)
+
+(use-package dockerfile)
 
 (server-start)
 
