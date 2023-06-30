@@ -555,8 +555,6 @@
 
 (use-package ag)
 
-(use-package dockerfile)
-
 (server-start)
 
 ;; ;;; init.el ends here
