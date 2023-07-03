@@ -19,8 +19,8 @@
 ;; Start the server if it's not already started.
 (require 'server)
 (unless (server-running-p)
-    (server-start))
-   
+  (server-start))
+
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
@@ -44,13 +44,13 @@
 
 ;; setup custom/personal/etc.
 (setq-default dotfiles-dir "~/.emacs.d/"
-	      custom-file (concat dotfiles-dir "custom.el")
-	      personal-file (concat dotfiles-dir "personal.el"))
+			  custom-file (concat dotfiles-dir "custom.el")
+			  personal-file (concat dotfiles-dir "personal.el"))
 
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
 	  (progn (load f)
-		 (message (concat "Loaded " f)))
+			 (message (concat "Loaded " f)))
     nil))
 
 ;; all "yes" or "no" questions should be y/n
@@ -100,7 +100,7 @@
 ;; (global-linum-mode t) ;; Line numbersthis is good for teaching, but i don't generally want it.
 
 ;;;; highlight the current line?
-; (global-hl-line-mode t)
+										; (global-hl-line-mode t)
 
 ;; column number (lives in mode line)
 (column-number-mode t)
@@ -114,11 +114,11 @@
 
 ;; ;; see if we can get away with just the use-package below
 ;; ;; this is how they say to do it. 
-;; (unless (package-installed-p 'quelpa)
-;;   (with-temp-buffer
-;;     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-;;     (eval-buffer)
-;;     (quelpa-self-upgrade)))
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
 
 
 ;; (require 'use-package)
@@ -136,7 +136,7 @@
   :hook (prog-mode . copilot-mode)
   
   :bind (("<tab>" . copilot-accept-completion)
-	 ("C-TAB" . copilot-accept-completion-by-word)))
+		 ("C-TAB" . copilot-accept-completion-by-word)))
 
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
@@ -166,16 +166,16 @@
   ;;  (load-theme 'doom-dracula)
   ;;  (load-theme 'doom-rouge)
   ;;  (load-theme 'doom-molokai)
-;;  (load-theme 'doom-ephemeral)
+  ;;  (load-theme 'doom-ephemeral)
   ;; (load-theme 'doom-outrun-electric)
-;;   (load-theme 'doom-peacock)
- ;; (load-theme 'doom-molokai)
- ;; (load-theme 'doom-nord)
- (load-theme 'doom-spacegrey)
-; (load-theme 'doom-tomorrow-day)
-;;  (load-theme 'doom-tomorrow-night)
- ;; (load-theme 'doom-vibrant)
- )
+  ;;   (load-theme 'doom-peacock)
+  ;; (load-theme 'doom-molokai)
+  ;; (load-theme 'doom-nord)
+  (load-theme 'doom-spacegrey)
+										; (load-theme 'doom-tomorrow-day)
+  ;;  (load-theme 'doom-tomorrow-night)
+  ;; (load-theme 'doom-vibrant)
+  )
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
@@ -183,7 +183,7 @@
   (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
   ;; set the height
   (doom-modeline-height 32 "height")
-(doom-modeline-battery t)
+  (doom-modeline-battery t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 ;; FIXME: get rid of this if we don't have a battery
@@ -202,7 +202,7 @@
 
 (use-package yaml-mode
   :mode (("\\.yaml$'" . yaml-mode)
-	 ("\\.yml$'" . yaml-mode)))
+		 ("\\.yml$'" . yaml-mode)))
 
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -300,33 +300,12 @@
 (use-package eshell-toggle
   :bind (("C-c e" . eshell-toggle)))
 
-;; (use-package ido
-;;   :bind
-;;   ( ("C-x C-f" . ido-find-file) ))
-
-;; (use-package helm
-;;   :bind (("C-x C-f" . helm-find-files)
-;;   ("C-x b" . helm-mini)
-;;   ("M-x" . helm-M-x)
-;;   ("C-h a" . helm-apropos)
-;;   ("M-y". helm-show-kill-ring) ;; eh...
-;;   ("M-i" . helm-swoop-without-pre-input)
-;;   ("C-s" . isearch-forward)
-	 
-;; 	 :map helm-map ("<tab>" . helm-execute-persistent-action))
-;;   :config 
-;; ;  (setq helm-ff-file-name-history-use-recentf t)
-;; ;  (setq helm-buffers-fuzzy-matching t)
-;;   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-;;   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;;   (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-;;   (helm-mode t))
 
 ;; failing (install the icon files... "m-x icons install" something should get you close
 ;; (use-package all-the-icons-ivy-rich
 ;;   :init (all-the-icons-ivy-rich-mode 1))
 
- (set-frame-font "Monaco 14")
+(set-frame-font "Monaco 14")
 
 
 (use-package ivy-rich)
@@ -383,14 +362,14 @@
 
 (use-package npm-mode)
 
-; built in
+										; built in
 (require 'treesit)
 
 (use-package flycheck
   :init (global-flycheck-mode))
 
 
-; (use-package 'exec-path-from-shell)
+										; (use-package 'exec-path-from-shell)
 
 ;;;;
 ;;;;
@@ -452,35 +431,23 @@
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-hide-markup-in-view-modes t)
   :bind (:map markdown-mode-map
-         ("C-c C-e" . markdown-do)))
+			  ("C-c C-e" . markdown-do)))
 
 (use-package dumb-jump
   :init
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package google-this
   :bind (("C-x g" . google-this)))
 
 (use-package chatgpt-shell
-    :ensure t)
-    ;; :custom
-    ;; ((chatgpt-shell-openai-key
-    ;;   (lambda ()
-    ;;     (auth-source-pass-get 'secret "openai-key")))))
-
-
-(use-package pinentry
   :ensure t
-  :config
-  (pinentry-start))
+  :custom
+  ((chatgpt-shell-openai-key
+    (lambda ()
+      (auth-source-pass-get 'secret "open-ai")))))
 
 
-
-;; mpd client, not great. use ncmpcpp
-;; (use-package mpdel
-;;   :config
-;;   (mpdel-mode))
- 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
@@ -490,12 +457,19 @@
   :ensure t
   :demand t
   :init
-  (setq org-directory "~/Dropbox/Org")
+  (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-agenda-files (list org-directory))
   ;; default notes file
   (setq org-default-notes-file (concat org-directory "/Notes.org"))
   ;; default todo file
   (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
+
+  ;; this will override copilot if you want it to.
+  ;; :bind
+  ;; (:map org-mode-map
+  ;;       ("TAB" . org-cycle)
+  ;;       ("S-TAB" . org-shifttab)
+  ;;       ("C-TAB" . org-global-cycle))
 
   :config
   (defun my-org-template (type headline)
@@ -503,16 +477,52 @@
       (when (string= type "t")
         (setq template (concat "* TODO %?\n  %i\n  %a")))
       `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
-         ,template)))
+			  ,template)))
 
   (setq org-capture-templates
         (list (my-org-template "t" "Tasks")
-              (my-org-template "n" "Notes")
-              (my-org-template "i" "Ideas")))
+              (my-org-template "n" "Notes")))
   
   (setq org-startup-folded 'showall)
   (require 'org-agenda))
 
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory (file-truename"~/Dropbox/mem"))
+  (org-roam-dailies-directory "daily/")
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+		 ("C-c n f" . org-roam-node-find)
+		 ("C-c n i" . org-roam-node-insert)
+		 ("C-c n g" . org-roam-graph)
+		 ("C-c n c" . org-roam-capture)
+		 ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-setup)
+  (org-roam-db-autosync-mode)
+;  (org-roam-completion-everywhere t)
+  (setq org-roam-graph-executable "/usr/local/bin/dot")
+  (setq org-id-locations-file  (file-truename "~/emacs.d/.org-id-locations"))
+  (setq org-roam-node-display-template
+		(concat "${title:*} "
+				(propertize "${tags:10}" 'face 'org-tag)))
+
+
+  (setq org-roam-dailies-capture-templates
+		'(("d" "default" entry
+		   "* %?"
+		   :if-new (file+head "%<%Y-%m-%d>.org"
+							  "#+title: %<%Y-%m-%d>\n#+roam_tags: ${roam_tags}\n"))))
+
+  (setq org-roam-capture-templates
+		'(("d" "default" plain "%?"
+		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+							  "#+created: %U\n#+title: ${title}\n#+roam_tags: \n\n")
+		   :unnarrowed t)))
+
+  )
 
 
 (global-set-key (kbd "C-c a") 'org-agenda)  ;; Bind C-c a to org-agenda
@@ -520,6 +530,8 @@
 (global-set-key (kbd "C-c t") 'org-todo)
 (global-set-key (kbd "M-p") 'org-backward-heading-same-level)
 (global-set-key (kbd "M-n") 'org-forward-heading-same-level)
+
+
 
 (use-package auth-source-1password
   :ensure t
@@ -549,6 +561,8 @@
 
 (use-package projectile
   :ensure t
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
   :config
   (projectile-mode +1)
   (setq projectile-project-search-path '("~/code/fh")))
