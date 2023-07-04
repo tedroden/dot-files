@@ -505,11 +505,11 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+title: %<%Y-%m-%d>\n#+roam_tags: ${roam_tags}\n"))))
+							  "#+title: %<%Y-%m-%d>\n#+filetags: ${filetags}\n"))))
   (setq org-roam-capture-templates
 		'(("d" "default" plain "%?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+created: %U\n#+title: ${title}\n#+roam_tags: \n\n")
+							  "#+created: %U\n#+title: ${title}\n#+filetags: \n\n")
 		   :unnarrowed t))))
 
 (use-package activity-watch-mode
