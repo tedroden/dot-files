@@ -1,7 +1,6 @@
 
 ;; ~/.emacs.d/init.el --- (this file)
 
-
 ;;; add this to your .bashrc or .zshrc
 ;; export EDITOR="emacsclient -nw"
 
@@ -453,9 +452,16 @@
   :demand t
   :bind
   (("C-c a" . org-agenda)  ;; Bind C-c a to org-agenda
-   ("C-c c" . org-capture))
+   ("C-c c" . org-capture)
+
+  ;; this will override copilot if you want it to.
+  (:map org-mode-map
+        ("<tab>" . org-cycle)
+        ("S-<tab>" . org-shifttab)
+        ("C-<tab>" . org-global-cycle)))
   :init
   (setq org-directory (file-truename "~/Dropbox/Org"))
+  (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   ;; default notes file
   (setq org-default-notes-file (concat org-directory "/Notes.org"))
@@ -483,7 +489,6 @@
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
 		 ("C-c n i" . org-roam-node-insert)
-		 ("C-c n g" . org-roam-graph)
 		 ("C-c n c" . org-roam-capture)
 		 ("C-c n j" . org-roam-dailies-capture-today))
   :config
@@ -545,6 +550,15 @@
   :bind
   (("C-c k" . 'counsel-projectile-ag)
    ("C-c C-f" . 'counsel-projectile-find-file)))
+
+(use-package org-roam-ui
+  :bind
+  (("C-c n g" . org-roam-ui-open))
+  :config
+  (setq org-roam-ui-sync-theme t
+		org-roam-ui-follow t
+		org-roam-ui-update-on-save t
+		org-roam-ui-open-on-start t))
 
 
 (server-start)
