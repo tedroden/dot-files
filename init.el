@@ -350,15 +350,15 @@
 
 (use-package counsel
   :bind
-  (("C-c k" . 'counsel-projectile-ag)
-   ("C-x b" . 'counsel-switch-buffer)
+  (("C-x b" . 'counsel-switch-buffer)
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
-   ("C-c C-f" . 'counsel-projectile-find-file)   
-   ("C-x d" . 'counsel-dired)      
+   ("C-x d" . 'counsel-dired)
    ("C-h f" . 'counsel-describe-function)
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
+
+
 
 (use-package npm-mode)
 
@@ -368,21 +368,18 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
-
-										; (use-package 'exec-path-from-shell)
+;; (use-package 'exec-path-from-shell)
 
 ;;;;
 ;;;;
+
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
   :custom
   (ibuffer-never-show-predicates '("*helm") "don't show helm")
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
   (ibuffer-saved-filter-groups '(("Buffers"
-								  ("FANCY" (filename . "code/fh/fancy"))
-								  ("HANDS" (filename . "code/fh/hands"))
-								  ("Fancy Hands Code" (filename . "code/fh/fancyhands"))
-								  ("Dot Files" (filename . "dot-files"))								  
+								  ("Dot Files" (filename . "dot-files"))
 								  ("Emacs" (or (filename . "dot-emacs.el")
 											   (filename . "init.el")
 											   (name . "\*GNU Emacs\*")
@@ -391,7 +388,6 @@
 											   ))
 								  ("exwm" (mode . exwm-mode))
 								  ("GIT" (mode . magit-mode))
-								  ("Mail" (name . "\*notmuch"))	 
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))	 
@@ -452,10 +448,12 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-
 (use-package org
   :ensure t
   :demand t
+  :bind
+  (("C-c a" . org-agenda)  ;; Bind C-c a to org-agenda
+   ("C-c c" . org-capture))
   :init
   (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-agenda-files (list org-directory))
@@ -463,28 +461,17 @@
   (setq org-default-notes-file (concat org-directory "/Notes.org"))
   ;; default todo file
   (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
-
-  ;; this will override copilot if you want it to.
-  ;; :bind
-  ;; (:map org-mode-map
-  ;;       ("TAB" . org-cycle)
-  ;;       ("S-TAB" . org-shifttab)
-  ;;       ("C-TAB" . org-global-cycle))
-
   :config
-  (defun my-org-template (type headline)
-    (let ((template "* %?\n  %i\n  %a"))
-      (when (string= type "t")
-        (setq template (concat "* TODO %?\n  %i\n  %a")))
-      `(,type ,headline entry (file+headline ,(concat org-directory "/" headline ".org") ,headline)
-			  ,template)))
-
   (setq org-capture-templates
-        (list (my-org-template "t" "Tasks")
-              (my-org-template "n" "Notes")))
-  
+        '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+           "* %?\n  %i\n  %a")))
+;  (setq org-capture-default-template "t")
   (setq org-startup-folded 'showall)
   (require 'org-agenda))
+
+
 
 (use-package org-roam
   :ensure t
@@ -509,34 +496,16 @@
 		(concat "${title:*} "
 				(propertize "${tags:10}" 'face 'org-tag)))
 
-
   (setq org-roam-dailies-capture-templates
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
 							  "#+title: %<%Y-%m-%d>\n#+roam_tags: ${roam_tags}\n"))))
-
   (setq org-roam-capture-templates
 		'(("d" "default" plain "%?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
 							  "#+created: %U\n#+title: ${title}\n#+roam_tags: \n\n")
-		   :unnarrowed t)))
-
-  )
-
-
-(global-set-key (kbd "C-c a") 'org-agenda)  ;; Bind C-c a to org-agenda
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-c t") 'org-todo)
-(global-set-key (kbd "M-p") 'org-backward-heading-same-level)
-(global-set-key (kbd "M-n") 'org-forward-heading-same-level)
-
-
-
-(use-package auth-source-1password
-  :ensure t
-  :config
-  (auth-source-pass-enable))
+		   :unnarrowed t))))
 
 (use-package activity-watch-mode
   :ensure t
@@ -568,6 +537,15 @@
   (setq projectile-project-search-path '("~/code/fh")))
 
 (use-package ag)
+
+(use-package counsel-projectile
+  :config
+  (counsel-projectile-mode)
+
+  :bind
+  (("C-c k" . 'counsel-projectile-ag)
+   ("C-c C-f" . 'counsel-projectile-find-file)))
+
 
 (server-start)
 
