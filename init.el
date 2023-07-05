@@ -80,15 +80,12 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 (global-set-key (kbd "C-c |") 'split-window-right) ;; should be removed in favor of exwm?
 (global-set-key (kbd "C-c -") 'split-window-below);; should be removed in favor of exwm?
-(global-set-key (kbd "C-h m") 'man) ;; normally this is describe mode.
-
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
-;;;; not great on a mac
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
 ;;(add-to-list 'default-frame-alist '(undecorated-round . t))
 
@@ -171,7 +168,7 @@
   ;; (load-theme 'doom-molokai)
   ;; (load-theme 'doom-nord)
   (load-theme 'doom-spacegrey)
-										; (load-theme 'doom-tomorrow-day)
+;; (load-theme 'doom-tomorrow-day)
   ;;  (load-theme 'doom-tomorrow-night)
   ;; (load-theme 'doom-vibrant)
   )
@@ -224,12 +221,10 @@
 (use-package avy
   :bind ("C-/" .'avy-goto-char-2))
 
-;; Is this how I should do this? I'm not 
+;; Is this how I should do this? I don't know.
 (use-package python
   :mode ("\\.py\\'" . python-ts-mode)
   :interpreter ("python" . python-ts-mode))
-
-
 
 ;;;; show icons in dired! (requires all-theicons-dired)
 ;; (use-package all-the-icons-dired
@@ -308,13 +303,7 @@
 
 
 (use-package ivy-rich)
-(use-package nerd-icons
-  ;; :custom
-  ;; The Nerd Font you want to use in GUI
-  ;; "Symbols Nerd Font Mono" is the default and is recommended
-  ;; but you can use any other Nerd Font if you want
-  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
-  )
+(use-package nerd-icons)
 
 (use-package nerd-icons-ivy-rich
   :ensure t
@@ -335,9 +324,6 @@
   :config
   (nerd-icons-completion-mode))
 
-
-
-
 (use-package ivy
   :bind
   (("C-o" . 'swiper))
@@ -357,11 +343,9 @@
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
-
-
 (use-package npm-mode)
 
-										; built in
+;; built in
 (require 'treesit)
 
 (use-package flycheck
@@ -369,13 +353,9 @@
 
 ;; (use-package 'exec-path-from-shell)
 
-;;;;
-;;;;
-
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
   :custom
-  (ibuffer-never-show-predicates '("*helm") "don't show helm")
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
   (ibuffer-saved-filter-groups '(("Buffers"
 								  ("Dot Files" (filename . "dot-files"))
@@ -391,7 +371,6 @@
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))	 
 								  ))))
-
 
 ;;;;;; this is useful if pair programming or demoing
 ;; (use-package beacon
@@ -486,16 +465,25 @@
   :custom
   (org-roam-directory (file-truename"~/Dropbox/mem"))
   (org-roam-dailies-directory "daily/")
+  (org-roam-completion-everywhere t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
 		 ("C-c n i" . org-roam-node-insert)
 		 ("C-c n c" . org-roam-capture)
-		 ("C-c n j" . org-roam-dailies-capture-today))
+		 ("C-c n j" . org-roam-dailies-capture-today)
+		 :map org-roam-dailies-map
+         ("Y" . org-roam-dailies-capture-yesterday)
+         ("T" . org-roam-dailies-capture-tomorrow)
+		 )
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+
   :config
+    (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-setup)
   (org-roam-db-autosync-mode)
-;  (org-roam-completion-everywhere t)
-  (setq org-roam-graph-executable "/usr/local/bin/dot")
+
+;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
   (setq org-id-locations-file  (file-truename "~/emacs.d/.org-id-locations"))
   (setq org-roam-node-display-template
 		(concat "${title:*} "
@@ -560,6 +548,21 @@
 		org-roam-ui-update-on-save t
 		org-roam-ui-open-on-start t))
 
+
+;; Optionally use the `orderless' completion style.
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
 
 (server-start)
 
