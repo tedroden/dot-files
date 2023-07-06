@@ -42,7 +42,7 @@
 
 
 ;; setup custom/personal/etc.
-(setq-default dotfiles-dir "~/.emacs.d/"
+(setq-default dotfiles-dir (file-truename "~/.emacs.d/")
 			  custom-file (concat dotfiles-dir "custom.el")
 			  personal-file (concat dotfiles-dir "personal.el"))
 
@@ -167,7 +167,8 @@
   ;;   (load-theme 'doom-peacock)
   ;; (load-theme 'doom-molokai)
   ;; (load-theme 'doom-nord)
-  (load-theme 'doom-spacegrey)
+;;  (load-theme 'doom-spacegrey)
+  (load-theme 'doom-badger)
 ;; (load-theme 'doom-tomorrow-day)
   ;;  (load-theme 'doom-tomorrow-night)
   ;; (load-theme 'doom-vibrant)
@@ -268,7 +269,6 @@
 (add-hook 'prog-mode-hook  'tedroden/code-setup)
 (add-hook 'text-mode-hook  'tedroden/code-setup)
 
-
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
   "go to previous window"
@@ -324,24 +324,24 @@
   :config
   (nerd-icons-completion-mode))
 
-(use-package ivy
-  :bind
-  (("C-o" . 'swiper))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-initial-inputs-alist nil)
-  :config
-  (ivy-mode nil))
+;; (use-package ivy
+;;   :bind
+;;   (("C-o" . 'swiper))
+;;   :custom
+;;   (ivy-use-virtual-buffers t)
+;;   (ivy-initial-inputs-alist nil)
+;;   :config
+;;   (ivy-mode nil))
 
-(use-package counsel
-  :bind
-  (("C-x b" . 'counsel-switch-buffer)
-   ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-x d" . 'counsel-dired)
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
-   ("M-y" . 'counsel-yank-pop)))
+;; (use-package counsel
+;;   :bind
+;;   (("C-x b" . 'counsel-switch-buffer)
+;;    ("M-x" . 'counsel-M-x)
+;;    ("C-x C-f" . 'counsel-find-file)
+;;    ("C-x d" . 'counsel-dired)
+;;    ("C-h f" . 'counsel-describe-function)
+;;    ("C-h v" . 'counsel-describe-variable)
+;;    ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
 
@@ -438,7 +438,14 @@
         ("<tab>" . org-cycle)
         ("S-<tab>" . org-shifttab)
         ("C-<tab>" . org-global-cycle)))
+
+
+
   :init
+  ;; setup org-indent-mode
+  (setq org-startup-indented t)
+  ;; American time formats
+  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
@@ -446,14 +453,15 @@
   (setq org-default-notes-file (concat org-directory "/Notes.org"))
   ;; default todo file
   (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
+
   :config
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
            "* TODO %?\n  %i\n  %a")
           ("n" "Note" entry (file+headline org-default-notes-file "Notes")
            "* %?\n  %i\n  %a")))
-;  (setq org-capture-default-template "t")
-  (setq org-startup-folded 'showall)
+;;   (setq org-capture-default-template "t")
+;;  (setq org-startup-folded 'showall)
   (require 'org-agenda))
 
 
@@ -466,6 +474,8 @@
   (org-roam-directory (file-truename"~/Dropbox/mem"))
   (org-roam-dailies-directory "daily/")
   (org-roam-completion-everywhere t)
+  (org-startup-folded 'content)
+
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
 		 ("C-c n i" . org-roam-node-insert)
@@ -484,7 +494,7 @@
   (org-roam-db-autosync-mode)
 
 ;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
-  (setq org-id-locations-file  (file-truename "~/emacs.d/.org-id-locations"))
+  (setq org-id-locations-file  (concat dotfiles-dir ".org-id-locations"))
   (setq org-roam-node-display-template
 		(concat "${title:*} "
 				(propertize "${tags:10}" 'face 'org-tag)))
@@ -493,11 +503,11 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+title: %<%Y-%m-%d>\n#+filetags: ${filetags}\n"))))
+							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
   (setq org-roam-capture-templates
-		'(("d" "default" plain "%?"
+		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+created: %U\n#+title: ${title}\n#+filetags: \n\n")
+							  "#+created: %U\n#+filetags: ${filetags} \n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
 (use-package activity-watch-mode
@@ -548,6 +558,10 @@
 		org-roam-ui-update-on-save t
 		org-roam-ui-open-on-start t))
 
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
