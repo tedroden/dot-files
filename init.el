@@ -96,7 +96,7 @@
 ;; (global-linum-mode t) ;; Line numbersthis is good for teaching, but i don't generally want it.
 
 ;;;; highlight the current line?
-										; (global-hl-line-mode t)
+;; (global-hl-line-mode t)
 
 ;; column number (lives in mode line)
 (column-number-mode t)
@@ -235,7 +235,6 @@
   :ensure t
   :init (all-the-icons-ibuffer-mode 1))
 
-
 ;;;;
 ;;;;;; magit setup. Is this right?
 (use-package magit
@@ -245,30 +244,6 @@
   :hook ((css-mode . rainbow-mode)
 		 (sass-mode . rainbow-mode)))
 
-
-
-(defun tedroden/code-setup ()
-  "Highlight certain phrases."
-  (interactive)
-  (highlight-phrase "FIXME" 'black)
-  (highlight-phrase "Fixme" 'black)
-  (highlight-phrase "fixme" 'black)
-  )
-
-;;;;;; (defun tedroden/writer-mode ()
-;;;;;;   (interactive)
-;;;;;;   (markdown-mode)
-;;;;;;   (visual-line-mode)
-;;;;;;   (visual-fill-column-mode))
-;;;;
-;;;;(defun tedroden/writer-mode ()
-;;;;  (interactive)
-;;;;  (message "not loading writer-mode"))
-;;;;
-
-(add-hook 'prog-mode-hook  'tedroden/code-setup)
-(add-hook 'text-mode-hook  'tedroden/code-setup)
-
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
   "go to previous window"
@@ -277,7 +252,6 @@
 
 ;; not sure when this is actually used.
 (setq-default tab-width 4)
-
 
 (use-package eshell
   :bind  (("C-!" . eshell))
