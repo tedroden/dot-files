@@ -151,30 +151,15 @@
 ;; just for my chromebook!! emacs can do anything.
 ;; (global-set-key (kbd "<deletechar>") 'backward-kill-word)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; theme related stuff
-
-(use-package doom-themes
-  :ensure t
+(use-package ef-themes
   :init
-  ;; (load-theme 'doom-snazzy)
-  ;; (load-theme 'doom-dark+)
-  ;;  (load-theme 'doom-material)
-  ;; (load-theme 'doom-1337)
-  ;; (load-theme 'doom-badger)
-  ;;  (load-theme 'doom-dracula)
-  ;;  (load-theme 'doom-rouge)
-  ;;  (load-theme 'doom-molokai)
-  ;;  (load-theme 'doom-ephemeral)
-  ;; (load-theme 'doom-outrun-electric)
-  ;;   (load-theme 'doom-peacock)
-  ;; (load-theme 'doom-molokai)
-  ;; (load-theme 'doom-nord)
-  (load-theme 'doom-spacegrey)
-										; (load-theme 'doom-tomorrow-day)
-  ;;  (load-theme 'doom-tomorrow-night)
-  ;; (load-theme 'doom-vibrant)
+  ;; light dark or nothing
+  (ef-themes-load-random 'dark)
   )
+
+(use-package spacious-padding
+  :config
+  (spacious-padding-mode 1))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
