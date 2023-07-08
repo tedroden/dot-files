@@ -78,8 +78,9 @@
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'ted/edit-dot-emacs)
-(global-set-key (kbd "C-c |") 'split-window-right) ;; should be removed in favor of exwm?
-(global-set-key (kbd "C-c -") 'split-window-below);; should be removed in favor of exwm?
+
+(global-set-key (kbd "C-' |") 'split-window-right)
+(global-set-key (kbd "C-' -") 'split-window-below)
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
@@ -298,24 +299,24 @@
   :config
   (nerd-icons-completion-mode))
 
-;; (use-package ivy
-;;   :bind
-;;   (("C-o" . 'swiper))
-;;   :custom
-;;   (ivy-use-virtual-buffers t)
-;;   (ivy-initial-inputs-alist nil)
-;;   :config
-;;   (ivy-mode nil))
+(use-package ivy
+  :bind
+  (("C-o" . 'swiper))
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-initial-inputs-alist nil)
+  :config
+  (ivy-mode nil))
 
-;; (use-package counsel
-;;   :bind
-;;   (("C-x b" . 'counsel-switch-buffer)
-;;    ("M-x" . 'counsel-M-x)
-;;    ("C-x C-f" . 'counsel-find-file)
-;;    ("C-x d" . 'counsel-dired)
-;;    ("C-h f" . 'counsel-describe-function)
-;;    ("C-h v" . 'counsel-describe-variable)
-;;    ("M-y" . 'counsel-yank-pop)))
+(use-package counsel
+  :bind
+  (("C-x b" . 'counsel-switch-buffer)
+   ("M-x" . 'counsel-M-x)
+   ("C-x C-f" . 'counsel-find-file)
+   ("C-x d" . 'counsel-dired)
+   ("C-h f" . 'counsel-describe-function)
+   ("C-h v" . 'counsel-describe-variable)
+   ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
 
@@ -416,6 +417,7 @@
 
 
   :init
+  (require 'org-babel)
   ;; setup org-indent-mode
   (setq org-startup-indented t)
   ;; American time formats
@@ -477,7 +479,7 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
+k							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
@@ -532,20 +534,10 @@
 		org-roam-ui-update-on-save t
 		org-roam-ui-open-on-start t))
 
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode))
-
-;; Optionally use the `orderless' completion style.
-(use-package orderless
-  :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+;; (use-package vertico
+;;   :ensure t
+;;   :init
+;;   (vertico-mode))
 
 (use-package pdf-tools
   :ensure t
