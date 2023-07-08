@@ -42,7 +42,7 @@
 
 
 ;; setup custom/personal/etc.
-(setq-default dotfiles-dir "~/.emacs.d/"
+(setq-default dotfiles-dir (file-truename "~/.emacs.d/")
 			  custom-file (concat dotfiles-dir "custom.el")
 			  personal-file (concat dotfiles-dir "personal.el"))
 
@@ -78,17 +78,15 @@
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'ted/edit-dot-emacs)
-(global-set-key (kbd "C-c |") 'split-window-right) ;; should be removed in favor of exwm?
-(global-set-key (kbd "C-c -") 'split-window-below);; should be removed in favor of exwm?
-(global-set-key (kbd "C-h m") 'man) ;; normally this is describe mode.
 
+(global-set-key (kbd "C-' |") 'split-window-right)
+(global-set-key (kbd "C-' -") 'split-window-below)
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
-;;;; not great on a mac
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
 ;;(add-to-list 'default-frame-alist '(undecorated-round . t))
 
@@ -99,7 +97,7 @@
 ;; (global-linum-mode t) ;; Line numbersthis is good for teaching, but i don't generally want it.
 
 ;;;; highlight the current line?
-										; (global-hl-line-mode t)
+;; (global-hl-line-mode t)
 
 ;; column number (lives in mode line)
 (column-number-mode t)
@@ -209,12 +207,10 @@
 (use-package avy
   :bind ("C-/" .'avy-goto-char-2))
 
-;; Is this how I should do this? I'm not 
+;; Is this how I should do this? I don't know.
 (use-package python
   :mode ("\\.py\\'" . python-ts-mode)
   :interpreter ("python" . python-ts-mode))
-
-
 
 ;;;; show icons in dired! (requires all-theicons-dired)
 ;; (use-package all-the-icons-dired
@@ -223,7 +219,6 @@
 (use-package all-the-icons-ibuffer
   :ensure t
   :init (all-the-icons-ibuffer-mode 1))
-
 
 ;;;;
 ;;;;;; magit setup. Is this right?
@@ -234,31 +229,6 @@
   :hook ((css-mode . rainbow-mode)
 		 (sass-mode . rainbow-mode)))
 
-
-
-(defun tedroden/code-setup ()
-  "Highlight certain phrases."
-  (interactive)
-  (highlight-phrase "FIXME" 'black)
-  (highlight-phrase "Fixme" 'black)
-  (highlight-phrase "fixme" 'black)
-  )
-
-;;;;;; (defun tedroden/writer-mode ()
-;;;;;;   (interactive)
-;;;;;;   (markdown-mode)
-;;;;;;   (visual-line-mode)
-;;;;;;   (visual-fill-column-mode))
-;;;;
-;;;;(defun tedroden/writer-mode ()
-;;;;  (interactive)
-;;;;  (message "not loading writer-mode"))
-;;;;
-
-(add-hook 'prog-mode-hook  'tedroden/code-setup)
-(add-hook 'text-mode-hook  'tedroden/code-setup)
-
-
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
   "go to previous window"
@@ -267,7 +237,6 @@
 
 ;; not sure when this is actually used.
 (setq-default tab-width 4)
-
 
 (use-package eshell
   :bind  (("C-!" . eshell))
@@ -293,13 +262,7 @@
 
 
 (use-package ivy-rich)
-(use-package nerd-icons
-  ;; :custom
-  ;; The Nerd Font you want to use in GUI
-  ;; "Symbols Nerd Font Mono" is the default and is recommended
-  ;; but you can use any other Nerd Font if you want
-  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
-  )
+(use-package nerd-icons)
 
 (use-package nerd-icons-ivy-rich
   :ensure t
@@ -320,9 +283,6 @@
   :config
   (nerd-icons-completion-mode))
 
-
-
-
 (use-package ivy
   :bind
   (("C-o" . 'swiper))
@@ -342,11 +302,9 @@
    ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
-
-
 (use-package npm-mode)
 
-										; built in
+;; built in
 (require 'treesit)
 
 (use-package flycheck
@@ -354,13 +312,9 @@
 
 ;; (use-package 'exec-path-from-shell)
 
-;;;;
-;;;;
-
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
   :custom
-  (ibuffer-never-show-predicates '("*helm") "don't show helm")
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
   (ibuffer-saved-filter-groups '(("Buffers"
 								  ("Dot Files" (filename . "dot-files"))
@@ -376,7 +330,6 @@
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))	 
 								  ))))
-
 
 ;;;;;; this is useful if pair programming or demoing
 ;; (use-package beacon
@@ -444,7 +397,15 @@
         ("<tab>" . org-cycle)
         ("S-<tab>" . org-shifttab)
         ("C-<tab>" . org-global-cycle)))
+
+
+
   :init
+  (require 'org-babel)
+  ;; setup org-indent-mode
+  (setq org-startup-indented t)
+  ;; American time formats
+  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
@@ -452,14 +413,15 @@
   (setq org-default-notes-file (concat org-directory "/Notes.org"))
   ;; default todo file
   (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
+
   :config
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
            "* TODO %?\n  %i\n  %a")
           ("n" "Note" entry (file+headline org-default-notes-file "Notes")
            "* %?\n  %i\n  %a")))
-;  (setq org-capture-default-template "t")
-  (setq org-startup-folded 'showall)
+;;   (setq org-capture-default-template "t")
+;;  (setq org-startup-folded 'showall)
   (require 'org-agenda))
 
 
@@ -471,17 +433,28 @@
   :custom
   (org-roam-directory (file-truename"~/Dropbox/mem"))
   (org-roam-dailies-directory "daily/")
+  (org-roam-completion-everywhere t)
+  (org-startup-folded 'content)
+
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
 		 ("C-c n i" . org-roam-node-insert)
 		 ("C-c n c" . org-roam-capture)
-		 ("C-c n j" . org-roam-dailies-capture-today))
+		 ("C-c n j" . org-roam-dailies-capture-today)
+		 :map org-roam-dailies-map
+         ("Y" . org-roam-dailies-capture-yesterday)
+         ("T" . org-roam-dailies-capture-tomorrow)
+		 )
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+
   :config
+    (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-setup)
   (org-roam-db-autosync-mode)
-;  (org-roam-completion-everywhere t)
-  (setq org-roam-graph-executable "/usr/local/bin/dot")
-  (setq org-id-locations-file  (file-truename "~/emacs.d/.org-id-locations"))
+
+;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
+  (setq org-id-locations-file  (concat dotfiles-dir ".org-id-locations"))
   (setq org-roam-node-display-template
 		(concat "${title:*} "
 				(propertize "${tags:10}" 'face 'org-tag)))
@@ -490,11 +463,11 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+title: %<%Y-%m-%d>\n#+roam_tags: ${roam_tags}\n"))))
+k							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
   (setq org-roam-capture-templates
-		'(("d" "default" plain "%?"
+		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+created: %U\n#+title: ${title}\n#+roam_tags: \n\n")
+							  "#+created: %U\n#+filetags: ${filetags} \n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
 (use-package activity-watch-mode
@@ -545,6 +518,15 @@
 		org-roam-ui-update-on-save t
 		org-roam-ui-open-on-start t))
 
+;; (use-package vertico
+;;   :ensure t
+;;   :init
+;;   (vertico-mode))
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
 
 (server-start)
 
