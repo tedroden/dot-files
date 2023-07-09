@@ -80,6 +80,7 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 
 (global-set-key (kbd "C-' |") 'split-window-right)
+
 (global-set-key (kbd "C-' -") 'split-window-below)
 
 ;; Command should be META on the mac
@@ -154,10 +155,6 @@
   ;; light dark or nothing
   (ef-themes-load-random 'dark)
   )
-
-(use-package spacious-padding
-  :config
-  (spacious-padding-mode 1))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
@@ -279,28 +276,27 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
-(use-package nerd-icons-completion
-  :config
-  (nerd-icons-completion-mode))
 
-(use-package ivy
-  :bind
-  (("C-o" . 'swiper))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-initial-inputs-alist nil)
-  :config
-  (ivy-mode nil))
 
-(use-package counsel
-  :bind
-  (("C-x b" . 'counsel-switch-buffer)
-   ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-x d" . 'counsel-dired)
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
-   ("M-y" . 'counsel-yank-pop)))
+
+;; (use-package ivy
+;;   :bind
+;;   (("C-o" . 'swiper))
+;;   :custom
+;;   (ivy-use-virtual-buffers t)
+;;   (ivy-initial-inputs-alist nil)
+;;   :config
+;;   (ivy-mode nil))
+
+;; (use-package counsel
+;;   :bind
+;;   (("C-x b" . 'counsel-switch-buffer)
+;;    ("M-x" . 'counsel-M-x)
+;;    ("C-x C-f" . 'counsel-find-file)
+;;    ("C-x d" . 'counsel-dired)
+;;    ("C-h f" . 'counsel-describe-function)
+;;    ("C-h v" . 'counsel-describe-variable)
+;;    ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
 
@@ -380,48 +376,38 @@
     (lambda ()
       (auth-source-pass-get 'secret "open-ai")))))
 
-
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
-		 ("C-0" . 'mc/unmark-next-like-this)))
+		("C-0" . 'mc/unmark-next-like-this)))
 
 (use-package org
   :ensure t
   :demand t
-  :bind
-  (("C-c a" . org-agenda)  ;; Bind C-c a to org-agenda
-   ("C-c c" . org-capture)
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
 
-  ;; this will override copilot if you want it to.
-  (:map org-mode-map
-        ("<tab>" . org-cycle)
-        ("S-<tab>" . org-shifttab)
-        ("C-<tab>" . org-global-cycle)))
-
-
+         :map org-mode-map
+         (("M-F" . org-metaright)
+          ("M-B" . org-metaleft)
+		  ("C-c t i" . org-table-insert-row)
+		  ("C-c t p" . org-table-move-row-up)
+		  ("C-c t n" . org-table-move-row-down)
+		  ))
 
   :init
-  (require 'org-babel)
-  ;; setup org-indent-mode
   (setq org-startup-indented t)
-  ;; American time formats
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
-  ;; default notes file
   (setq org-default-notes-file (concat org-directory "/Notes.org"))
-  ;; default todo file
   (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
-
   :config
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
            "* TODO %?\n  %i\n  %a")
           ("n" "Note" entry (file+headline org-default-notes-file "Notes")
            "* %?\n  %i\n  %a")))
-;;   (setq org-capture-default-template "t")
-;;  (setq org-startup-folded 'showall)
   (require 'org-agenda))
 
 
@@ -449,11 +435,11 @@
   ("C-c n d" . org-roam-dailies-map)
 
   :config
-    (require 'org-roam-dailies) ;; Ensure the keymap is available
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-setup)
   (org-roam-db-autosync-mode)
 
-;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
+  ;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
   (setq org-id-locations-file  (concat dotfiles-dir ".org-id-locations"))
   (setq org-roam-node-display-template
 		(concat "${title:*} "
@@ -463,11 +449,12 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
+							  "#+created: %U\n\n"))))
+
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+created: %U\n#+filetags: ${filetags} \n#+title: ${title}\n\n")
+							  "#+created: %U\n#+filetags: ${filetags}\n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
 (use-package activity-watch-mode
@@ -518,15 +505,82 @@
 		org-roam-ui-update-on-save t
 		org-roam-ui-open-on-start t))
 
-;; (use-package vertico
-;;   :ensure t
-;;   :init
-;;   (vertico-mode))
 
 (use-package pdf-tools
   :ensure t
   :config
   (pdf-tools-install))
+
+;;;;;;;;;;;;;;;;;;;;
+;; Enable vertico (config from vertico/README.org)
+;; START OF VERTICO CONFIG
+(use-package vertico
+  :init
+  (vertico-mode)
+
+  ;; Different scroll margin
+  ;; (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  ;; (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+;; END OF VERTICO CONFIG
+;;;;;;;;;;;;;;;;;;;;
+
+;; Enable rich annotations using the Marginalia package
+(use-package marginalia
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init section is always executed.
+  :init
+
+  ;; Marginalia must be actived in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
+
+(use-package nerd-icons-completion
+  :after marginalia
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
+  :config
+  (nerd-icons-completion-mode))
 
 (server-start)
 
