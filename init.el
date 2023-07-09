@@ -80,6 +80,7 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 
 (global-set-key (kbd "C-' |") 'split-window-right)
+
 (global-set-key (kbd "C-' -") 'split-window-below)
 
 ;; Command should be META on the mac
@@ -408,37 +409,42 @@
   (("C-c a" . org-agenda)  ;; Bind C-c a to org-agenda
    ("C-c c" . org-capture)
 
-  ;; this will override copilot if you want it to.
-  (:map org-mode-map
-        ("<tab>" . org-cycle)
-        ("S-<tab>" . org-shifttab)
-        ("C-<tab>" . org-global-cycle)))
 
 
+   (:map org-mode-map
+		 (("M-F" . org-metaright)
+		  ("M-B" . org-metaleft)
 
-  :init
-  (require 'org-babel)
-  ;; setup org-indent-mode
-  (setq org-startup-indented t)
-  ;; American time formats
-  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-  (setq org-directory (file-truename "~/Dropbox/Org"))
-  (setq org-archive-location "archive/%s_archive::")
-  (setq org-agenda-files (list org-directory))
-  ;; default notes file
-  (setq org-default-notes-file (concat org-directory "/Notes.org"))
-  ;; default todo file
-  (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
+		  ;; over-ride co-pilot
+          ;; ("<tab>" . org-cycle)
+          ;; ("S-<tab>" . org-shifttab)
+          ;; ("C-<tab>" . org-global-cycle)
+		  )
+		 )
+   )
 
-  :config
-  (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
-           "* TODO %?\n  %i\n  %a")
-          ("n" "Note" entry (file+headline org-default-notes-file "Notes")
-           "* %?\n  %i\n  %a")))
-;;   (setq org-capture-default-template "t")
-;;  (setq org-startup-folded 'showall)
-  (require 'org-agenda))
+		 :init
+		 ;; setup org-indent-mode
+		 (setq org-startup-indented t)
+		 ;; American time formats
+		 (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
+		 (setq org-directory (file-truename "~/Dropbox/Org"))
+		 (setq org-archive-location "archive/%s_archive::")
+		 (setq org-agenda-files (list org-directory))
+		 ;; default notes file
+		 (setq org-default-notes-file (concat org-directory "/Notes.org"))
+		 ;; default todo file
+		 (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
+
+		 :config
+		 (setq org-capture-templates
+			   '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
+				  "* TODO %?\n  %i\n  %a")
+				 ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+				  "* %?\n  %i\n  %a")))
+		 ;;   (setq org-capture-default-template "t")
+		 ;;  (setq org-startup-folded 'showall)
+		 (require 'org-agenda))
 
 
 
@@ -479,11 +485,11 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-k							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
+							  "#+filetags: ${filetags}\n"))))
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+created: %U\n#+filetags: ${filetags} \n#+title: ${title}\n\n")
+							  "#+created: %U\n#+filetags: ${filetags}\n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
 (use-package activity-watch-mode
