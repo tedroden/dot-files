@@ -463,7 +463,7 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-k							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
+							  "#+filetags: ${filetags}\n#+title: %<%Y-%m-%d>\n"))))
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
