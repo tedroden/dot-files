@@ -156,10 +156,6 @@
   (ef-themes-load-random 'dark)
   )
 
-(use-package spacious-padding
-  :config
-  (spacious-padding-mode 1))
-
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom
@@ -381,54 +377,39 @@
     (lambda ()
       (auth-source-pass-get 'secret "open-ai")))))
 
-
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
-		 ("C-0" . 'mc/unmark-next-like-this)))
+		("C-0" . 'mc/unmark-next-like-this)))
 
 (use-package org
   :ensure t
   :demand t
-  :bind
-  (("C-c a" . org-agenda)  ;; Bind C-c a to org-agenda
-   ("C-c c" . org-capture)
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
 
+         :map org-mode-map
+         (("M-F" . org-metaright)
+          ("M-B" . org-metaleft)
+		  ("C-c t i" . org-table-insert-row)
+		  ("C-c t p" . org-table-move-row-up)
+		  ("C-c t n" . org-table-move-row-down)
+		  ))
 
-
-   (:map org-mode-map
-		 (("M-F" . org-metaright)
-		  ("M-B" . org-metaleft)
-
-		  ;; over-ride co-pilot
-          ;; ("<tab>" . org-cycle)
-          ;; ("S-<tab>" . org-shifttab)
-          ;; ("C-<tab>" . org-global-cycle)
-		  )
-		 )
-   )
-
-		 :init
-		 ;; setup org-indent-mode
-		 (setq org-startup-indented t)
-		 ;; American time formats
-		 (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-		 (setq org-directory (file-truename "~/Dropbox/Org"))
-		 (setq org-archive-location "archive/%s_archive::")
-		 (setq org-agenda-files (list org-directory))
-		 ;; default notes file
-		 (setq org-default-notes-file (concat org-directory "/Notes.org"))
-		 ;; default todo file
-		 (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
-
-		 :config
-		 (setq org-capture-templates
-			   '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
-				  "* TODO %?\n  %i\n  %a")
-				 ("n" "Note" entry (file+headline org-default-notes-file "Notes")
-				  "* %?\n  %i\n  %a")))
-		 ;;   (setq org-capture-default-template "t")
-		 ;;  (setq org-startup-folded 'showall)
-		 (require 'org-agenda))
+  :init
+  (setq org-startup-indented t)
+  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
+  (setq org-directory (file-truename "~/Dropbox/Org"))
+  (setq org-archive-location "archive/%s_archive::")
+  (setq org-agenda-files (list org-directory))
+  (setq org-default-notes-file (concat org-directory "/Notes.org"))
+  (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
+  :config
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline org-default-tasks-file "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+           "* %?\n  %i\n  %a")))
+  (require 'org-agenda))
 
 
 
@@ -455,11 +436,11 @@
   ("C-c n d" . org-roam-dailies-map)
 
   :config
-    (require 'org-roam-dailies) ;; Ensure the keymap is available
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-setup)
   (org-roam-db-autosync-mode)
 
-;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
+  ;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
   (setq org-id-locations-file  (concat dotfiles-dir ".org-id-locations"))
   (setq org-roam-node-display-template
 		(concat "${title:*} "
