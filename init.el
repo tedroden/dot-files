@@ -388,9 +388,15 @@
          ("C-c c" . org-capture)
 
          :map org-mode-map
+
          (("M-F" . org-metaright)
           ("M-B" . org-metaleft)
-		  ("C-c t i" . org-table-insert-row)
+
+		  ;; take these back from co-pillot
+        ("<tab>" . org-cycle)
+        ("S-<tab>" . org-shifttab)
+        ("C-<tab>" . org-global-cycle)
+
 		  ("C-c t p" . org-table-move-row-up)
 		  ("C-c t n" . org-table-move-row-down)
 		  ))
@@ -450,7 +456,7 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+filetags: ${filetags}\n"))))
+							  "#+title: Daily Notes %<%Y-%m-%d>\n"))))
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
@@ -517,4 +523,6 @@
 
 (server-start)
 
+;; finally
+(org-roam-dailies-goto-today)
 ;; ;;; init.el ends here
