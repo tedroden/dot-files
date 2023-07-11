@@ -276,28 +276,27 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
-(use-package nerd-icons-completion
-  :config
-  (nerd-icons-completion-mode))
 
-(use-package ivy
-  :bind
-  (("C-o" . 'swiper))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-initial-inputs-alist nil)
-  :config
-  (ivy-mode nil))
 
-(use-package counsel
-  :bind
-  (("C-x b" . 'counsel-switch-buffer)
-   ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-x d" . 'counsel-dired)
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
-   ("M-y" . 'counsel-yank-pop)))
+
+;; (use-package ivy
+;;   :bind
+;;   (("C-o" . 'swiper))
+;;   :custom
+;;   (ivy-use-virtual-buffers t)
+;;   (ivy-initial-inputs-alist nil)
+;;   :config
+;;   (ivy-mode nil))
+
+;; (use-package counsel
+;;   :bind
+;;   (("C-x b" . 'counsel-switch-buffer)
+;;    ("M-x" . 'counsel-M-x)
+;;    ("C-x C-f" . 'counsel-find-file)
+;;    ("C-x d" . 'counsel-dired)
+;;    ("C-h f" . 'counsel-describe-function)
+;;    ("C-h v" . 'counsel-describe-variable)
+;;    ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
 
@@ -456,7 +455,7 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+title: Daily Notes %<%Y-%m-%d>\n"))))
+							  "#+created: %U\n\n"))))
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
@@ -511,15 +510,89 @@
 		org-roam-ui-update-on-save t
 		org-roam-ui-open-on-start t))
 
-;; (use-package vertico
-;;   :ensure t
-;;   :init
-;;   (vertico-mode))
 
 (use-package pdf-tools
   :ensure t
   :config
   (pdf-tools-install))
+
+;;;;;;;;;;;;;;;;;;;;
+;; Enable vertico (config from vertico/README.org)
+;; START OF VERTICO CONFIG
+(use-package vertico
+  :init
+  (vertico-mode)
+
+  ;; Different scroll margin
+  ;; (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  ;; (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+;; END OF VERTICO CONFIG
+;;;;;;;;;;;;;;;;;;;;
+
+;; Enable rich annotations using the Marginalia package
+(use-package marginalia
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init section is always executed.
+  :init
+
+  ;; Marginalia must be actived in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
+
+(use-package nerd-icons-completion
+  :after marginalia
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
+  :config
+  (nerd-icons-completion-mode))
 
 (server-start)
 
