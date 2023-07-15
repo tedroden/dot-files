@@ -7,7 +7,8 @@
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
 ;; brew install emacs-plus@29 --with-native-comp
-;; 
+;;
+;; osascript -e "tell application \"Finder\" to make alias file to (POSIX file \"/opt/homebrew/Cellar/emacs-plus@29/29.0.90/Emacs.app\") at POSIX file \"/Applications\""
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -378,7 +379,7 @@
 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
-		("C-0" . 'mc/unmark-next-like-this)))
+		 ("C-0" . 'mc/unmark-next-like-this)))
 
 (use-package org
   :ensure t
@@ -392,10 +393,10 @@
           ("M-B" . org-metaleft)
 
 		  ;; take these back from co-pillot
-        ("<tab>" . org-cycle)
-        ("S-<tab>" . org-shifttab)
-        ("C-<tab>" . org-global-cycle)
-
+          ("<tab>" . org-cycle)
+          ("S-<tab>" . org-shifttab)
+          ("C-<tab>" . org-global-cycle)
+		  ("C-c t i" . org-table-insert-row)
 		  ("C-c t p" . org-table-move-row-up)
 		  ("C-c t n" . org-table-move-row-down)
 		  ))
@@ -578,7 +579,7 @@
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+			  ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init
@@ -643,7 +644,7 @@
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
          ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-;;         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+		 ;;         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
@@ -651,8 +652,8 @@
          ;; Other custom bindings
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ;; M-g bindings in `goto-map'
-;;         ("M-g e" . consult-compile-error)
-;;         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+		 ;;         ("M-g e" . consult-compile-error)
+		 ;;         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
          ("M-g" . consult-goto-line)             ;; orig. goto-line
          ;; ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
          ;; ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
@@ -725,6 +726,7 @@
 
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
+  ;; doesn't work (?)
   (setq consult-narrow-key "<") ;; "C-+"
 
   ;; Optionally make narrowing help available in the minibuffer.
