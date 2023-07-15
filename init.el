@@ -455,11 +455,12 @@
 		'(("d" "default" entry
 		   "* %?"
 		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+created: %U\n\n"))))
+							  "#+title: Daily Notes %<%Y-%m-%d>\n#+created: %U\n\n"))))
+
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
 		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+created: %U\n#+filetags: ${filetags}\n#+title: ${title}\n\n")
+							  "#+created: %U\n\n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
 (use-package activity-watch-mode
