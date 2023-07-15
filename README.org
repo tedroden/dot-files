@@ -1,8 +1,8 @@
-# Ted Roden's various dotfiles
+* Ted Roden's various dotfiles
 
-It's really just my .emacs file. 
+It's really just my [[file:init.el][.emacs.d/init.el]] file.
 
-## .emacs
+* .emacs
 
 This sets up some sane (IMO) defaults and installs useful packages.
 
