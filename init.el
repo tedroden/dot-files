@@ -82,6 +82,9 @@
 
 (global-set-key (kbd "C-c |") 'split-window-right)
 (global-set-key (kbd "C-c -") 'split-window-below)
+(global-set-key (kbd "C-' |") 'split-window-right)
+(global-set-key (kbd "C-' -") 'split-window-below)
+
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
