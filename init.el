@@ -736,11 +736,14 @@
   :bind
   (("M-g" . goto-line-with-feedback)))
 
-
-
 (use-package treemacs)
 (use-package treemacs-projectile)
+(use-package dockerfile-mode)
 
+(use-package emojify
+  :hook (after-init . global-emojify-mode)
+  :bind
+  (("C-c E" . emojify-insert-emoji)))
 
 (server-start)
 
