@@ -378,7 +378,7 @@
   :custom
   ((chatgpt-shell-openai-key
     (lambda ()
-      (auth-source-pass-get 'secret "open-ai")))))
+      (auth-source-pass-get 'secret "openai-key")))))
 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
@@ -745,6 +745,22 @@
   :hook (after-init . global-emojify-mode)
   :bind
   (("C-c E" . emojify-insert-emoji)))
+
+
+(defun open-current-file-with-sudo-tramp ()
+  "Open the currently visited file with sudo:: method in TRAMP,
+   but refuse to open files in the home directory.
+   (A copilot/chatgpt colab... )"
+  (interactive)
+  (when buffer-file-name
+    (let ((file-path (buffer-file-name)))
+      (unless (string-prefix-p (expand-file-name "~") file-path)
+        (find-alternate-file ;; this will kill the current buffer, use switch-to-buffer if you don't want that.
+         (concat "/sudo::" file-path)))
+      (when (string-prefix-p (expand-file-name "~") file-path)
+        (message "Don't bring sudo in here")))))
+
+(global-set-key (kbd "C-c s") 'open-current-file-with-sudo-tramp)
 
 (server-start)
 
