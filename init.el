@@ -375,6 +375,7 @@
 
 (use-package chatgpt-shell
   :ensure t
+  :bind (("C-c g" . chatgpt-shell))
   :custom
   ((chatgpt-shell-openai-key
     (lambda ()
@@ -761,6 +762,7 @@
         (message "Don't bring sudo in here")))))
 
 (global-set-key (kbd "C-c s") 'open-current-file-with-sudo-tramp)
+(setq tramp-auto-save-directory (expand-file-name "~/.emacs.d/tramp-autosave"))
 
 (server-start)
 
