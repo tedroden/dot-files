@@ -6,9 +6,9 @@
 
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
-;; brew install emacs-plus@29 --with-native-comp
+;; brew install emacs-plus@30 --with-native-comp
 ;;
-;; osascript -e "tell application \"Finder\" to make alias file to (POSIX file \"/opt/homebrew/Cellar/emacs-plus@29/29.0.90/Emacs.app\") at POSIX file \"/Applications\""
+;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications"
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -590,6 +590,8 @@
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
+
+(use-package demap)
 
 ;; finally
 (org-roam-dailies-goto-today)
