@@ -16,10 +16,7 @@
 ;; Enable transient mark mode
 (transient-mark-mode 1)
 
-;; Start the server if it's not already started.
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+
 
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
@@ -610,9 +607,12 @@
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
 
+;; Finally
+;; Start the server if it's not already started.
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
-;; finally
-(server-start)
 (org-roam-dailies-goto-today)
 
 ;;; init.el ends here
