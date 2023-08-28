@@ -251,8 +251,7 @@
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
-  :bind (("C-c e" . eshell-toggle)))
-
+  :bind (("C-' e" . eshell-toggle)))
 
 ;; failing (install the icon files... "m-x icons install" something should get you close
 ;; (use-package all-the-icons-ivy-rich
@@ -400,6 +399,8 @@
          (("M-F" . org-metaright)
           ("M-B" . org-metaleft)
 
+		  ("C-c i t" . counsel-org-tag)
+
 		  ;; take these back from co-pillot
           ("<tab>" . org-cycle)
           ("S-<tab>" . org-shifttab)
@@ -408,9 +409,12 @@
 		  ("M-P" . org-metaup)
 		  ("M-N" . org-metadown)
 
+		  ("C-c o" . org-table-insert-row)
+
 		  ("C-c t i" . org-table-insert-row)
 		  ("C-c t p" . org-table-move-row-up)
 		  ("C-c t n" . org-table-move-row-down)
+
 		  ))
 
   :init
@@ -419,18 +423,20 @@
   (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
-  (setq org-default-tasks-file (concat org-directory "/Tasks.org"))
-  (setq fh-file (concat org-directory "/Fancy Hands.org"))
-  (setq grow-file (concat org-directory "/Grow.org"))
+  (setq org-agenda-remove-tags nil)
+  (setq tasks-file (concat org-directory "/Tasks.org"))
   :config
-(setq org-capture-templates
-      '(("t" "TODO" entry (file org-default-tasks-file)
+  (setq org-capture-templates
+      '(("t" "TODO" entry (file+headline tasks-file "Tasks")
          "* TODO %?\n  %i\n  %a")
-        ("f" "Fancy Hands" entry (file fh-file)
+        ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
          "* TODO %?\n  %i\n  %a")
-        ("g" "Grow" entry (file grow-file)
+        ("g" "Grow" entry (file+headline tasks-file "Grow")
          "* TODO %?\n  %i\n  %a")
+        ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+         "* TODO %?%(org-set-tags \"BUY\")\n")
         ))
+
   (require 'org-agenda))
 
 
@@ -480,6 +486,17 @@
 							  "#+created: %U\n\n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
+
+;;;;
+;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
+(defun tedroden/force-org-rebuild-cache ()
+  "Rebuild the `org-mode' and `org-roam' cache."
+  (interactive)
+  (org-id-update-id-locations)
+  (org-roam-db-clear-all)
+  (org-roam-db-sync)
+  (org-roam-update-org-id-locations))
+
 (use-package activity-watch-mode
   :ensure t
   :config
@@ -492,11 +509,6 @@
               ("F" . dired-narrow))
   :config
   (put 'dired-find-alternate-file 'disabled nil))
-
-;; (use-package editorconfig
-;;   :ensure t
-;;   :config
-;;   (editorconfig-mode 1))
 
 (use-package typescript-ts-mode
   :ensure t)
@@ -566,6 +578,13 @@
   (("C-c E" . emojify-insert-emoji)))
 
 
+;; This provides a cute little mini-map (just like a modern editor)
+(use-package demap
+  :bind
+  ;; turn it on with...
+  (("C-' d" . demap-toggle)))
+
+;; built in stuff...
 (defun open-current-file-with-sudo-tramp ()
   "Open the currently visited file with sudo:: method in TRAMP,
    but refuse to open files in the home directory.
@@ -577,12 +596,12 @@
         (find-alternate-file ;; this will kill the current buffer, use switch-to-buffer if you don't want that.
          (concat "/sudo::" file-path)))
       (when (string-prefix-p (expand-file-name "~") file-path)
-        (message "Don't bring sudo in here")))))
+        (message "Don't bring sudo into your home directory")))))
 
-(global-set-key (kbd "C-c s") 'open-current-file-with-sudo-tramp)
+(global-set-key (kbd "C-' s") 'open-current-file-with-sudo-tramp)
 (setq tramp-auto-save-directory (expand-file-name "~/.emacs.d/tramp-autosave"))
 
-(server-start)
+
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
 (custom-set-variables
   '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
@@ -591,9 +610,9 @@
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
 
-(use-package demap)
 
 ;; finally
+(server-start)
 (org-roam-dailies-goto-today)
 
 ;;; init.el ends here
