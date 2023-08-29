@@ -35,9 +35,7 @@
 ;; Enable transient mark mode
 (transient-mark-mode 1)
 
-
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-
 
 ;; setup custom/personal/etc.
 (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
@@ -411,10 +409,13 @@
 		  ("C-c t i" . org-table-insert-row)
 		  ("C-c t p" . org-table-move-row-up)
 		  ("C-c t n" . org-table-move-row-down)
-
+		  ("C-c X" . org-latex-export-to-pdf)
 		  ))
 
   :init
+(unbind-key "C-'" org-mode-map)
+(unbind-key "C-," org-mode-map)
+  (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-startup-indented t)
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-directory (file-truename "~/Dropbox/Org"))
@@ -435,7 +436,6 @@
         ))
 
   (require 'org-agenda))
-
 
 
 (use-package org-roam
