@@ -1,4 +1,3 @@
-
 ;; ~/.emacs.d/init.el --- (this file)
 
 ;;; add this to your .bashrc or .zshrc
@@ -9,14 +8,15 @@
 ;; brew install emacs-plus@30 --with-native-comp
 ;;
 ;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications"
+;;
+;; Do not reinstall via: `brew reinstall emacs-plus@30 --with-native-comp`
+;; Do this: `brew uninstall uninstall emacs-plus@30` and reinstall it.
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
 
 ;; Enable transient mark mode
 (transient-mark-mode 1)
-
-
 
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
