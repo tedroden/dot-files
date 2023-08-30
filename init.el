@@ -153,6 +153,7 @@
   :init
   ;; light dark or nothing
   (ef-themes-load-random 'dark)
+   (setq ef-themes-region '(intense no-extend neutral))
   )
 
 (use-package doom-modeline
@@ -415,6 +416,7 @@
   :init
 (unbind-key "C-'" org-mode-map)
 (unbind-key "C-," org-mode-map)
+   (setq org-ellipsis " ▾")
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-startup-indented t)
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
@@ -434,7 +436,6 @@
         ("s" "Shopping" entry (file+headline tasks-file "Tasks")
          "* TODO %?%(org-set-tags \"BUY\")\n")
         ))
-
   (require 'org-agenda))
 
 
