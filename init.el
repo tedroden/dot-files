@@ -21,6 +21,8 @@
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
+
+
 ;;; Code:
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -220,7 +222,9 @@
 ;;;;
 ;;;;;; magit setup. Is this right?
 (use-package magit
-  :bind (("C-c m" . magit-status)))
+  :bind (("C-c m" . magit-status))
+  :custom
+  (git-commit-major-mode 'org-mode))
 
 (use-package rainbow-mode
   :hook ((css-mode . rainbow-mode)
