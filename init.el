@@ -237,28 +237,13 @@
 
 ;; not sure when this is actually used.
 (setq-default tab-width 4)
-
-(use-package eshell
-  :bind  (("C-!" . eshell))
-  :config
-  (progn
-	;; (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)
-	(add-hook 'eshell-preoutput-filter-functions
-			  'ansi-color-apply)
-	;; requires `eshell-git-prompt`
-	))
-
+(use-package eshell)
 
 ;; show eshell right under the current window
 (use-package eshell-toggle
   :bind (("C-' e" . eshell-toggle)))
 
-;; failing (install the icon files... "m-x icons install" something should get you close
-;; (use-package all-the-icons-ivy-rich
-;;   :init (all-the-icons-ivy-rich-mode 1))
-
 (set-frame-font "Monaco 14")
-
 
 (use-package ivy-rich)
 (use-package nerd-icons)
@@ -269,7 +254,6 @@
   (nerd-icons-ivy-rich-mode 1)
   (ivy-rich-mode 1))
 
-
 (use-package nerd-icons-ibuffer
   :ensure t
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
@@ -277,9 +261,6 @@
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
-
-
-
 
 (use-package ivy
   :bind
@@ -384,16 +365,18 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-(defvar org-default-tasks-file nil "Default org tasks file.")
-(defvar fh-file nil "Fancy Hands task file.")
-(defvar grow-file nil "Fancy Hands task file.")
+(defvar the-list-file nil "Default org tasks file.")
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
 
 (use-package org
   :ensure t
   :demand t
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
-
+("C-c l" . open-the-list)
          :map org-mode-map
 
          (("M-F" . org-metaright)
@@ -422,13 +405,17 @@
 (unbind-key "C-," org-mode-map)
    (setq org-ellipsis " ▾")
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
-  (setq org-startup-indented t)
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-remove-tags nil)
-  (setq tasks-file (concat org-directory "/Tasks.org"))
+  ;; hide stars and indent on startup:
+  (setq org-startup-indented t)
+  (setq org-hide-leading-stars t)
+
+  (setq the-list-file (concat org-directory "/the-list.org"))
+
   :config
   (setq org-capture-templates
       '(("t" "TODO" entry (file+headline tasks-file "Tasks")
@@ -618,6 +605,6 @@
 (unless (server-running-p)
   (server-start))
 
-(org-roam-dailies-goto-today)
+;; (org-roam-dailies-goto-today)
 
 ;;; init.el ends here
