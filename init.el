@@ -365,11 +365,6 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-(defvar the-list-file nil "Default org tasks file.")
-(defun open-the-list ()
-  "Quickly edit my ~/Org/the-list.org file."
-  (interactive)
-  (find-file the-list-file))
 
 (use-package org
   :ensure t
@@ -415,6 +410,13 @@
   (setq org-hide-leading-stars t)
 
   (setq the-list-file (concat org-directory "/the-list.org"))
+
+  (defvar the-list-file nil "Default org tasks file.")
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
+
 
   :config
   (setq org-capture-templates
