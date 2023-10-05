@@ -9,7 +9,7 @@ personal.el
 elpa
 ido.last
 ac-comphist.dat
-/.DS_Store
+.DS_Store
 .vscode
 __pycache__
 venv
