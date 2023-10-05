@@ -274,7 +274,7 @@
 (use-package counsel
   :bind
   (
-   ("C-x b" . 'counsel-switch-buffer)
+   ("C-x b" . 'ivy-switch-buffer)
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
    ("C-x d" . 'counsel-dired)
@@ -365,11 +365,6 @@
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
-(defvar the-list-file nil "Default org tasks file.")
-(defun open-the-list ()
-  "Quickly edit my ~/Org/the-list.org file."
-  (interactive)
-  (find-file the-list-file))
 
 (use-package org
   :ensure t
@@ -415,6 +410,13 @@
   (setq org-hide-leading-stars t)
 
   (setq the-list-file (concat org-directory "/the-list.org"))
+
+  (defvar the-list-file nil "Default org tasks file.")
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
+
 
   :config
   (setq org-capture-templates
@@ -573,6 +575,9 @@
   ;; turn it on with...
   (("C-' d" . demap-toggle)))
 
+(use-package eglot
+  :ensure t)
+
 ;; built in stuff...
 (defun open-current-file-with-sudo-tramp ()
   "Open the currently visited file with sudo:: method in TRAMP,
@@ -598,6 +603,8 @@
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
+
+
 
 ;; Finally
 ;; Start the server if it's not already started.
