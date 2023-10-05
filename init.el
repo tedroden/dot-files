@@ -274,7 +274,7 @@
 (use-package counsel
   :bind
   (
-   ("C-x b" . 'counsel-switch-buffer)
+   ("C-x b" . 'ivy-switch-buffer)
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
    ("C-x d" . 'counsel-dired)
@@ -575,6 +575,9 @@
   ;; turn it on with...
   (("C-' d" . demap-toggle)))
 
+(use-package eglot
+  :ensure t)
+
 ;; built in stuff...
 (defun open-current-file-with-sudo-tramp ()
   "Open the currently visited file with sudo:: method in TRAMP,
@@ -600,6 +603,8 @@
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
+
+
 
 ;; Finally
 ;; Start the server if it's not already started.
