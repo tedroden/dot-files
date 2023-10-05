@@ -562,7 +562,7 @@
 (use-package dockerfile-mode)
 
 (use-package emojify
-  :hook (after-init . global-emojify-mode)
+;  :hook (after-init . global-emojify-mode)
   :bind
   (("C-c E" . emojify-insert-emoji)))
 
