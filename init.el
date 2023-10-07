@@ -366,6 +366,14 @@
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
 
+(setq org-directory (file-truename "~/Dropbox/Org"))
+(setq the-list-file (concat org-directory "/the-list.org"))
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
+
+(require 'org)
 (use-package org
   :ensure t
   :demand t
@@ -401,7 +409,6 @@
    (setq org-ellipsis " ▾")
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-  (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-remove-tags nil)
@@ -409,13 +416,6 @@
   (setq org-startup-indented t)
   (setq org-hide-leading-stars t)
 
-  (setq the-list-file (concat org-directory "/the-list.org"))
-
-  (defvar the-list-file nil "Default org tasks file.")
-(defun open-the-list ()
-  "Quickly edit my ~/Org/the-list.org file."
-  (interactive)
-  (find-file the-list-file))
 
 
   :config
