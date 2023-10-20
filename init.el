@@ -48,17 +48,25 @@
   (if (file-exists-p f)
 	  (progn (load f)
 			 (message (concat "Loaded " f)))
-    nil))
+	nil))
 
 ;; all "yes" or "no" questions should be y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (global-hi-lock-mode 1)
 
-(setq-default c-default-style "k&r"
-			  c-basic-offset 4
-			  tab-width 4
-			  indent-tabs-mode t)
+
+(setq-default c-default-style "k&r")
+(setq-default tab-width 4)
+(setq-default c-basic-offset 4)
+(setq-default indent-tabs-mode nil)
+(setq-default typescript-ts-mode-indent-offset 4)
+
+;; (setq-default c-default-style "k&r")
+;; (setq-default tab-width 2)
+;; (setq-default indent-tabs-mode nil)
+;; (setq-default c-basic-offset 2)
+;; (setq-default js-indent-level 2)
 
 (defun ted/edit-dot-emacs ()
   "Quickly edit my dot Emacs file."
@@ -96,10 +104,11 @@
 (setq confirm-kill-emacs 'yes-or-no-p)
 
 ;;;; Want line numbers?
-;; (global-linum-mode t) ;; Line numbersthis is good for teaching, but i don't generally want it.
+;; (global-linum-mode t) ;; Line numbers
 
 ;;;; highlight the current line?
 ;; (global-hl-line-mode t)
+
 
 ;; column number (lives in mode line)
 (column-number-mode t)
@@ -107,17 +116,17 @@
 ;; get package stuff ready
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+			 '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 
-;; ;; see if we can get away with just the use-package below
-;; ;; this is how they say to do it. 
+;; see if we can get away with just the use-package below
+;; this is how they say to do it.
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
-    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
+	(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+	(eval-buffer)
+	(quelpa-self-upgrade)))
 
 
 ;; (require 'use-package)
@@ -128,18 +137,17 @@
 
 (use-package copilot
   :quelpa (copilot :fetcher github
-                   :repo "zerolfx/copilot.el"
-                   :branch "main"
-                   :files ("dist" "*.el"))
-  
+				   :repo "zerolfx/copilot.el"
+				   :branch "main"
+				   :files ("dist" "*.el"))
+
   :hook (prog-mode . copilot-mode)
-  
+
   :bind (("<tab>" . copilot-accept-completion)
 		 ("C-TAB" . copilot-accept-completion-by-word)))
 
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
-
 
 (defun tedroden/no-suspend ()
   "Don't minimize the frame if we hit control-z."
@@ -155,7 +163,7 @@
   :init
   ;; light dark or nothing
   (ef-themes-load-random 'dark)
-   (setq ef-themes-region '(intense no-extend neutral))
+  (setq ef-themes-region '(intense no-extend neutral))
   )
 
 (use-package doom-modeline
@@ -235,8 +243,7 @@
   (interactive)
   (other-window -1))
 
-;; not sure when this is actually used.
-(setq-default tab-width 4)
+
 (use-package eshell)
 
 ;; show eshell right under the current window
@@ -284,11 +291,7 @@
 
 (use-package npm-mode)
 
-;; built in
-(require 'treesit)
 
-(use-package flycheck
-  :init (global-flycheck-mode))
 
 ;; (use-package 'exec-path-from-shell)
 
@@ -308,7 +311,7 @@
 								  ("GIT" (mode . magit-mode))
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
-								  ("Man" (name . "\*Man"))	 
+								  ("Man" (name . "\*Man"))
 								  ))))
 
 ;;;;;; this is useful if pair programming or demoing
@@ -328,8 +331,8 @@
   :init (save-place-mode 1)
   :config
   (progn
-    (setq-default save-place t)
-    (setq save-place-limit nil)))
+	(setq-default save-place t)
+	(setq save-place-limit nil)))
 
 (use-package rjsx-mode
   :defer t)
@@ -358,31 +361,39 @@
   :bind (("C-c g" . chatgpt-shell))
   :custom
   ((chatgpt-shell-openai-key
-    (lambda ()
-      (auth-source-pass-get 'secret "openai-key")))))
+	(lambda ()
+	  (auth-source-pass-get 'secret "openai-key")))))
 
 (use-package multiple-cursors
   :bind (("C-\-" . 'mc/mark-next-like-this)
 		 ("C-0" . 'mc/unmark-next-like-this)))
 
 
+(setq org-directory (file-truename "~/Dropbox/Org"))
+(setq the-list-file (concat org-directory "/the-list.org"))
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
+
+(require 'org)
 (use-package org
   :ensure t
   :demand t
   :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
-("C-c l" . open-the-list)
-         :map org-mode-map
+		 ("C-c c" . org-capture)
+         ("C-c o" . open-the-list)
+		 :map org-mode-map
 
-         (("M-F" . org-metaright)
-          ("M-B" . org-metaleft)
+		 (("M-F" . org-metaright)
+		  ("M-B" . org-metaleft)
 
 		  ("C-c i t" . counsel-org-tag)
 
 		  ;; take these back from co-pillot
-          ("<tab>" . org-cycle)
-          ("S-<tab>" . org-shifttab)
-          ("C-<tab>" . org-global-cycle)
+		  ("<tab>" . org-cycle)
+		  ("S-<tab>" . org-shifttab)
+		  ("C-<tab>" . org-global-cycle)
 
 		  ("M-P" . org-metaup)
 		  ("M-N" . org-metadown)
@@ -396,12 +407,11 @@
 		  ))
 
   :init
-(unbind-key "C-'" org-mode-map)
-(unbind-key "C-," org-mode-map)
-   (setq org-ellipsis " ▾")
+  (unbind-key "C-'" org-mode-map)
+  (unbind-key "C-," org-mode-map)
+  (setq org-ellipsis " ▾")
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-  (setq org-directory (file-truename "~/Dropbox/Org"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-remove-tags nil)
@@ -409,26 +419,19 @@
   (setq org-startup-indented t)
   (setq org-hide-leading-stars t)
 
-  (setq the-list-file (concat org-directory "/the-list.org"))
-
-  (defvar the-list-file nil "Default org tasks file.")
-(defun open-the-list ()
-  "Quickly edit my ~/Org/the-list.org file."
-  (interactive)
-  (find-file the-list-file))
 
 
   :config
   (setq org-capture-templates
-      '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-         "* TODO %?\n  %i\n  %a")
-        ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
-         "* TODO %?\n  %i\n  %a")
-        ("g" "Grow" entry (file+headline tasks-file "Grow")
-         "* TODO %?\n  %i\n  %a")
-        ("s" "Shopping" entry (file+headline tasks-file "Tasks")
-         "* TODO %?%(org-set-tags \"BUY\")\n")
-        ))
+	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+		   "* TODO %?\n  %i\n  %a")
+		  ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
+		   "* TODO %?\n  %i\n  %a")
+		  ("g" "Grow" entry (file+headline tasks-file "Grow")
+		   "* TODO %?\n  %i\n  %a")
+		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+		   "* TODO %?%(org-set-tags \"BUY\")\n")
+		  ))
   (require 'org-agenda))
 
 
@@ -448,8 +451,8 @@
 		 ("C-c n c" . org-roam-capture)
 		 ("C-c n j" . org-roam-dailies-capture-today)
 		 :map org-roam-dailies-map
-         ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow)
+		 ("Y" . org-roam-dailies-capture-yesterday)
+		 ("T" . org-roam-dailies-capture-tomorrow)
 		 )
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
@@ -497,7 +500,7 @@
 
 (use-package dired-narrow
   :bind (:map dired-mode-map
-              ("F" . dired-narrow))
+			  ("F" . dired-narrow))
   :config
   (put 'dired-find-alternate-file 'disabled nil))
 
@@ -547,13 +550,13 @@
 (defun goto-line-with-feedback (&optional line)
   "Show line numbers temporarily, while prompting for the line number input. LINE: number"
   (interactive "P")
-(if line
-	(ok-goto-line line)
-    (unwind-protect
-        (progn
-          (nlinum-mode 1)
-          (ok-goto-line (read-number "Goto line: ")))
-      (nlinum-mode -1))))
+  (if line
+	  (ok-goto-line line)
+	(unwind-protect
+		(progn
+		  (nlinum-mode 1)
+		  (ok-goto-line (read-number "Goto line: ")))
+	  (nlinum-mode -1))))
 
 (use-package nlinum
   :bind
@@ -564,7 +567,6 @@
 (use-package dockerfile-mode)
 
 (use-package emojify
-;  :hook (after-init . global-emojify-mode)
   :bind
   (("C-c E" . emojify-insert-emoji)))
 
@@ -575,8 +577,25 @@
   ;; turn it on with...
   (("C-' d" . demap-toggle)))
 
-(use-package eglot
-  :ensure t)
+;; (use-package eglot
+;;   :ensure t)
+
+;; (setq major-mode-remap-alist
+;;       '((python-mode . python-ts-mode)))
+
+;; built in
+(require 'treesit)
+
+;; (setq major-mode-remap-alist
+;;  '((yaml-mode . yaml-ts-mode)
+;;    (bash-mode . bash-ts-mode)
+;;    (js2-mode . js-ts-mode)
+;;    (typescript-mode . typescript-ts-mode)
+;;    (json-mode . json-ts-mode)
+;;    (css-mode . css-ts-mode)
+;;    (python-mode . python-ts-mode)))
+
+                                        ;(use-package eat)
 
 ;; built in stuff...
 (defun open-current-file-with-sudo-tramp ()
@@ -585,12 +604,12 @@
    (A copilot/chatgpt colab... )"
   (interactive)
   (when buffer-file-name
-    (let ((file-path (buffer-file-name)))
-      (unless (string-prefix-p (expand-file-name "~") file-path)
-        (find-alternate-file ;; this will kill the current buffer, use switch-to-buffer if you don't want that.
-         (concat "/sudo::" file-path)))
-      (when (string-prefix-p (expand-file-name "~") file-path)
-        (message "Don't bring sudo into your home directory")))))
+	(let ((file-path (buffer-file-name)))
+	  (unless (string-prefix-p (expand-file-name "~") file-path)
+		(find-alternate-file ;; this will kill the current buffer, use switch-to-buffer if you don't want that.
+		 (concat "/sudo::" file-path)))
+	  (when (string-prefix-p (expand-file-name "~") file-path)
+		(message "Don't bring sudo into your home directory")))))
 
 (global-set-key (kbd "C-' s") 'open-current-file-with-sudo-tramp)
 (setq tramp-auto-save-directory (expand-file-name "~/.emacs.d/tramp-autosave"))
@@ -598,12 +617,63 @@
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
 (custom-set-variables
-  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
-  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+ '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
+ '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
 
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (typescript-ts-mode . lsp)
+		 (python-mode . lsp)
+		 (yaml-mode . lsp)
+		 (json-mode . lsp)
+		 (css-mode . lsp)
+		 (bash-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+
+;; if you are helm user
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; (use-package sideline)
+;; (use-package sideline-lsp)
+
+
+
+
+
+(use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-python-ms)
+                         (lsp))))  ; or lsp-deferred
+
+
+
+(use-package flycheck
+  :init (global-flycheck-mode))
+
+(use-package company
+  :init (global-company-mode)
+  :bind (:map company-active-map ("<tab>" . company-complete-selection)))
+
+
+(with-eval-after-load 'lsp-mode
+  ;; :global/:workspace/:file
+  (setq lsp-modeline-diagnostics-scope :workspace))
 
 
 ;; Finally
