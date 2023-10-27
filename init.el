@@ -675,6 +675,9 @@
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
+;; With use-package:
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 ;; Finally
 ;; Start the server if it's not already started.
