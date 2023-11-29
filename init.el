@@ -79,6 +79,19 @@
 	(find-file dot-emacs)))
 
 
+(defun insert-date-or-datetime (ARG)
+  "Insert todays date ARG to get the (American) time."
+   (interactive "P")
+   (insert (if ARG
+               (format-time-string "%Y-%m-%d %H:%M %p")
+             (format-time-string "%Y-%m-%d"))))
+
+;; This provides a cute little mini-map (just like a modern editor)
+(use-package demap
+  :bind
+  ;; turn it on with...
+  (("C-' m" . demap-toggle)))
+
 ;; (global-set-key "\M-g" 'goto-line)
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
@@ -90,6 +103,7 @@
 (global-set-key (kbd "C-' |") 'split-window-right)
 (global-set-key (kbd "C-' -") 'split-window-below)
 (global-set-key (kbd "C-c r") 'replace-string)
+(global-set-key (kbd "C-' d") 'insert-date-or-datetime)
 
 
 ;; Command should be META on the mac
@@ -163,7 +177,9 @@
   :init
   ;; light dark or nothing
   (ef-themes-load-random 'dark)
-  (setq ef-themes-region '(intense no-extend neutral))
+;  (setq ef-themes-region '(intense no-extend neutral))
+  :bind
+    (("C-' t" . ef-themes-load-random))
   )
 
 (use-package doom-modeline
@@ -571,11 +587,7 @@
   (("C-c E" . emojify-insert-emoji)))
 
 
-;; This provides a cute little mini-map (just like a modern editor)
-(use-package demap
-  :bind
-  ;; turn it on with...
-  (("C-' d" . demap-toggle)))
+
 
 ;; (use-package eglot
 ;;   :ensure t)
@@ -635,7 +647,8 @@
 		 (css-mode . lsp)
 		 (bash-mode . lsp)
          ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
+;         (lsp-mode . lsp-enable-which-key-integration)
+         )
   :commands lsp)
 
 ;; optionally
@@ -675,6 +688,7 @@
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
+(add-hook 'prog-mode-hook #'lsp)
 
 ;; Finally
 ;; Start the server if it's not already started.
