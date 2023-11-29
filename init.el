@@ -614,6 +614,12 @@
 (global-set-key (kbd "C-' s") 'open-current-file-with-sudo-tramp)
 (setq tramp-auto-save-directory (expand-file-name "~/.emacs.d/tramp-autosave"))
 
+;; (use-package which-key                 ;
+;;   :config
+;;   (which-key-mode)
+;;   (which-key-setup-minibuffer)
+;;   )
+
 
 ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
 (custom-set-variables
@@ -634,34 +640,31 @@
 		 (json-mode . lsp)
 		 (css-mode . lsp)
 		 (bash-mode . lsp)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
+         )
   :commands lsp)
+
+
+(use-package treesit-auto
+  :config
+  (global-treesit-auto-mode))
+
+
 
 ;; optionally
 (use-package lsp-ui :commands lsp-ui-mode)
 
 ;; if you are helm user
-(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+
 ;; if you are ivy user
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-;; (use-package sideline)
-;; (use-package sideline-lsp)
-
-
-
-
-
-(use-package lsp-python-ms
+(use-package lsp-pyright
   :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)
   :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp))))  ; or lsp-deferred
-
-
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 (use-package flycheck
   :init (global-flycheck-mode))
@@ -675,9 +678,9 @@
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
-;; With use-package:
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;; ;; With use-package:
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
 
 ;; Finally
 ;; Start the server if it's not already started.
