@@ -398,7 +398,7 @@
   :demand t
   :bind (("C-c a" . org-agenda)
 		 ("C-c c" . org-capture)
-         ("C-c o" . open-the-list)
+         ("C-' o" . open-the-list)
 		 :map org-mode-map
 
 		 (("M-F" . org-metaright)
@@ -538,7 +538,8 @@
   (counsel-projectile-mode)
 
   :bind
-  (("C-c k" . 'counsel-projectile-ag)
+  (("C-c k" . 'counsel-projectile-rg)
+   ("M-p" . 'counsel-projectile-find-file) ;; i think this is close to vs code, right?
    ("C-c C-f" . 'counsel-projectile-find-file)))
 
 (use-package org-roam-ui
@@ -682,10 +683,10 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
-(use-package company
-  :init (global-company-mode)
-  :bind (:map company-active-map ("<tab>" . company-complete-selection)))
-
+;; (use-package company
+;;   :init (global-company-mode)
+;;   :bind (:map company-active-map ("<tab>" . company-complete-selection)))
+1
 
 (with-eval-after-load 'lsp-mode
   ;; :global/:workspace/:file
