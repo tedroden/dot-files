@@ -39,10 +39,14 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
-;; setup custom/personal/etc.
-(setq-default dotfiles-dir (file-truename "~/.emacs.d/")
-			  custom-file (concat dotfiles-dir "custom.el")
-			  personal-file (concat dotfiles-dir "personal.el"))
+(defvar dotfiles-dir (file-truename "~/.emacs.d/"))
+(defvar personal-file (concat dotfiles-dir "personal.el"))
+(setq-default custom-file (concat dotfiles-dir "custom.el"))
+
+;; ;; setup custom/personal/etc.
+;; (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
+;; 			  custom-file
+;; 			  personal-file )
 
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
@@ -646,6 +650,7 @@
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-restart 'ignore)
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
 		 (python-mode . lsp)
@@ -653,9 +658,9 @@
 		 (json-mode . lsp)
 		 (css-mode . lsp)
 		 (bash-mode . lsp)
-
+		 (sh-mode . lsp)
          )
-  :commands lsp)
+  :commands lsp  )
 
 
 (use-package treesit-auto
