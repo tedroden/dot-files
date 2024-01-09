@@ -11,6 +11,7 @@
 ;;
 ;; Do not reinstall via: `brew reinstall emacs-plus@30 --with-native-comp`
 ;; Do this: `brew uninstall uninstall emacs-plus@30` and reinstall it.
+;; Also, delete and re-create the alias in /Applications every time
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -95,7 +96,8 @@
   :bind
   ;; turn it on with...
   (("C-' m" . demap-toggle)))
-
+(global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "C-?") 'help-command)
 ;; (global-set-key "\M-g" 'goto-line)
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
@@ -106,6 +108,7 @@
 (global-set-key (kbd "C-c -") 'split-window-below)
 (global-set-key (kbd "C-' |") 'split-window-right)
 (global-set-key (kbd "C-' -") 'split-window-below)
+; $(global-set-key (kbd "C-' -") 'turn-OnahfA-evil-mode)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-' d") 'insert-date-or-datetime)
 
@@ -116,7 +119,7 @@
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
-;;(add-to-list 'default-frame-alist '(undecorated-round . t))
+(add-to-list 'default-frame-alist '(undecorated-round . t))
 
 ;; confirm on exit
 (setq confirm-kill-emacs 'yes-or-no-p)
@@ -180,18 +183,22 @@
 (use-package ef-themes
   :init
   ;; light dark or nothing
-  (ef-themes-load-random 'dark)
+  (ef-themes-load-random)
 ;  (setq ef-themes-region '(intense no-extend neutral))
   :bind
     (("C-' t" . ef-themes-load-random))
   )
+
+;; kind of nice too. but doesn't play well with magit.
+;; (use-package ayu-theme
+;;   :config (load-theme 'ayu-dark t))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
   ;; set the height
-  (doom-modeline-height 32 "height")
+
   (doom-modeline-battery t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
@@ -305,8 +312,8 @@
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
    ("C-x d" . 'counsel-dired)
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
+   ("C-' f" . 'counsel-describe-function)
+   ("C-' v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
@@ -385,9 +392,8 @@
 	  (auth-source-pass-get 'secret "openai-key")))))
 
 (use-package multiple-cursors
-  :bind (("C-\-" . 'mc/mark-next-like-this)
-		 ("C-0" . 'mc/unmark-next-like-this)))
-
+  :bind (("C-' -" . 'mc/mark-next-like-this)
+		 ("C-' 0" . 'mc/unmark-next-like-this)))
 
 (setq org-directory (file-truename "~/Dropbox/Org"))
 (setq the-list-file (concat org-directory "/the-list.org"))
@@ -651,6 +657,7 @@
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-restart 'ignore)
+  (setq lsp-modeline-code-actions-enable  nil)
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
 		 (python-mode . lsp)
@@ -688,10 +695,22 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
+(use-package vundo
+  :ensure t
+  :bind
+  (("C-' v" . vundo)
+   ("C-' r" . redo)))
+
+(package-vc-install "https://github.com/JasZhe/window-stool")
+
+(use-package window-stool
+  :config
+  (add-hook 'prog-mode-hook #'window-stool-mode))
+
 ;; (use-package company
 ;;   :init (global-company-mode)
 ;;   :bind (:map company-active-map ("<tab>" . company-complete-selection)))
-1
+
 
 (with-eval-after-load 'lsp-mode
   ;; :global/:workspace/:file
@@ -699,6 +718,9 @@
 
 
 (add-hook 'prog-mode-hook #'lsp)
+
+
+
 
 ;; ;; With use-package:
 ;; (use-package company-box
