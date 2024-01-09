@@ -699,6 +699,8 @@
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
 
+(use-package kbd-mode
+  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest)
 
 ;; Finally
 ;; Start the server if it's not already started.
