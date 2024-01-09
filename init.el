@@ -701,12 +701,6 @@
   (("C-' v" . vundo)
    ("C-' r" . redo)))
 
-(package-vc-install "https://github.com/JasZhe/window-stool")
-
-(use-package window-stool
-  :config
-  (add-hook 'prog-mode-hook #'window-stool-mode))
-
 ;; (use-package company
 ;;   :init (global-company-mode)
 ;;   :bind (:map company-active-map ("<tab>" . company-complete-selection)))
