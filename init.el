@@ -55,8 +55,8 @@
 			 (message (concat "Loaded " f)))
 	nil))
 
-;; all "yes" or "no" questions should be y/n
-(fset 'yes-or-no-p 'y-or-n-p)
+
+
 
 (global-hi-lock-mode 1)
 
@@ -115,14 +115,17 @@
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
+(setq ns-pop-up-frames 'nil) ;; don't open a new frame for every file
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
-(add-to-list 'default-frame-alist '(undecorated-round . t))
+;; (add-to-list 'default-frame-alist '(undecorated-round . t))
 
 ;; confirm on exit
 (setq confirm-kill-emacs 'yes-or-no-p)
+;; all "yes" or "no" questions should be y/n
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;;;; Want line numbers?
 ;; (global-linum-mode t) ;; Line numbers
@@ -141,26 +144,13 @@
 (package-initialize)
 
 
-;; see if we can get away with just the use-package below
-;; this is how they say to do it.
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-	(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-	(eval-buffer)
-	(quelpa-self-upgrade)))
+;; ;; (require 'use-package)
 
 
-;; (require 'use-package)
-
-(use-package quelpa)
-(use-package quelpa-use-package
-  :ensure t)
 
 (use-package copilot
-  :quelpa (copilot :fetcher github
-				   :repo "zerolfx/copilot.el"
-				   :branch "main"
-				   :files ("dist" "*.el"))
+  :vc (:url "https://github.com/zerolfx/copilot.el"
+            :branch "main")
 
   :hook (prog-mode . copilot-mode)
 
@@ -200,6 +190,10 @@
   ;; set the height
 
   (doom-modeline-battery t)
+  (doom-modeline-height 36)
+
+;; Whether display the `lsp' state. Non-nil to display in the mode-line.
+(doom-modeline-lsp t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 ;; FIXME: get rid of this if we don't have a battery
@@ -713,7 +707,9 @@
 
 (add-hook 'prog-mode-hook #'lsp)
 
-
+;; my new keyboard inspired me.
+(add-hook 'prog-mode-hook (lambda ()
+                            (local-set-key (kbd "C-j") 'newline-and-indent)))
 
 
 ;; ;; With use-package:
