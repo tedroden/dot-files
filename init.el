@@ -112,7 +112,6 @@
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-' d") 'insert-date-or-datetime)
 
-
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
 (setq ns-pop-up-frames 'nil) ;; don't open a new frame for every file
@@ -173,7 +172,7 @@
 (use-package ef-themes
   :init
   ;; light dark or nothing
-  (ef-themes-load-random)
+  (ef-themes-load-random 'dark)
 ;  (setq ef-themes-region '(intense no-extend neutral))
   :bind
     (("C-' t" . ef-themes-load-random))
@@ -716,6 +715,9 @@
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
 
+(use-package password-store
+  :ensure t
+  :bind (("C-' p" . password-store-copy)))
 
 ;; Finally
 ;; Start the server if it's not already started.
