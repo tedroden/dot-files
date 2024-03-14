@@ -1,6 +1,6 @@
 ;; ~/.emacs.d/init.el --- (this file)
 
-;;; add this to your .bashrc or .zshrc
+;; add this to your .bashrc or .zshrc
 ;; export EDITOR="emacsclient -nw"
 
 ;;; I'm currently intalling this emacs:
@@ -108,7 +108,6 @@
 (global-set-key (kbd "C-c -") 'split-window-below)
 (global-set-key (kbd "C-' |") 'split-window-right)
 (global-set-key (kbd "C-' -") 'split-window-below)
-; $(global-set-key (kbd "C-' -") 'turn-OnahfA-evil-mode)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-' d") 'insert-date-or-datetime)
 
@@ -150,11 +149,11 @@
 (use-package copilot
   :vc (:url "https://github.com/zerolfx/copilot.el"
             :branch "main")
-
   :hook (prog-mode . copilot-mode)
-
   :bind (("<tab>" . copilot-accept-completion)
 		 ("C-TAB" . copilot-accept-completion-by-word)))
+
+
 
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
@@ -216,10 +215,10 @@
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package ws-butler
-  :ensure t
-  :config
-  (ws-butler-global-mode))
+;; (use-package ws-butler
+;;   :ensure t
+;;   :config
+;;   (ws-butler-global-mode))
 
 ;; great for quickly switching windows if you've got more than 2
 ;; (use-package ace-window
@@ -233,6 +232,7 @@
 ;; super cool search if you can see where you want to go.
 (use-package avy
   :bind ("C-/" .'avy-goto-char-2))
+
 
 ;; Is this how I should do this? I don't know.
 (use-package python
@@ -311,10 +311,7 @@
 
 (use-package npm-mode)
 
-
-
 ;; (use-package 'exec-path-from-shell)
-
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
   :custom
@@ -334,10 +331,10 @@
 								  ("Man" (name . "\*Man"))
 								  ))))
 
-;;;;;; this is useful if pair programming or demoing
-;; (use-package beacon
-;;   :init
-;;   (beacon-mode t))
+;; this is useful if pair programming or demoing
+(use-package beacon
+  :init
+  (beacon-mode t))
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
@@ -384,12 +381,13 @@
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
 
+;; I do not like these key bindings. What does VS code do?
 (use-package multiple-cursors
-  :bind (("C-' -" . 'mc/mark-next-like-this)
+  :bind (("C-' 9" . 'mc/mark-next-like-this)
 		 ("C-' 0" . 'mc/unmark-next-like-this)))
 
 (setq org-directory (file-truename "~/Dropbox/Org"))
-(setq the-list-file (concat org-directory "/the-list.org"))
+(setq the-list-file (concat org-directory "/the-list.org.gpg"))
 (defun open-the-list ()
   "Quickly edit my ~/Org/the-list.org file."
   (interactive)
@@ -402,6 +400,7 @@
   :bind (("C-c a" . org-agenda)
 		 ("C-c c" . org-capture)
          ("C-' o" . open-the-list)
+         ("C-c o" . open-the-list)
 		 :map org-mode-map
 
 		 (("M-F" . org-metaright)
@@ -438,16 +437,23 @@
   (setq org-startup-indented t)
   (setq org-hide-leading-stars t)
 
-
-
   :config
   (setq org-capture-templates
-	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?\n  %i\n  %a")
-		  ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
-		   "* TODO %?\n  %i\n  %a")
+	    '(
+          ("t" "TODO" entry (file+headline tasks-file "Tasks")
+		   "* TODO %?\n\t%a")
+          ("n" "Note" entry (file+headline tasks-file "Notes")
+		   "* %?\n\t%a")
+		;;   ("q" "Quesos" entry (file+headline tasks-file "Quesos Notes")
+		;;    "* TODO %?\n  %i\n  %a")
+		;;   ("q" "Quesos" entry (file+headline tasks-file "Quesos Todo")
+		;;    "* TODO %?\n  %i\n  %a")
+		  ("f" "Fancy Hands" entry (file+headline the-list-file "Fancy Hands")
+		   "* TODO %?\n\t%a")
+		  ("" "Fancy Hands (note)" entry (file+headline the-list-file "Fancy Hands")
+		   "* %?\n\t%a")
 		  ("g" "Grow" entry (file+headline tasks-file "Grow")
-		   "* TODO %?\n  %i\n  %a")
+		   "* TODO %?")
 		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
 		   "* TODO %?%(org-set-tags \"BUY\")\n")
 		  ))
@@ -495,7 +501,7 @@
 
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
-		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
 							  "#+created: %U\n\n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
@@ -651,6 +657,8 @@
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-restart 'ignore)
   (setq lsp-modeline-code-actions-enable  nil)
+  (setq lsp-apply-edits-after-file-operations nil)
+  
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
 		 (python-mode . lsp)
@@ -718,6 +726,42 @@
 (use-package password-store
   :ensure t
   :bind (("C-' p" . password-store-copy)))
+
+
+(use-package wrap-region
+  :ensure t
+  :config
+  (wrap-region-global-mode t))
+
+(use-package pinentry
+  :ensure t
+  :config
+  (pinentry-start))
+
+(setenv "GPG_AGENT_INFO" nil)
+
+
+;;;; start chat gpt
+(defun my-xref-customizations ()
+  ;; Disable copilot-mode firstdd>, ensure this matches how you disable it.
+  ;; Check if copilot-mode is available before trying to disable.
+  (when (featurep 'copilot)
+    (copilot-mode -1))
+
+  ;; Customize TAB behavior in Xref buffers
+  ;; Replace `'desired-tab-function` with the actual function you want for TAB.
+  ;; For example, `xref-next-line` could be a useful default for navigating references.
+  (local-set-key (kbd "RET") 'xref-quit-and-goto-xref)
+  (local-set-key (kbd "TAB") 'xref-goto-xref)
+  ;; Optionally, set SHIFT-TAB to go to the previous line, mirroring TABs navigation.
+  (local-set-key (kbd "<backtab>") 'xref-previous-line))
+
+;; Add the custom function to xref buffer mode hook.
+(add-hook 'xref--xref-buffer-mode-hook 'my-xref-customizations)
+
+;;; end chapt gpt
+
+
 
 ;; Finally
 ;; Start the server if it's not already started.
