@@ -1,17 +1,23 @@
+;;; init.el --- Emacs configuration  -*- lexical-binding: t -*-
+;;; Commentary:
+;;
 ;; ~/.emacs.d/init.el --- (this file)
-
+;;
+;; 
+;; Requires Emacs 30+ (due to: `use-package :vc`)
+;;
 ;; add this to your .bashrc or .zshrc
 ;; export EDITOR="emacsclient -nw"
-
+;;
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
 ;; brew install emacs-plus@30 --with-native-comp
 ;;
-;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications"
+;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
-;; Do not reinstall via: `brew reinstall emacs-plus@30 --with-native-comp`
-;; Do this: `brew uninstall uninstall emacs-plus@30` and reinstall it.
-;; Also, delete and re-create the alias in /Applications every time
+;; DO NOT reinstall, uninstall and install again.
+;; Do this: `brew uninstall emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
+
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -21,7 +27,6 @@
 
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
-
 
 
 ;;; Code:
@@ -94,11 +99,12 @@
 ;; This provides a cute little mini-map (just like a modern editor)
 (use-package demap
   :bind
-  ;; turn it on with...
+  ;; Turn it on/off with.
   (("C-' m" . demap-toggle)))
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-?") 'help-command)
-;; (global-set-key "\M-g" 'goto-line)
+
+; (global-set-key (kbd "C-h") 'delete-backward-char)
+; (global-set-key (kbd "C-?") 'help-command)
+
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
 (global-set-key (kbd "C-x p") 'tedroden/prev-window)
@@ -151,7 +157,7 @@
             :branch "main")
   :hook (prog-mode . copilot-mode)
   :bind (("<tab>" . copilot-accept-completion)
-		 ("C-TAB" . copilot-accept-completion-by-word)))
+		 ("C-TAB" . copilot-accept-completion)))
 
 
 
@@ -161,7 +167,7 @@
 (defun tedroden/no-suspend ()
   "Don't minimize the frame if we hit control-z."
   (interactive)
-  (message "Not suspending frame. You're welcome"))
+  (message "Not suspending frame."))
 
 (global-set-key (kbd "C-z") 'tedroden/no-suspend)
 
@@ -260,6 +266,7 @@
 
 ;; setup-x p goes to the previous window (opposite of C-x o)
 (defun tedroden/prev-window ()
+  "Go to the previous window."
   (interactive)
   (other-window -1))
 
@@ -299,6 +306,10 @@
   (ivy-mode nil))
 
 (use-package counsel
+  :config
+  ;; Ignore some files when doing file searches `C-x C-f`
+  ;; Just start typing the file name to show the hidden file(s)
+  (setq counsel-find-file-ignore-regexp "\\(?:\\`[#.]\\)\\|\\(?:[#~]\\'\\)")
   :bind
   (
    ("C-x b" . 'ivy-switch-buffer)
@@ -516,10 +527,10 @@
   (org-roam-db-sync)
   (org-roam-update-org-id-locations))
 
-(use-package activity-watch-mode
-  :ensure t
-  :config
-  (global-activity-watch-mode t))
+;; (use-package activity-watch-mode
+;;   :ensure t
+;;   :config
+;;   (global-activity-watch-mode t))
 
 (use-package dotenv-mode)
 
@@ -561,20 +572,21 @@
 		org-roam-ui-open-on-start t))
 
 
-(use-package pdf-tools
-  :ensure t
-  :config
-  (pdf-tools-install))
+;; (use-package pdf-tools
+;;   :ensure t
+;;   :config
+;;   (pdf-tools-install))
 
 
 
 (defun ok-goto-line (line)
+  "Go to the specified LINE."
   (goto-char (point-min))
   (forward-line (1- line)))
 
-;; This functoin is mostly from: https://gist.github.com/magnars/3292872
+;; This function is mostly from: https://gist.github.com/magnars/3292872
 (defun goto-line-with-feedback (&optional line)
-  "Show line numbers temporarily, while prompting for the line number input. LINE: number"
+  "Show line numbers temporarily, while prompting for the LINE number input."
   (interactive "P")
   (if line
 	  (ok-goto-line line)
@@ -670,13 +682,6 @@
          )
   :commands lsp  )
 
-
-(use-package treesit-auto
-  :config
-  (global-treesit-auto-mode))
-
-
-
 ;; optionally
 (use-package lsp-ui :commands lsp-ui-mode)
 
@@ -687,11 +692,25 @@
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))  ; or lsp-deferred
+;; (use-package lsp-pyright
+;;   :ensure t
+;;   :hook (python-mode . (lambda ()
+;;                           (require 'lsp-pyright)
+;;                           (lsp))))  ; or lsp-deferred
+(with-eval-after-load 'lsp-mode
+  ;; :global/:workspace/:file
+  (setq lsp-modeline-diagnostics-scope :workspace))
+
+
+(add-hook 'prog-mode-hook #'lsp)
+
+
+(use-package treesit-auto
+  :config
+  (global-treesit-auto-mode))
+
+;; (use-package eglot)
+
 
 (use-package flycheck
   :init (global-flycheck-mode))
@@ -702,17 +721,11 @@
   (("C-' v" . vundo)
    ("C-' r" . redo)))
 
-;; (use-package company
-;;   :init (global-company-mode)
-;;   :bind (:map company-active-map ("<tab>" . company-complete-selection)))
+(use-package company
+  :init (global-company-mode)
+  :bind (:map company-active-map ("<enter>" . company-complete-selection)))
 
 
-(with-eval-after-load 'lsp-mode
-  ;; :global/:workspace/:file
-  (setq lsp-modeline-diagnostics-scope :workspace))
-
-
-(add-hook 'prog-mode-hook #'lsp)
 
 ;; my new keyboard inspired me.
 (add-hook 'prog-mode-hook (lambda ()
@@ -720,8 +733,8 @@
 
 
 ;; ;; With use-package:
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
+(use-package company-box
+   :hook (company-mode . company-box-mode))
 
 (use-package password-store
   :ensure t
@@ -738,12 +751,19 @@
   :config
   (pinentry-start))
 
+(use-package buffer-move
+  :bind
+  (("C-c <up>" . buf-move-up)
+   ("C-c <down>" . buf-move-down)
+   ("C-c <left>" . buf-move-left)
+   ("C-c <right>" . buf-move-right)))
+
 (setenv "GPG_AGENT_INFO" nil)
 
 
 ;;;; start chat gpt
 (defun my-xref-customizations ()
-  ;; Disable copilot-mode firstdd>, ensure this matches how you disable it.
+  ;; Disable copilot-mode first, ensure this matches how you disable it.
   ;; Check if copilot-mode is available before trying to disable.
   (when (featurep 'copilot)
     (copilot-mode -1))
