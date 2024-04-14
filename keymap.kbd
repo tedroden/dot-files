@@ -33,16 +33,16 @@
           _    brdn    brup   lp     mctl    bldn blup prev    pp     next   mute    vold  volu
           _    _       _      _      _       _    _    _       _      _      _        _    _    _
           _    _       _      _      _       _    _    _       _      _      _        _    _    _
-          bspc @a_lyr1 @s_ctl @d_cmd @f_sft  _    _    @j_sft  @k_cmd @l_ctl @;_lyr1  _    _
+          lctl     @a_lyr1 @s_ctl @d_cmd @f_sft  _    _    @j_sft  @k_cmd @l_ctl @;_lyr1  _    _
           _    _       _      _      _       _    _    _       _      _      _        _    _
           @fn  _       _      _      _       _    _    _       _      _
           )
 
 (deflayer function
-          _    f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
-          _    _    _    _    _    _    _    _    _    _     _    _    _    _
-          _    _    _    _    _    _    _    \_   -    "     '    _    _    _
-          _    _    lctl lmet _    _    left down up   right _    _    _
-          _    _    _    _    _    _    _    _    _    _     _    _    _
-          _    _    _    _              _              _     _    _    _    _
-          )
+  _    f1   f2   f3   f4   f5   f6   f7   f8   f9     f10  f11  f12
+  _    _    _    _    _    _    _    _    _    _      _    _    _    _
+  _    _    lmet    {    }    _    &    \_    -    "     '    _    _    _
+  _    _    lctl    \(    \)    _    left down  up   right _    _    _
+  _    _    _    [    ]    _    =    +    _     _     _    _    _
+  _    _    _    _              _               _     _    _    _    _
+)
