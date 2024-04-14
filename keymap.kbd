@@ -13,30 +13,30 @@
  caps a    s    d    f    g    h    j    k    l    ;    '    ret
  lsft z    x    c    v    b    n    m    ,    .    /    rsft up
  fn   lctl lalt lmet           spc            rmet ralt left down rght
- )
+)
 
 (defalias
   fn (around (layer-toggle function) fn)
 
-  a_lyr1 (tap-hold-next-release 200 a (layer-toggle function))
-  s_ctl (tap-hold-next-release 200 s lctl)
-  d_cmd (tap-hold-next-release 200 d lmet)
-  f_sft (tap-hold-next-release 200 f lsft)
+  a_lyr1 (tap-hold-next-release 170 a (layer-toggle function))
+  s_ctl (tap-hold-next-release 170 s lctl)
+  d_cmd (tap-hold-next-release 170 d lmet)
+  f_sft (tap-hold-next-release 170 f lsft)
 
- j_sft (tap-hold-next-release 200 j rsft)
-  k_cmd (tap-hold-next-release 200 k rmet)
-  l_ctl (tap-hold-next-release 200 l rctl)
-  ;_lyr1 (tap-hold-next-release 200 ; (layer-toggle function))
-  )
+  j_sft (tap-hold-next-release 170 j rsft)
+  k_cmd (tap-hold-next-release 170 k rmet)
+  l_ctl (tap-hold-next-release 170 l rctl)
+  ;_lyr1 (tap-hold-next-release 170 ; (layer-toggle function))
+)
 
 (deflayer default
-          _    brdn    brup   lp     mctl    bldn blup prev    pp     next   mute    vold  volu
-          _    _       _      _      _       _    _    _       _      _      _        _    _    _
-          _    _       _      _      _       _    _    _       _      _      _        _    _    _
-          lctl     @a_lyr1 @s_ctl @d_cmd @f_sft  _    _    @j_sft  @k_cmd @l_ctl @;_lyr1  _    _
-          _    _       _      _      _       _    _    _       _      _      _        _    _
-          @fn  _       _      _      _       _    _    _       _      _
-          )
+  _    brdn    brup   lp     mctl    bldn blup prev    pp     next   mute    vold  volu
+  _    _       _      _      _       _    _    _       _      _      _        _    _    _
+  _    _       _      _      _       _    _    _       _      _      _        _    _    _
+  bspc @a_lyr1 @s_ctl @d_cmd @f_sft  _    _    @j_sft  @k_cmd @l_ctl @;_lyr1  _    _
+  _    _       _      _      _       _    _    _       _      _      _        _    _
+  @fn  _       _      _      _       _    _    _       _      _
+)
 
 (deflayer function
   _    f1   f2   f3   f4   f5   f6   f7   f8   f9     f10  f11  f12
