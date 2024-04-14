@@ -1,9 +1,7 @@
 ;;; init.el --- Emacs configuration  -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;
-;; ~/.emacs.d/init.el --- (this file)
 ;;
-;; 
 ;; Requires Emacs 30+ (due to: `use-package :vc`)
 ;;
 ;; add this to your .bashrc or .zshrc
@@ -20,7 +18,7 @@
 ;; DO NOT reinstall, uninstall and install again.
 ;; Do this: `brew uninstall emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
 
-;; Disable the splash screen (to enable it agin, replace the t with 0)
+;; Disable the splash screen.
 (setq inhibit-splash-screen t)
 
 ;; Enable transient mark mode
@@ -61,7 +59,6 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (global-hi-lock-mode 1)
-
 
 (setq-default c-default-style "k&r")
 (setq-default tab-width 4)
@@ -114,7 +111,6 @@
 (global-set-key (kbd "C-' -") 'split-window-below)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-' d") 'insert-date-or-datetime)
-
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
