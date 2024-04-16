@@ -254,7 +254,9 @@
 (use-package magit
   :bind (("C-c m" . magit-status))
   :custom
-  (git-commit-major-mode 'org-mode))
+  (git-commit-major-mode 'org-mode)
+  (magit-save-repository-buffers 'dontask)
+  )
 
 (use-package rainbow-mode
   :hook ((css-mode . rainbow-mode)
