@@ -694,7 +694,7 @@
 		 (bash-mode . lsp)
 		 (sh-mode . lsp)
          )
-  :commands lsp  )
+  :commands lsp)
 
 ;; optionally
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -747,7 +747,7 @@
 
 
 (use-package kbd-mode
-  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest)
+  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
 
 (use-package password-store
   :ensure t
