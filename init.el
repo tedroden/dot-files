@@ -639,6 +639,12 @@
 
 ;; built in
 (require 'treesit)
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;; (setq major-mode-remap-alist
 ;;  '((yaml-mode . yaml-ts-mode)
@@ -727,7 +733,7 @@
 
 (use-package treesit-auto
   :config
-  (global-treesit-auto-mode))
+  (global-treesit-auto-mode 1))
 
 ;; (use-package eglot)
 
