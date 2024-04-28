@@ -1,12 +1,11 @@
 ;;; init.el --- Emacs configuration  -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;
-;; ~/.emacs.d/init.el --- (this file)
 ;;
-;; 
 ;; Requires Emacs 30+ (due to: `use-package :vc`)
 ;;
 ;; add this to your .bashrc or .zshrc
+
 ;; export EDITOR="emacsclient -nw"
 ;;
 ;;; I'm currently intalling this emacs:
@@ -15,11 +14,11 @@
 ;;
 ;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
+
 ;; DO NOT reinstall, uninstall and install again.
 ;; Do this: `brew uninstall emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
 
-
-;; Disable the splash screen (to enable it agin, replace the t with 0)
+;; Disable the splash screen.
 (setq inhibit-splash-screen t)
 
 ;; Enable transient mark mode
@@ -45,14 +44,10 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
-(defvar dotfiles-dir (file-truename "~/.emacs.d/"))
-(defvar personal-file (concat dotfiles-dir "personal.el"))
-(setq-default custom-file (concat dotfiles-dir "custom.el"))
-
-;; ;; setup custom/personal/etc.
-;; (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
-;; 			  custom-file
-;; 			  personal-file )
+;; setup custom/personal/etc.
+(setq-default dotfiles-dir (file-truename "~/.emacs.d/")
+			  custom-file (concat dotfiles-dir "custom.el")
+			  personal-file (concat dotfiles-dir "personal.el"))
 
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
@@ -60,11 +55,10 @@
 			 (message (concat "Loaded " f)))
 	nil))
 
-
-
+;; all "yes" or "no" questions should be y/n
+(fset 'yes-or-no-p 'y-or-n-p)
 
 (global-hi-lock-mode 1)
-
 
 (setq-default c-default-style "k&r")
 (setq-default tab-width 4)
@@ -124,17 +118,14 @@
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
-(setq ns-pop-up-frames 'nil) ;; don't open a new frame for every file
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;;(add-to-list 'default-frame-alist '(undecorated . t))
-;; (add-to-list 'default-frame-alist '(undecorated-round . t))
+;;(add-to-list 'default-frame-alist '(undecorated-round . t))
 
 ;; confirm on exit
 (setq confirm-kill-emacs 'yes-or-no-p)
-;; all "yes" or "no" questions should be y/n
-(fset 'yes-or-no-p 'y-or-n-p)
 
 ;;;; Want line numbers?
 ;; (global-linum-mode t) ;; Line numbers
@@ -235,10 +226,10 @@
 ;;; end theme related
 ;;;;;;;;;;;;;;;;;;;;;;
 
-;; (use-package ws-butler
-;;   :ensure t
-;;   :config
-;;   (ws-butler-global-mode))
+(use-package ws-butler
+  :ensure t
+  :config
+  (ws-butler-global-mode))
 
 ;; great for quickly switching windows if you've got more than 2
 ;; (use-package ace-window
@@ -252,7 +243,6 @@
 ;; super cool search if you can see where you want to go.
 (use-package avy
   :bind ("C-/" .'avy-goto-char-2))
-
 
 ;; Is this how I should do this? I don't know.
 (use-package python
@@ -331,13 +321,16 @@
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
    ("C-x d" . 'counsel-dired)
-   ("C-' f" . 'counsel-describe-function)
-   ("C-' v" . 'counsel-describe-variable)
+   ("C-h f" . 'counsel-describe-function)
+   ("C-h v" . 'counsel-describe-variable)
    ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
 
+
+
 ;; (use-package 'exec-path-from-shell)
+
 (use-package ibuffer
   :bind (("C-x C-b" . ibuffer))
   :custom
@@ -359,13 +352,16 @@
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))
 								  ))))
+
     (add-hook 'ibuffer-mode-hook
               (lambda ()
                 (ibuffer-switch-to-saved-filter-groups "Home")))
+
 ;; this is useful if pair programming or demoing
 (use-package beacon
   :init
   (beacon-mode t))
+
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
@@ -431,7 +427,6 @@
   :bind (("C-c a" . org-agenda)
 		 ("C-c c" . org-capture)
          ("C-' o" . open-the-list)
-         ("C-c o" . open-the-list)
 		 :map org-mode-map
 
 		 (("M-F" . org-metaright)
@@ -468,23 +463,16 @@
   (setq org-startup-indented t)
   (setq org-hide-leading-stars t)
 
+
+
   :config
   (setq org-capture-templates
-	    '(
-          ("t" "TODO" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?\n\t%a")
-          ("n" "Note" entry (file+headline tasks-file "Notes")
-		   "* %?\n\t%a")
-		;;   ("q" "Quesos" entry (file+headline tasks-file "Quesos Notes")
-		;;    "* TODO %?\n  %i\n  %a")
-		;;   ("q" "Quesos" entry (file+headline tasks-file "Quesos Todo")
-		;;    "* TODO %?\n  %i\n  %a")
-		  ("f" "Fancy Hands" entry (file+headline the-list-file "Fancy Hands")
-		   "* TODO %?\n\t%a")
-		  ("" "Fancy Hands (note)" entry (file+headline the-list-file "Fancy Hands")
-		   "* %?\n\t%a")
+	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+		   "* TODO %?\n  %i\n  %a")
+		  ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
+		   "* TODO %?\n  %i\n  %a")
 		  ("g" "Grow" entry (file+headline tasks-file "Grow")
-		   "* TODO %?")
+		   "* TODO %?\n  %i\n  %a")
 		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
 		   "* TODO %?%(org-set-tags \"BUY\")\n")
 		  ))
@@ -741,6 +729,7 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
+
 (use-package vundo
   :ensure t
   :bind
@@ -752,15 +741,13 @@
   :bind (:map company-active-map ("<enter>" . company-complete-selection)))
 
 
-
-;; my new keyboard inspired me.
-(add-hook 'prog-mode-hook (lambda ()
-                            (local-set-key (kbd "C-j") 'newline-and-indent)))
-
-
 ;; ;; With use-package:
 (use-package company-box
    :hook (company-mode . company-box-mode))
+
+
+(use-package kbd-mode
+  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest)
 
 (use-package password-store
   :ensure t
@@ -806,7 +793,6 @@
 (add-hook 'xref--xref-buffer-mode-hook 'my-xref-customizations)
 
 ;;; end chapt gpt
-
 
 
 ;; Finally
