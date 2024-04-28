@@ -259,6 +259,7 @@
   :mode ("\\.py\\'" . python-ts-mode)
   :interpreter ("python" . python-ts-mode))
 
+
 ;;;; show icons in dired! (requires all-theicons-dired)
 ;; (use-package all-the-icons-dired
 ;; :hook ((dired-mode . all-the-icons-dired-mode)))
@@ -341,21 +342,26 @@
   :bind (("C-x C-b" . ibuffer))
   :custom
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
-  (ibuffer-saved-filter-groups '(("Buffers"
+  (ibuffer-saved-filter-groups '(("Home"
+								  ("GIT" (name . "^magit-mode"))
+                                  
 								  ("Dot Files" (filename . "dot-files"))
+								  ("Fancy Python" (filename . "/fancy-python"))
+								  ("Hands TS" (filename . "/hands-ts"))
 								  ("Emacs" (or (filename . "dot-emacs.el")
 											   (filename . "init.el")
 											   (name . "\*GNU Emacs\*")
 											   (name . "\*scratch\*")
 											   (name . "\*Messages\*")
 											   ))
-								  ("exwm" (mode . exwm-mode))
-								  ("GIT" (mode . magit-mode))
+
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))
 								  ))))
-
+    (add-hook 'ibuffer-mode-hook
+              (lambda ()
+                (ibuffer-switch-to-saved-filter-groups "Home")))
 ;; this is useful if pair programming or demoing
 (use-package beacon
   :init
