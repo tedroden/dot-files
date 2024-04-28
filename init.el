@@ -148,8 +148,17 @@
 
 ;; get package stuff ready
 (require 'package)
-(add-to-list 'package-archives
-			 '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives
+      '(("elpa" . "https://elpa.gnu.org/packages/")
+        ("elpa-devel" . "https://elpa.gnu.org/devel/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; Highest number gets priority (what is not mentioned gets priority 0)
+(setq package-archive-priorities
+      '(("elpa-devel" . 4)
+        ("melpa" . 3)
+        ("elpa" . 2)
+        ("nongnu" . 1)))
 (package-initialize)
 
 
