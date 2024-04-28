@@ -107,15 +107,20 @@
 
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
-(global-set-key (kbd "C-x p") 'tedroden/prev-window)
+; (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'ted/edit-dot-emacs)
+
+(global-set-key (kbd "C-c |") 'split-window-right)
+(global-set-key (kbd "C-c r") 'replace-string)
+(global-set-key (kbd "C-c d") 'magit-diff-buffer-file)
+(global-set-key (kbd "C-c D") 'insert-date-or-datetime)
 
 (global-set-key (kbd "C-c |") 'split-window-right)
 (global-set-key (kbd "C-c -") 'split-window-below)
 (global-set-key (kbd "C-' |") 'split-window-right)
 (global-set-key (kbd "C-' -") 'split-window-below)
-(global-set-key (kbd "C-c r") 'replace-string)
-(global-set-key (kbd "C-' d") 'insert-date-or-datetime)
+
+
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
