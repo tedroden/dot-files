@@ -158,7 +158,8 @@
 
 
 (use-package copilot
-  :vc (:url "https://github.com/zerolfx/copilot.el"
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
             :branch "main")
   :hook (prog-mode . copilot-mode)
   :bind (("<tab>" . copilot-accept-completion)
