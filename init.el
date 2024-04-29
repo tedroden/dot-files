@@ -24,6 +24,8 @@
 ;; Enable transient mark mode
 (transient-mark-mode 1)
 
+(setq warning-minimum-level :emergency)
+
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
