@@ -24,6 +24,8 @@
 ;; Enable transient mark mode
 (transient-mark-mode 1)
 
+(setq warning-minimum-level :emergency)
+
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
@@ -158,7 +160,8 @@
 
 
 (use-package copilot
-  :vc (:url "https://github.com/zerolfx/copilot.el"
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
             :branch "main")
   :hook (prog-mode . copilot-mode)
   :bind (("<tab>" . copilot-accept-completion)
@@ -185,7 +188,7 @@
   (ef-themes-load-random 'dark)
 ;  (setq ef-themes-region '(intense no-extend neutral))
   :bind
-    (("C-' t" . ef-themes-load-random))
+    (("C-c t" . ef-themes-load-random))
   )
 
 ;; kind of nice too. but doesn't play well with magit.
@@ -360,9 +363,9 @@
                 (ibuffer-switch-to-saved-filter-groups "Home")))
 
 ;; this is useful if pair programming or demoing
-(use-package beacon
-  :init
-  (beacon-mode t))
+;;(use-package beacon
+;;  :init
+;;  (beacon-mode t))
 
 
 (use-package expand-region
