@@ -188,7 +188,7 @@
   (ef-themes-load-random 'dark)
 ;  (setq ef-themes-region '(intense no-extend neutral))
   :bind
-    (("C-' t" . ef-themes-load-random))
+    (("C-c t" . ef-themes-load-random))
   )
 
 ;; kind of nice too. but doesn't play well with magit.
