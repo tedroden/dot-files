@@ -23,7 +23,7 @@
   d_cmd (tap-hold-next-release 200 d lmet)
   f_sft (tap-hold-next-release 200 f lsft)
 
- j_sft (tap-hold-next-release 200 j rsft)
+  j_sft (tap-hold-next-release 200 j rsft)
   k_cmd (tap-hold-next-release 200 k rmet)
   l_ctl (tap-hold-next-release 200 l rctl)
   ;_lyr1 (tap-hold-next-release 200 ; (layer-toggle function))
@@ -33,7 +33,7 @@
           _    brdn    brup   lp     mctl    bldn blup prev    pp     next   mute    vold  volu
           _    _       _      _      _       _    _    _       _      _      _        _    _    _
           _    _       _      _      _       _    _    _       _      _      _        _    _    _
-          lctl     @a_lyr1 @s_ctl @d_cmd @f_sft  _    _    @j_sft  @k_cmd @l_ctl @;_lyr1  _    _
+          bspc     @a_lyr1 @s_ctl @d_cmd @f_sft  _    _    @j_sft  @k_cmd @l_ctl @;_lyr1  _    _
           _    _       _      _      _       _    _    _       _      _      _        _    _
           @fn  _       _      _      _       _    _    _       _      _
           )
