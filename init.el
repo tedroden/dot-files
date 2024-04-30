@@ -96,21 +96,25 @@
   ;; Turn it on/off with.
   (("C-' m" . demap-toggle)))
 
-
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-?") 'help-command)
+; (global-set-key (kbd "C-h") 'delete-backward-char)
+; (global-set-key (kbd "C-?") 'help-command)
 
 (global-set-key "\M-_" 'shrink-window)
 (global-set-key "\M-+" 'enlarge-window)
-(global-set-key (kbd "C-x p") 'tedroden/prev-window)
+; (global-set-key (kbd "C-x p") 'tedroden/prev-window)
 (global-set-key [f4] 'ted/edit-dot-emacs)
+
+(global-set-key (kbd "C-c |") 'split-window-right)
+(global-set-key (kbd "C-c r") 'replace-string)
+(global-set-key (kbd "C-c d") 'magit-diff-buffer-file)
+(global-set-key (kbd "C-c D") 'insert-date-or-datetime)
 
 (global-set-key (kbd "C-c |") 'split-window-right)
 (global-set-key (kbd "C-c -") 'split-window-below)
 (global-set-key (kbd "C-' |") 'split-window-right)
 (global-set-key (kbd "C-' -") 'split-window-below)
-(global-set-key (kbd "C-c r") 'replace-string)
-(global-set-key (kbd "C-' d") 'insert-date-or-datetime)
+
+
 
 ;; Command should be META on the mac
 (setq ns-command-modifier 'meta)
@@ -135,36 +139,32 @@
 
 ;; get package stuff ready
 (require 'package)
-(add-to-list 'package-archives
-			 '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives
+      '(("elpa" . "https://elpa.gnu.org/packages/")
+        ("elpa-devel" . "https://elpa.gnu.org/devel/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; Highest number gets priority (what is not mentioned gets priority 0)
+(setq package-archive-priorities
+      '(("elpa-devel" . 4)
+        ("melpa" . 3)
+        ("elpa" . 2)
+        ("nongnu" . 1)))
 (package-initialize)
 
 
-;; see if we can get away with just the use-package below
-;; this is how they say to do it.
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-	(url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-	(eval-buffer)
-	(quelpa-self-upgrade)))
+;; ;; (require 'use-package)
 
 
-;; (require 'use-package)
-
-(use-package quelpa)
-(use-package quelpa-use-package
-  :ensure t)
 
 (use-package copilot
-  :quelpa (copilot :fetcher github
-				   :repo "zerolfx/copilot.el"
-				   :branch "main"
-				   :files ("dist" "*.el"))
-
+  :vc (:url "https://github.com/zerolfx/copilot.el"
+            :branch "main")
   :hook (prog-mode . copilot-mode)
-
   :bind (("<tab>" . copilot-accept-completion)
 		 ("C-TAB" . copilot-accept-completion)))
+
+
 
 ;; previously, I did `:ensure t` for every `use-package` module
 (setq use-package-always-ensure t)
@@ -188,13 +188,21 @@
     (("C-' t" . ef-themes-load-random))
   )
 
+;; kind of nice too. but doesn't play well with magit.
+;; (use-package ayu-theme
+;;   :config (load-theme 'ayu-dark t))
+
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
   ;; set the height
-  (doom-modeline-height 32 "height")
+
   (doom-modeline-battery t)
+  (doom-modeline-height 36)
+
+;; Whether display the `lsp' state. Non-nil to display in the mode-line.
+(doom-modeline-lsp t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 ;; FIXME: get rid of this if we don't have a battery
@@ -240,6 +248,7 @@
 (use-package python
   :mode ("\\.py\\'" . python-ts-mode)
   :interpreter ("python" . python-ts-mode))
+
 
 ;;;; show icons in dired! (requires all-theicons-dired)
 ;; (use-package all-the-icons-dired
@@ -328,25 +337,33 @@
   :bind (("C-x C-b" . ibuffer))
   :custom
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
-  (ibuffer-saved-filter-groups '(("Buffers"
+  (ibuffer-saved-filter-groups '(("Home"
+								  ("GIT" (name . "^magit-mode"))
+                                  
 								  ("Dot Files" (filename . "dot-files"))
+								  ("Fancy Python" (filename . "/fancy-python"))
+								  ("Hands TS" (filename . "/hands-ts"))
 								  ("Emacs" (or (filename . "dot-emacs.el")
 											   (filename . "init.el")
 											   (name . "\*GNU Emacs\*")
 											   (name . "\*scratch\*")
 											   (name . "\*Messages\*")
 											   ))
-								  ("exwm" (mode . exwm-mode))
-								  ("GIT" (mode . magit-mode))
+
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))
 								  ))))
 
-;;;;;; this is useful if pair programming or demoing
-;; (use-package beacon
-;;   :init
-;;   (beacon-mode t))
+    (add-hook 'ibuffer-mode-hook
+              (lambda ()
+                (ibuffer-switch-to-saved-filter-groups "Home")))
+
+;; this is useful if pair programming or demoing
+(use-package beacon
+  :init
+  (beacon-mode t))
+
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
@@ -393,13 +410,13 @@
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
 
+;; I do not like these key bindings. What does VS code do?
 (use-package multiple-cursors
-  :bind (("C-\-" . 'mc/mark-next-like-this)
-		 ("C-0" . 'mc/unmark-next-like-this)))
-
+  :bind (("C-' 9" . 'mc/mark-next-like-this)
+		 ("C-' 0" . 'mc/unmark-next-like-this)))
 
 (setq org-directory (file-truename "~/Dropbox/Org"))
-(setq the-list-file (concat org-directory "/the-list.org"))
+(setq the-list-file (concat org-directory "/the-list.org.gpg"))
 (defun open-the-list ()
   "Quickly edit my ~/Org/the-list.org file."
   (interactive)
@@ -505,7 +522,7 @@
 
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
-		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
 							  "#+created: %U\n\n#+title: ${title}\n\n")
 		   :unnarrowed t))))
 
@@ -612,6 +629,12 @@
 
 ;; built in
 (require 'treesit)
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;; (setq major-mode-remap-alist
 ;;  '((yaml-mode . yaml-ts-mode)
@@ -660,6 +683,10 @@
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-restart 'ignore)
+  (setq lsp-modeline-code-actions-enable  nil)
+  (setq lsp-apply-edits-after-file-operations nil)
+  
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
 		 (python-mode . lsp)
@@ -667,7 +694,7 @@
 		 (json-mode . lsp)
 		 (css-mode . lsp)
 		 (bash-mode . lsp)
-
+		 (sh-mode . lsp)
          )
   :commands lsp)
 
@@ -696,7 +723,7 @@
 
 (use-package treesit-auto
   :config
-  (global-treesit-auto-mode))
+  (global-treesit-auto-mode 1))
 
 ;; (use-package eglot)
 
@@ -722,7 +749,7 @@
 
 
 (use-package kbd-mode
-  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest)
+  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
 
 (use-package password-store
   :ensure t
