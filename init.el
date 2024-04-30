@@ -361,9 +361,9 @@
                 (ibuffer-switch-to-saved-filter-groups "Home")))
 
 ;; this is useful if pair programming or demoing
-(use-package beacon
-  :init
-  (beacon-mode t))
+;;(use-package beacon
+;;  :init
+;;  (beacon-mode t))
 
 
 (use-package expand-region
