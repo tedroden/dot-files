@@ -37,7 +37,7 @@ zstyle ':omz:*' aliases no
 COMPLETION_WAITING_DOTS="true"
 
 
-plugins=(gnu-utils docker colored-man-pages)
+plugins=(gnu-utils docker colored-man-pages gh)
 
 source $ZSH/oh-my-zsh.sh
 
