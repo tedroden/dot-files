@@ -185,12 +185,16 @@
 (use-package ef-themes
   :init
   ;; light dark or nothing
-  (ef-themes-load-random 'dark)
+;  (ef-themes-load-random 'dark)
 ;  (setq ef-themes-region '(intense no-extend neutral))
   :bind
     (("C-c t" . ef-themes-load-random))
   )
 
+
+(use-package catppuccin-theme
+  :config
+  (load-theme 'catppuccin t))
 ;; kind of nice too. but doesn't play well with magit.
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-dark t))
@@ -365,7 +369,7 @@
 ;; this is useful if pair programming or demoing
 ;;(use-package beacon
 ;;  :init
-;;  (beacon-mode t))
+;;  (beacon-mode nil))
 
 
 (use-package expand-region
@@ -394,9 +398,8 @@
 (use-package markdown-mode
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-hide-markup-in-view-modes t)
-  :bind (:map markdown-mode-map
-			  ("C-c C-e" . markdown-do)))
+  :init (setq markdown-hide-markup-in-view-modes t))
+
 
 (use-package dumb-jump
   :init
@@ -720,9 +723,7 @@
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
-
 (add-hook 'prog-mode-hook #'lsp)
-
 
 (use-package treesit-auto
   :config
@@ -805,6 +806,13 @@
 (require 'server)
 (unless (server-running-p)
   (server-start))
+
+;; Worth putting in .zshrc
+;; # emacs
+;; export EDITOR="emacsclient -nw"
+;; alias e="emacsclient -n"   # open in existing frame, no waiting
+;; alias et="emacsclient -t"  # open in terminal
+;; alias ew="emacsclient"     # open regular, but wait for close
 
 ;; (org-roam-dailies-goto-today)
 
