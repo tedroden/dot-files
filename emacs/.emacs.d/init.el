@@ -411,6 +411,10 @@
   :ensure t
   :bind (("C-c g" . chatgpt-shell))
   :custom
+  ;; Don't prompt to save transcript when killing the chatgpt-buffer.
+  (setq kill-buffer-query-functions
+        (delq 'shell-maker-kill-buffer-query
+              kill-buffer-query-functions))
   ((chatgpt-shell-openai-key
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
