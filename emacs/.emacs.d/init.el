@@ -78,7 +78,7 @@
   "Quickly edit my dot Emacs file."
   (interactive)
   ;; I use a symlinked file by default, so try to open the OG file
-  (let ((dot-emacs (expand-file-name "~/code/dot-files/init.el")))
+  (let ((dot-emacs (expand-file-name "~/code/dot-files/emacs/.emacs.d/init.el")))
 	;; if not, just open the standard path
 	(unless (file-exists-p dot-emacs)
 	  (setq dot-emacs (concat dotfiles-dir "init.el")))
@@ -98,6 +98,10 @@
   ;; Turn it on/off with.
   (("C-' m" . demap-toggle)))
 
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell)
 ; (global-set-key (kbd "C-h") 'delete-backward-char)
 ; (global-set-key (kbd "C-?") 'help-command)
 
