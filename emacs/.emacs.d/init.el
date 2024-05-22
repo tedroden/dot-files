@@ -350,31 +350,30 @@
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
   (ibuffer-saved-filter-groups '(("Home"
 								  ("GIT" (name . "^magit-mode"))
-                                  
 								  ("Dot Files" (filename . "dot-files"))
 								  ("Fancy Python" (filename . "/fancy-python"))
 								  ("Hands TS" (filename . "/hands-ts"))
+								  ("Datastore" (filename . "/datastore-docker"))
+								  ("OG FH" (filename . "/fancyhands"))
 								  ("Emacs" (or (filename . "dot-emacs.el")
 											   (filename . "init.el")
 											   (name . "\*GNU Emacs\*")
 											   (name . "\*scratch\*")
 											   (name . "\*Messages\*")
 											   ))
-
 								  ("Org" (mode . org-mode))
 								  ("Eshell" (mode . eshell-mode))
 								  ("Man" (name . "\*Man"))
 								  ))))
 
-    (add-hook 'ibuffer-mode-hook
-              (lambda ()
-                (ibuffer-switch-to-saved-filter-groups "Home")))
+(add-hook 'ibuffer-mode-hook
+          (lambda ()
+            (ibuffer-switch-to-saved-filter-groups "Home")))
 
 ;; this is useful if pair programming or demoing
 ;;(use-package beacon
 ;;  :init
 ;;  (beacon-mode nil))
-
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
@@ -415,6 +414,10 @@
   :ensure t
   :bind (("C-c g" . chatgpt-shell))
   :custom
+  ;; Don't prompt to save transcript when killing the chatgpt-buffer.
+  (setq kill-buffer-query-functions
+        (delq 'shell-maker-kill-buffer-query
+              kill-buffer-query-functions))
   ((chatgpt-shell-openai-key
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
