@@ -270,7 +270,7 @@
 (use-package magit
   :bind (("C-c m" . magit-status))
   :custom
-  (git-commit-major-mode 'org-mode)
+  (git-commit-major-mode 'markdown-mode)
   (magit-save-repository-buffers 'dontask)
   )
 
