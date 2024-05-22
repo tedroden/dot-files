@@ -404,7 +404,6 @@
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-hide-markup-in-view-modes t))
 
-
 (use-package dumb-jump
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
@@ -712,6 +711,7 @@
   (setq lsp-restart 'ignore)
   (setq lsp-modeline-code-actions-enable  nil)
   (setq lsp-apply-edits-after-file-operations nil)
+  (setq lsp-file-watch-threshold 5000)
   
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
