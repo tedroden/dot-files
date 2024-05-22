@@ -619,29 +619,23 @@
 ;;   :config
 ;;   (pdf-tools-install))
 
-
-
 (defun ok-goto-line (line)
   "Go to the specified LINE."
   (goto-char (point-min))
   (forward-line (1- line)))
 
-;; This function is mostly from: https://gist.github.com/magnars/3292872
-(defun goto-line-with-feedback (&optional line)
-  "Show line numbers temporarily, while prompting for the LINE number input."
-  (interactive "P")
-  (if line
-	  (ok-goto-line line)
-	(unwind-protect
-		(progn
-		  (nlinum-mode 1)
-		  (ok-goto-line (read-number "Goto line: ")))
-	  (nlinum-mode -1))))
+(defun goto-line-with-feedback ()
+  "Show line numbers temporarily, while prompting for the line number input"
+  (interactive)
+  (unwind-protect
+      (progn
+        (display-line-numbers-mode 1)
+        (let ((num (read-number "Goto line: ")))
+          (ok-goto-line num)))
+    (display-line-numbers-mode -1)))g
 
-(use-package nlinum
-  :bind
-  (("M-g" . goto-line-with-feedback)))
-
+(global-set-key (kbd "M-g") 'goto-line-with-feedback)
+```
 (use-package treemacs)
 (use-package treemacs-projectile)
 (use-package dockerfile-mode)
