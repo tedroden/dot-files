@@ -576,6 +576,7 @@
   :bind
   (("C-c k" . 'counsel-projectile-rg)
    ("M-p" . 'counsel-projectile-find-file) ;; i think this is close to vs code, right?
+   ("C-c 4 f" . 'projectile-find-file-other-window)
    ("C-c C-f" . 'counsel-projectile-find-file)))
 
 (use-package org-roam-ui
