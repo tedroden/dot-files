@@ -425,7 +425,7 @@
 		 ("C-' 0" . 'mc/unmark-next-like-this)))
 
 (setq org-directory (file-truename "~/Dropbox/Org"))
-(setq the-list-file (concat org-directory "/the-list.org.gpg"))
+(setq the-list-file (concat org-directory "/the-list.org"))
 (defun open-the-list ()
   "Quickly edit my ~/Org/the-list.org file."
   (interactive)
@@ -474,15 +474,9 @@
   (setq org-startup-indented t)
   (setq org-hide-leading-stars t)
 
-
-
   :config
   (setq org-capture-templates
 	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?\n  %i\n  %a")
-		  ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
-		   "* TODO %?\n  %i\n  %a")
-		  ("g" "Grow" entry (file+headline tasks-file "Grow")
 		   "* TODO %?\n  %i\n  %a")
 		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
 		   "* TODO %?%(org-set-tags \"BUY\")\n")
