@@ -415,9 +415,6 @@
   :bind (("C-c g" . chatgpt-shell))
   :custom
   ;; Don't prompt to save transcript when killing the chatgpt-buffer.
-  (setq kill-buffer-query-functions
-        (delq 'shell-maker-kill-buffer-query
-              kill-buffer-query-functions))
   ((chatgpt-shell-openai-key
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
@@ -803,7 +800,7 @@
 (setenv "GPG_AGENT_INFO" nil)
 
 
-;;;; start chat gpt
+;;;; start chat
 (defun my-xref-customizations ()
   ;; Disable copilot-mode first, ensure this matches how you disable it.
   ;; Check if copilot-mode is available before trying to disable.
@@ -836,6 +833,9 @@
 ;; alias e="emacsclient -n"   # open in existing frame, no waiting
 ;; alias et="emacsclient -t"  # open in terminal
 ;; alias ew="emacsclient"     # open regular, but wait for close
+
+
+
 
 ;; (org-roam-dailies-goto-today)
 
