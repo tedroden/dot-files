@@ -213,7 +213,7 @@
   (doom-modeline-height 36)
 
 ;; Whether display the `lsp' state. Non-nil to display in the mode-line.
-(doom-modeline-lsp t)
+  (doom-modeline-lsp t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 ;; FIXME: get rid of this if we don't have a battery
