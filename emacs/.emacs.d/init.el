@@ -634,10 +634,10 @@
         (display-line-numbers-mode 1)
         (let ((num (read-number "Goto line: ")))
           (ok-goto-line num)))
-    (display-line-numbers-mode -1)))g
+    (display-line-numbers-mode -1)))
 
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
-```
+
 (use-package treemacs)
 (use-package treemacs-projectile)
 (use-package dockerfile-mode)
