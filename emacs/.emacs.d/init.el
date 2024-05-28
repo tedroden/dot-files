@@ -198,7 +198,10 @@
 
 (use-package catppuccin-theme
   :config
-  (load-theme 'catppuccin t))
+  (load-theme 'catppuccin t)
+  :custom
+  (catppuccin-enlarge-headings nil)
+  )
 ;; kind of nice too. but doesn't play well with magit.
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-dark t))
