@@ -503,17 +503,24 @@
   :init
   (unbind-key "C-'" org-mode-map)
   (unbind-key "C-," org-mode-map)
-  (setq org-ellipsis " ▾")
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-remove-tags nil)
-  ;; hide stars and indent on startup:
-  (setq org-startup-indented t)
-  (setq org-hide-leading-stars t)
+
 
   :config
+  ;; Don't do any of that visual indenting
+  (setq org-startup-indented nil)
+  ;; Show everything
+  (setq org-hide-leading-stars nil)
+  ;; Start fully expanded
+  (setq org-startup-folded 'nofold)
+
+  (setq org-blank-before-new-entry '((heading . nil)
+                                     (plain-list-item . nil))
+
   (setq org-capture-templates
 	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
 		   "* TODO %?\n  %i\n  %a")
