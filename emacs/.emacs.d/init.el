@@ -529,17 +529,6 @@
 		  ))
   (require 'org-agenda))
 
-(use-package md-roam
-  :ensure t
-  :vc (:url "https://github.com/nobiot/md-roam.git"
-            :rev :newest
-            :branch "main")
-  :config
-    (require 'md-roam)
-    (md-roam-mode 1)
-    (md-roam-use-markdown-file-links t)
-     (md-roam-node-insert-type 'org-roam-node-insert))
-
 
 
 (use-package org-roam
@@ -547,12 +536,11 @@
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-file-extensions '("md" "org"))
 
   (org-roam-directory (file-truename"~/Dropbox/mem"))
   (org-roam-dailies-directory "daily/")
   (org-roam-completion-everywhere t)
-  (org-startup-folded 'content)
+  (org-startup-folded 'nofold)
 
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
@@ -568,10 +556,6 @@
 
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (require 'org-id)
-  (defun my-org-roam-create-id ()
-  "Create a UUID for org-roam capture template."
-  (org-id-new))
 
   (org-roam-db-autosync-enable)
 
@@ -582,20 +566,16 @@
 				(propertize "${tags:10}" 'face 'org-tag)))
 
   (setq org-roam-dailies-capture-templates
-		'(("d" "default" entry ""
-		   :if-new (file+head "%<%Y-%m-%d>.md"
-							  (lambda () (concat "---\nid: " (org-id-new) "\ntitle: Daily Notes %<%Y-%m-%d>\n---\n%?"))))))
+		'(("d" "default" entry
+		   "* %?"
+		   :if-new (file+head "%<%Y-%m-%d>.org"
+							  "#+title: Daily Notes %<%Y-%m-%d>\n#+created: %U\n\n"))))
 
   (setq org-roam-capture-templates
-		'(("d" "default" plain ""
-           :if-new
-           (file+head "%<%Y%m%d%H%M%S>-${slug}.md"
-                      (lambda () (concat "---\nid: " (org-id-new) "\ntitle: ${title}\n---\n\n")))
-		   :unnarrowed t)))
-  )
-
-
-
+		'(("d" "default" plain "* %?"
+		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
+							  "#+created: %U\n\n#+title: ${title}\n\n")
+		   :unnarrowed t))))
 
 ;;;;
 ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
