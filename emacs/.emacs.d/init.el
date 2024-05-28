@@ -609,9 +609,22 @@
   ("C-c p" . projectile-command-map)
   :config
   (projectile-mode +1)
-  (setq projectile-project-search-path '("~/code/fh")))
+  (setq projectile-project-search-path '("~/code")))
 
-;; (use-package ag)
+
+(use-package ibuffer-projectile
+  :ensure t
+  :custom
+  ;; By default it puts "Projectile:" in front of the project name.
+  ;; Let's clear that out.
+      (ibuffer-projectile-prefix "")
+    :config
+    (add-hook 'ibuffer-hook
+                (lambda ()
+                (ibuffer-projectile-set-filter-groups)
+                (unless (eq ibuffer-sorting-mode 'alphabetic)
+                    (ibuffer-do-sort-by-alphabetic)))))
+
 
 (use-package counsel-projectile
   :config
