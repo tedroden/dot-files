@@ -394,16 +394,17 @@
   :bind (("C-x C-b" . ibuffer))
   :custom
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
-  (ibuffer-saved-filter-groups '(("Home"
-								  ("GIT" (name . "^magit-mode"))
-								  ("Org" (mode . org-mode))
-								  ("Eshell" (mode . eshell-mode))
-								  ("Man" (name . "\*Man"))
-								  ))))
+  (ibuffer-saved-filter-groups
+   '(("Home"
+      ("GIT" (name . "^magit-mode"))
+      ("Org" (mode . org-mode))
+      ("Eshell" (mode . eshell-mode))
+      ("Man" (name . "*Man")))))
+  :config
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-switch-to-saved-filter-groups "Home"))))
 
-(add-hook 'ibuffer-mode-hook
-          (lambda ()
-            (ibuffer-switch-to-saved-filter-groups "Home")))
 
 ;; this is useful if pair programming or demoing
 ;;(use-package beacon
