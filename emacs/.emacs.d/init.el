@@ -528,7 +528,7 @@
 		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
 		   "* TODO %?%(org-set-tags \"BUY\")\n")
 		  ))
-  (require 'org-agenda))
+  (require 'org-agenda)))
 
 
 
