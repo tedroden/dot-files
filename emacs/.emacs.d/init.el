@@ -435,7 +435,11 @@
 
 (use-package markdown-mode
   :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
+  :mode ("\\.md\\'" . gfm-mode)
+  :bind ;; make sure TAB does the defauljt
+    (:map markdown-mode-map
+            ("<tab>" . markdown-cycle)
+            ("S-<tab>" . markdown-shifttab))
   :init (setq markdown-hide-markup-in-view-modes t))
 
 (use-package dumb-jump
