@@ -99,10 +99,12 @@
   (("C-' m" . demap-toggle)))
 
 
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-(use-package exec-path-from-shell)
-; (global-set-key (kbd "C-h") 'delete-backward-char)
+;; I don't think we need this anymore
+;;(use-package exec-path-from-shell)
+;;(when (memq window-system '(mac ns x))
+;;  (exec-path-from-shell-initialize))
+
+;; (global-set-key (kbd "C-h") 'delete-backward-char)
 ; (global-set-key (kbd "C-?") 'help-command)
 
 (global-set-key "\M-_" 'shrink-window)
