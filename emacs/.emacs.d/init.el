@@ -111,7 +111,8 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 
 (global-set-key (kbd "C-c |") 'split-window-right)
-(global-set-key (kbd "C-c r") 'replace-string)
+(global-set-key (kbd "C-c r") 'query-replace)
+(global-set-key (kbd "C-c s") 'ispell-word)
 (global-set-key (kbd "C-c d") 'magit-diff-buffer-file)
 (global-set-key (kbd "C-c D") 'insert-date-or-datetime)
 
@@ -260,45 +261,45 @@
   ("C-/" . 'avy-goto-char-2 )
   ("M-j" . 'avy-goto-char-timer )
   :config
-(defun avy-action-kill-whole-line (pt)
-  (save-excursion
-    (goto-char pt)
-    (kill-whole-line))
-  (select-window
-   (cdr
-    (ring-ref avy-ring 0)))
-  t)
+  (defun avy-action-kill-whole-line (pt)
+    (save-excursion
+      (goto-char pt)
+      (kill-whole-line))
+    (select-window
+     (cdr
+      (ring-ref avy-ring 0)))
+    t)
 
-(setf (alist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
-      (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
+  (setf (vyalist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
+        (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
 
-(defun avy-action-copy-whole-line (pt)
-  (save-excursion
-    ((goto-char pt)
-    (cl-destructuring-bind (start . end)
-        (bounds-of-thing-at-point 'line)
-      (copy-region-as-kill start end)))
-  (select-window
-   (cdr
-    (ring-ref avy-ring 0)))
-  t))
+  (defun avy-action-copy-whole-line (pt)
+    (save-excursion
+      ((goto-char pt)
+       (cl-destructuring-bind (start . end)
+           (bounds-of-thing-at-point 'line)
+         (copy-region-as-kill start end)))
+      (select-window
+       (cdr
+        (ring-ref avy-ring 0)))
+      t))
 
-(defun avy-action-yank-whole-line (pt)
-  (avy-action-copy-whole-line pt)
-  (save-excursion (yank))
-  t)
+  (defun avy-action-yank-whole-line (pt)
+    (avy-action-copy-whole-line pt)
+    (save-excursion (yank))
+    t)
 
-(setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
-      (alist-get ?w avy-dispatch-alist) 'avy-action-copy
-      (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line
-      (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line)
+  (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
+        (alist-get ?w avy-dispatch-alist) 'avy-action-copy
+        (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line
+        (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line)
 
-(defun avy-action-mark-to-char (pt)
-  (activate-mark)
-  (goto-char pt))
+  (defun avy-action-mark-to-char (pt)
+    (activate-mark)
+    (goto-char pt))
 
-(setf (alist-get ?M  avy-dispatch-alist) 'avy-action-mark-to-char)
-)
+  (setf (alist-get ?M  avy-dispatch-alist) 'avy-action-mark-to-char)
+  )
 
 
 ;; Is this how I should do this? I don't know.
@@ -323,6 +324,10 @@
   (git-commit-major-mode 'markdown-mode)
   (magit-save-repository-buffers 'dontask)
   )
+
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
 
 (use-package rainbow-mode
   :hook ((css-mode . rainbow-mode)
@@ -574,8 +579,8 @@
 
   (setq org-roam-capture-templates
 		'(("d" "default" plain "* %?"
-		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
-							  "#+created: %U\n\n#+title: ${title}\n\n")
+		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+							  "#+title: ${title}\n#+created: %U\n\n")
 		   :unnarrowed t))))
 
 ;;;;
@@ -759,7 +764,14 @@
   :commands lsp)
 
 ;; optionally
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui
+  :custom
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc--sideline-pos-y 0)
+  (lsp-ui-doc-delay 0.5)
+  ; (lsp-ui-doc-side 'right)
+  )
 
 ;; if you are helm user
 ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
@@ -798,6 +810,8 @@
 
 (use-package company
   :init (global-company-mode)
+  :config
+  (setq company-idle-delay 0.5) ; Set the delay to 0.5 seconds
   :bind (:map company-active-map ("<enter>" . company-complete-selection)))
 
 
@@ -830,6 +844,13 @@
    ("C-c <down>" . buf-move-down)
    ("C-c <left>" . buf-move-left)
    ("C-c <right>" . buf-move-right)))
+
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings)))
 
 (setenv "GPG_AGENT_INFO" nil)
 
