@@ -10,13 +10,13 @@
 ;;
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
-;; brew install emacs-plus@30 --with-native-comp
+;; brew install emacs-plus@31 --with-native-comp
 ;;
-;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
+;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@31/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
 
 ;; DO NOT reinstall, uninstall and install again.
-;; Do this: `brew uninstall emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
+;; Do this: `brew uninstall emacs-plus@31 && brew unlink emacs-plus@31 && rm /Applications/Emacs.app` and reinstall it.
 
 ;; Disable the splash screen.
 (setq inhibit-splash-screen t)
