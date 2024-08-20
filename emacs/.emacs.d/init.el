@@ -416,10 +416,6 @@
   :ensure t
   :bind (("C-c g" . chatgpt-shell))
   :custom
-  ;; Don't prompt to save transcript when killing the chatgpt-buffer.
-  (setq kill-buffer-query-functions
-        (delq 'shell-maker-kill-buffer-query
-              kill-buffer-query-functions))
   ((chatgpt-shell-openai-key
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
@@ -636,7 +632,7 @@
         (display-line-numbers-mode 1)
         (let ((num (read-number "Goto line: ")))
           (ok-goto-line num)))
-    (display-line-numbers-mode -1)))g
+    (display-line-numbers-mode -1)))
 
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
 ```
@@ -777,8 +773,8 @@
    :hook (company-mode . company-box-mode))
 
 
-(use-package kbd-mode
-  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
+;; (use-package kbd-mode
+;;   :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
 
 (use-package password-store
   :ensure t
@@ -801,6 +797,11 @@
    ("C-c <down>" . buf-move-down)
    ("C-c <left>" . buf-move-left)
    ("C-c <right>" . buf-move-right)))
+
+(use-package ready-player
+  :ensure t
+  :config
+  (ready-player-mode +1))
 
 (setenv "GPG_AGENT_INFO" nil)
 
