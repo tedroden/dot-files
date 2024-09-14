@@ -10,13 +10,13 @@
 ;;
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
-;; brew install emacs-plus@31 --with-native-comp
+;; brew install emacs-plus@30 --with-native-comp
 ;;
-;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@31/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
+;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
 
 ;; DO NOT reinstall, uninstall and install again.
-;; Do this: `brew uninstall emacs-plus@31 && brew unlink emacs-plus@31 && rm /Applications/Emacs.app` and reinstall it.
+;; Do this: `brew uninstall emacs-plus@30 && brew unlink emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
 
 ;; Disable the splash screen.
 (setq inhibit-splash-screen t)
@@ -46,10 +46,29 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
+;; get package stuff ready
+(require 'package)
+(setq package-archives
+      '(("elpa" . "https://elpa.gnu.org/packages/")
+        ("elpa-devel" . "https://elpa.gnu.org/devel/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; Highest number gets priority (what is not mentioned gets priority 0)
+(setq package-archive-priorities
+      '(("elpa-devel" . 4)
+        ("melpa" . 3)
+        ("elpa" . 2)
+        ("nongnu" . 1)))
+
+(unless (bound-and-true-p package--initialized)
+  (setq package-enable-at-startup nil)
+  (package-initialize))
+
 ;; setup custom/personal/etc.
 (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
 			  custom-file (concat dotfiles-dir "custom.el")
 			  personal-file (concat dotfiles-dir "personal.el"))
+
 
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
@@ -99,9 +118,11 @@
   (("C-' m" . demap-toggle)))
 
 
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-(use-package exec-path-from-shell)
+
+;(use-package exec-path-from-shell)
+;(when (memq window-system '(mac ns x))
+;  (exec-path-from-shell-initialize))
+
 ; (global-set-key (kbd "C-h") 'delete-backward-char)
 ; (global-set-key (kbd "C-?") 'help-command)
 
@@ -143,34 +164,39 @@
 
 ;; column number (lives in mode line)
 (column-number-mode t)
-
-;; get package stuff ready
-(require 'package)
-(setq package-archives
-      '(("elpa" . "https://elpa.gnu.org/packages/")
-        ("elpa-devel" . "https://elpa.gnu.org/devel/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ("melpa" . "https://melpa.org/packages/")))
-;; Highest number gets priority (what is not mentioned gets priority 0)
-(setq package-archive-priorities
-      '(("elpa-devel" . 4)
-        ("melpa" . 3)
-        ("elpa" . 2)
-        ("nongnu" . 1)))
-(package-initialize)
-
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; ;; (require 'use-package)
-
-
-
 (use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-            :rev :newest
-            :branch "main")
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+  :ensure t
   :hook (prog-mode . copilot-mode)
   :bind (("<tab>" . copilot-accept-completion)
 		 ("C-TAB" . copilot-accept-completion)))
+
+
+
+;; (use-package copilot
+;;   :vc (:url "https://github.com/copilot-emacs/copilot.el"
+;;             :rev :newest
+;;             :branch "main")
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (("<tab>" . copilot-accept-completion)
+;; 		 ("C-TAB" . copilot-accept-completion)))
 
 
 
@@ -254,6 +280,7 @@
   :bind (("M-o" . switch-window))
   :custom
   (switch-window-shortcut-style 'qwerty "use letters instead of numbers"))
+;; (eval-buffer)
 
 ;; super cool search if you can see where you want to go.
 (use-package avy
@@ -396,7 +423,7 @@
 ;; (use-package 'exec-path-from-shell)
 
 (use-package ibuffer
-  :bind (("C-x C-b" . ibuffer))
+  :bind (("C-x B" . ibuffer))
   :custom
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
   (ibuffer-saved-filter-groups
@@ -536,6 +563,16 @@
   (require 'org-agenda)))
 
 
+;; (use-package md-roam
+;;   :ensure t
+;;   :vc (:url "https://github.com/nobiot/md-roam.git"
+;;             :rev :newest
+;;             :branch "main")
+;;   :config
+;;     (require 'md-roam)
+;;     (md-roam-mode 1)
+;;     (md-roam-use-markdown-file-links t)
+;;     (md-roam-node-insert-type 'org-roam-node-insert))
 
 (use-package org-roam
   :ensure t
@@ -547,6 +584,7 @@
   (org-roam-dailies-directory "daily/")
   (org-roam-completion-everywhere t)
   (org-startup-folded 'nofold)
+  ; (org-roam-file-extensions '("md" "org"))
 
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
@@ -744,13 +782,16 @@
 (make-directory "~/.emacs.d/autosaves/" t)
 
 (use-package lsp-mode
+  :ensure t
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-restart 'ignore)
   (setq lsp-modeline-code-actions-enable  nil)
   (setq lsp-apply-edits-after-file-operations nil)
   (setq lsp-file-watch-threshold 5000)
+  (add-hook 'prog-mode-hook #'lsp)
   
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
@@ -780,23 +821,23 @@
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-;; (use-package lsp-pyright
-;;   :ensure t
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-pyright)
-;;                           (lsp))))  ; or lsp-deferred
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+
 (with-eval-after-load 'lsp-mode
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
-(add-hook 'prog-mode-hook #'lsp)
+
 
 (use-package treesit-auto
   :config
   (global-treesit-auto-mode 1))
 
 ;; (use-package eglot)
-
 
 (use-package flycheck
   :init (global-flycheck-mode))
@@ -814,14 +855,14 @@
   (setq company-idle-delay 0.5) ; Set the delay to 0.5 seconds
   :bind (:map company-active-map ("<enter>" . company-complete-selection)))
 
-
+(use-package dash)
 ;; ;; With use-package:
 (use-package company-box
    :hook (company-mode . company-box-mode))
 
 
-(use-package kbd-mode
-  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
+;(use-package kbd-mode
+;  :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
 
 (use-package password-store
   :ensure t

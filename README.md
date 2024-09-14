@@ -10,10 +10,10 @@ It's mostly my [init.el](emacs/.emacs.d/init.el) file.
 ## Usage
 
  1. Copy or link the files wherever you want.
- 2. Using `stow` (`brew install stow`):
+ 2. or use `stow` (`brew install stow`):
  
-There is a [`Makefile`](Makefile) to install and remove them:
+Use [`install.sh`](install.sh) to install and remove them:
 
- - `make all` 👉 creates links
- - `make delete` 👉 removes them
+ - `sh ./install.sh emacs` 👉 creates emacs link
+ - `sh ./install.sh emacs-delete` 👉 removes it
 
