@@ -35,7 +35,6 @@ zstyle ':omz:*' aliases no
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 COMPLETION_WAITING_DOTS="true"
 
-
 plugins=(gnu-utils docker colored-man-pages gh)
 
 source $ZSH/oh-my-zsh.sh
@@ -54,6 +53,7 @@ alias ew="emacsclient"     # open regular, but wait for close
 
 # ls
 alias ls="ls --color=auto -F"
+alias l="ls -lah"
 
 # nvm
 export NVM_DIR="${HOME}/.nvm"
