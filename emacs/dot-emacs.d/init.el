@@ -16,7 +16,7 @@
 ;;
 
 ;; DO NOT reinstall, uninstall and install again.
-;; Do this: `brew uninstall emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
+;; Do this: `brew uninstall emacs-plus@30 && brew unlink emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
 
 ;; Disable the splash screen.
 (setq inhibit-splash-screen t)
@@ -46,10 +46,29 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
+;; get package stuff ready
+(require 'package)
+(setq package-archives
+      '(("elpa" . "https://elpa.gnu.org/packages/")
+        ("elpa-devel" . "https://elpa.gnu.org/devel/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; Highest number gets priority (what is not mentioned gets priority 0)
+(setq package-archive-priorities
+      '(("elpa-devel" . 4)
+        ("melpa" . 3)
+        ("elpa" . 2)
+        ("nongnu" . 1)))
+
+(unless (bound-and-true-p package--initialized)
+  (setq package-enable-at-startup nil)
+  (package-initialize))
+
 ;; setup custom/personal/etc.
 (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
 			  custom-file (concat dotfiles-dir "custom.el")
 			  personal-file (concat dotfiles-dir "personal.el"))
+
 
 (dolist (f (list custom-file personal-file))
   (if (file-exists-p f)
@@ -113,7 +132,8 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 
 (global-set-key (kbd "C-c |") 'split-window-right)
-(global-set-key (kbd "C-c r") 'replace-string)
+(global-set-key (kbd "C-c r") 'query-replace)
+(global-set-key (kbd "C-c s") 'ispell-word)
 (global-set-key (kbd "C-c d") 'magit-diff-buffer-file)
 (global-set-key (kbd "C-c D") 'insert-date-or-datetime)
 
@@ -144,34 +164,39 @@
 
 ;; column number (lives in mode line)
 (column-number-mode t)
-
-;; get package stuff ready
-(require 'package)
-(setq package-archives
-      '(("elpa" . "https://elpa.gnu.org/packages/")
-        ("elpa-devel" . "https://elpa.gnu.org/devel/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ("melpa" . "https://melpa.org/packages/")))
-;; Highest number gets priority (what is not mentioned gets priority 0)
-(setq package-archive-priorities
-      '(("elpa-devel" . 4)
-        ("melpa" . 3)
-        ("elpa" . 2)
-        ("nongnu" . 1)))
-(package-initialize)
-
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; ;; (require 'use-package)
-
-
-
 (use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-            :rev :newest
-            :branch "main")
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+  :ensure t
   :hook (prog-mode . copilot-mode)
   :bind (("<tab>" . copilot-accept-completion)
 		 ("C-TAB" . copilot-accept-completion)))
+
+
+
+;; (use-package copilot
+;;   :vc (:url "https://github.com/copilot-emacs/copilot.el"
+;;             :rev :newest
+;;             :branch "main")
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (("<tab>" . copilot-accept-completion)
+;; 		 ("C-TAB" . copilot-accept-completion)))
 
 
 
@@ -200,7 +225,10 @@
 
 (use-package catppuccin-theme
   :config
-  (load-theme 'catppuccin t))
+  (load-theme 'catppuccin t)
+  :custom
+  (catppuccin-enlarge-headings nil)
+  )
 ;; kind of nice too. but doesn't play well with magit.
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-dark t))
@@ -215,7 +243,7 @@
   (doom-modeline-height 36)
 
 ;; Whether display the `lsp' state. Non-nil to display in the mode-line.
-(doom-modeline-lsp t)
+  (doom-modeline-lsp t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 ;; FIXME: get rid of this if we don't have a battery
@@ -252,10 +280,54 @@
   :bind (("M-o" . switch-window))
   :custom
   (switch-window-shortcut-style 'qwerty "use letters instead of numbers"))
+;; (eval-buffer)
 
 ;; super cool search if you can see where you want to go.
 (use-package avy
-  :bind ("C-/" .'avy-goto-char-2))
+  :bind
+  ("C-/" . 'avy-goto-char-2 )
+  ("M-j" . 'avy-goto-char-timer )
+  :config
+  (defun avy-action-kill-whole-line (pt)
+    (save-excursion
+      (goto-char pt)
+      (kill-whole-line))
+    (select-window
+     (cdr
+      (ring-ref avy-ring 0)))
+    t)
+
+  (setf (vyalist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
+        (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
+
+  (defun avy-action-copy-whole-line (pt)
+    (save-excursion
+      ((goto-char pt)
+       (cl-destructuring-bind (start . end)
+           (bounds-of-thing-at-point 'line)
+         (copy-region-as-kill start end)))
+      (select-window
+       (cdr
+        (ring-ref avy-ring 0)))
+      t))
+
+  (defun avy-action-yank-whole-line (pt)
+    (avy-action-copy-whole-line pt)
+    (save-excursion (yank))
+    t)
+
+  (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
+        (alist-get ?w avy-dispatch-alist) 'avy-action-copy
+        (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line
+        (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line)
+
+  (defun avy-action-mark-to-char (pt)
+    (activate-mark)
+    (goto-char pt))
+
+  (setf (alist-get ?M  avy-dispatch-alist) 'avy-action-mark-to-char)
+  )
+
 
 ;; Is this how I should do this? I don't know.
 (use-package python
@@ -279,6 +351,10 @@
   (git-commit-major-mode 'markdown-mode)
   (magit-save-repository-buffers 'dontask)
   )
+
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
 
 (use-package rainbow-mode
   :hook ((css-mode . rainbow-mode)
@@ -347,30 +423,20 @@
 ;; (use-package 'exec-path-from-shell)
 
 (use-package ibuffer
-  :bind (("C-x C-b" . ibuffer))
+  :bind (("C-x B" . ibuffer))
   :custom
   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
-  (ibuffer-saved-filter-groups '(("Home"
-								  ("GIT" (name . "^magit-mode"))
-								  ("Dot Files" (filename . "dot-files"))
-								  ("Fancy Python" (filename . "/fancy-python"))
-								  ("Hands TS" (filename . "/hands-ts"))
-								  ("Datastore" (filename . "/datastore-docker"))
-								  ("OG FH" (filename . "/fancyhands"))
-								  ("Emacs" (or (filename . "dot-emacs.el")
-											   (filename . "init.el")
-											   (name . "\*GNU Emacs\*")
-											   (name . "\*scratch\*")
-											   (name . "\*Messages\*")
-											   ))
-								  ("Org" (mode . org-mode))
-								  ("Eshell" (mode . eshell-mode))
-								  ("Man" (name . "\*Man"))
-								  ))))
+  (ibuffer-saved-filter-groups
+   '(("Home"
+      ("GIT" (name . "^magit-mode"))
+      ("Org" (mode . org-mode))
+      ("Eshell" (mode . eshell-mode))
+      ("Man" (name . "*Man")))))
+  :config
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-switch-to-saved-filter-groups "Home"))))
 
-(add-hook 'ibuffer-mode-hook
-          (lambda ()
-            (ibuffer-switch-to-saved-filter-groups "Home")))
 
 ;; this is useful if pair programming or demoing
 ;;(use-package beacon
@@ -402,7 +468,11 @@
 
 (use-package markdown-mode
   :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
+  :mode ("\\.md\\'" . gfm-mode)
+  :bind ;; make sure TAB does the defauljt
+    (:map markdown-mode-map
+            ("<tab>" . markdown-cycle)
+            ("S-<tab>" . markdown-shifttab))
   :init (setq markdown-hide-markup-in-view-modes t))
 
 (use-package dumb-jump
@@ -416,6 +486,7 @@
   :ensure t
   :bind (("C-c g" . chatgpt-shell))
   :custom
+
   ((chatgpt-shell-openai-key
 	(lambda ()
 	  (auth-source-pass-get 'secret "openai-key")))))
@@ -426,7 +497,7 @@
 		 ("C-' 0" . 'mc/unmark-next-like-this)))
 
 (setq org-directory (file-truename "~/Dropbox/Org"))
-(setq the-list-file (concat org-directory "/the-list.org.gpg"))
+(setq the-list-file (concat org-directory "/the-list.org"))
 (defun open-the-list ()
   "Quickly edit my ~/Org/the-list.org file."
   (interactive)
@@ -465,55 +536,55 @@
   :init
   (unbind-key "C-'" org-mode-map)
   (unbind-key "C-," org-mode-map)
-  (setq org-ellipsis " ▾")
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-remove-tags nil)
-  ;; hide stars and indent on startup:
-  (setq org-startup-indented t)
-  (setq org-hide-leading-stars t)
-
 
 
   :config
+  ;; Don't do any of that visual indenting
+  (setq org-startup-indented nil)
+  ;; Show everything
+  (setq org-hide-leading-stars nil)
+  ;; Start fully expanded
+  (setq org-startup-folded 'nofold)
+
+  (setq org-blank-before-new-entry '((heading . nil)
+                                     (plain-list-item . nil))
+
   (setq org-capture-templates
 	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?\n  %i\n  %a")
-		  ("f" "Fancy Hands" entry (file+headline tasks-file "Fancy Hands")
-		   "* TODO %?\n  %i\n  %a")
-		  ("g" "Grow" entry (file+headline tasks-file "Grow")
 		   "* TODO %?\n  %i\n  %a")
 		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
 		   "* TODO %?%(org-set-tags \"BUY\")\n")
 		  ))
-  (require 'org-agenda))
-
-(use-package md-roam
-  :ensure t
-  :vc (:url "https://github.com/nobiot/md-roam.git"
-            :rev :newest
-            :branch "main")
-  :config
-    (require 'md-roam)
-    (md-roam-mode 1)
-    (md-roam-use-markdown-file-links t)
-     (md-roam-node-insert-type 'org-roam-node-insert))
+  (require 'org-agenda)))
 
 
+;; (use-package md-roam
+;;   :ensure t
+;;   :vc (:url "https://github.com/nobiot/md-roam.git"
+;;             :rev :newest
+;;             :branch "main")
+;;   :config
+;;     (require 'md-roam)
+;;     (md-roam-mode 1)
+;;     (md-roam-use-markdown-file-links t)
+;;     (md-roam-node-insert-type 'org-roam-node-insert))
 
 (use-package org-roam
   :ensure t
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-file-extensions '("md" "org"))
 
   (org-roam-directory (file-truename"~/Dropbox/mem"))
   (org-roam-dailies-directory "daily/")
   (org-roam-completion-everywhere t)
-  (org-startup-folded 'content)
+  (org-startup-folded 'nofold)
+  ; (org-roam-file-extensions '("md" "org"))
 
   :bind (("C-c n l" . org-roam-buffer-toggle)
 		 ("C-c n f" . org-roam-node-find)
@@ -529,10 +600,6 @@
 
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (require 'org-id)
-  (defun my-org-roam-create-id ()
-  "Create a UUID for org-roam capture template."
-  (org-id-new))
 
   (org-roam-db-autosync-enable)
 
@@ -543,20 +610,16 @@
 				(propertize "${tags:10}" 'face 'org-tag)))
 
   (setq org-roam-dailies-capture-templates
-		'(("d" "default" entry ""
-		   :if-new (file+head "%<%Y-%m-%d>.md"
-							  (lambda () (concat "---\nid: " (org-id-new) "\ntitle: Daily Notes %<%Y-%m-%d>\n---\n%?"))))))
+		'(("d" "default" entry
+		   "* %?"
+		   :if-new (file+head "%<%Y-%m-%d>.org"
+							  "#+title: Daily Notes %<%Y-%m-%d>\n#+created: %U\n\n"))))
 
   (setq org-roam-capture-templates
-		'(("d" "default" plain ""
-           :if-new
-           (file+head "%<%Y%m%d%H%M%S>-${slug}.md"
-                      (lambda () (concat "---\nid: " (org-id-new) "\ntitle: ${title}\n---\n\n")))
-		   :unnarrowed t)))
-  )
-
-
-
+		'(("d" "default" plain "* %?"
+		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+							  "#+title: ${title}\n#+created: %U\n\n")
+		   :unnarrowed t))))
 
 ;;;;
 ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
@@ -590,9 +653,22 @@
   ("C-c p" . projectile-command-map)
   :config
   (projectile-mode +1)
-  (setq projectile-project-search-path '("~/code/fh")))
+  (setq projectile-project-search-path '("~/code")))
 
-;; (use-package ag)
+
+(use-package ibuffer-projectile
+  :ensure t
+  :custom
+  ;; By default it puts "Projectile:" in front of the project name.
+  ;; Let's clear that out.
+      (ibuffer-projectile-prefix "")
+    :config
+    (add-hook 'ibuffer-hook
+                (lambda ()
+                (ibuffer-projectile-set-filter-groups)
+                (unless (eq ibuffer-sorting-mode 'alphabetic)
+                    (ibuffer-do-sort-by-alphabetic)))))
+
 
 (use-package counsel-projectile
   :config
@@ -635,7 +711,7 @@
     (display-line-numbers-mode -1)))
 
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
-```
+
 (use-package treemacs)
 (use-package treemacs-projectile)
 (use-package dockerfile-mode)
@@ -706,13 +782,16 @@
 (make-directory "~/.emacs.d/autosaves/" t)
 
 (use-package lsp-mode
+  :ensure t
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-restart 'ignore)
   (setq lsp-modeline-code-actions-enable  nil)
   (setq lsp-apply-edits-after-file-operations nil)
   (setq lsp-file-watch-threshold 5000)
+  (add-hook 'prog-mode-hook #'lsp)
   
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (typescript-ts-mode . lsp)
@@ -726,7 +805,14 @@
   :commands lsp)
 
 ;; optionally
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui
+  :custom
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc--sideline-pos-y 0)
+  (lsp-ui-doc-delay 0.5)
+  ; (lsp-ui-doc-side 'right)
+  )
 
 ;; if you are helm user
 ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
@@ -735,23 +821,23 @@
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-;; (use-package lsp-pyright
-;;   :ensure t
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-pyright)
-;;                           (lsp))))  ; or lsp-deferred
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+
 (with-eval-after-load 'lsp-mode
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
-(add-hook 'prog-mode-hook #'lsp)
+
 
 (use-package treesit-auto
   :config
   (global-treesit-auto-mode 1))
 
 ;; (use-package eglot)
-
 
 (use-package flycheck
   :init (global-flycheck-mode))
@@ -765,9 +851,11 @@
 
 (use-package company
   :init (global-company-mode)
+  :config
+  (setq company-idle-delay 0.5) ; Set the delay to 0.5 seconds
   :bind (:map company-active-map ("<enter>" . company-complete-selection)))
 
-
+(use-package dash)
 ;; ;; With use-package:
 (use-package company-box
    :hook (company-mode . company-box-mode))
@@ -798,15 +886,23 @@
    ("C-c <left>" . buf-move-left)
    ("C-c <right>" . buf-move-right)))
 
+
 (use-package ready-player
   :ensure t
   :config
   (ready-player-mode +1))
 
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings)))
+
 (setenv "GPG_AGENT_INFO" nil)
 
 
-;;;; start chat gpt
+;;;; start chat
 (defun my-xref-customizations ()
   ;; Disable copilot-mode first, ensure this matches how you disable it.
   ;; Check if copilot-mode is available before trying to disable.
@@ -839,6 +935,9 @@
 ;; alias e="emacsclient -n"   # open in existing frame, no waiting
 ;; alias et="emacsclient -t"  # open in terminal
 ;; alias ew="emacsclient"     # open regular, but wait for close
+
+
+
 
 ;; (org-roam-dailies-goto-today)
 
