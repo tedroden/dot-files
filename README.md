@@ -1,6 +1,6 @@
 # Ted Roden's dotfiles
 
-It's mostly my [init.el](emacs/.emacs.d/init.el) file.
+It's mostly my [init.el](emacs/dot-emacs.d/init.el) file.
 
  - [`📝 emacs`](emacs/dot-emacs.d/init.el) my `init.el`
  - [`🚫 gitignore`](gitignore/.gitignore) a global `.gitignore`
