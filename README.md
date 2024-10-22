@@ -2,7 +2,7 @@
 
 It's mostly my [init.el](emacs/.emacs.d/init.el) file.
 
- - [`📝 emacs`](emacs/.emacs.d/init.el) my `init.el`
+ - [`📝 emacs`](emacs/dot-emacs.d/init.el) my `init.el`
  - [`🚫 gitignore`](gitignore/.gitignore) a global `.gitignore`
  - [`🖥️ tmux`](tmux/.tmux.conf) a nice `.tmux.conf`
  - [`🐚 zsh`](zsh/.zshrc) a very simple `.zshrc` (using `oh-my-zsh`)
