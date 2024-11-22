@@ -26,6 +26,17 @@
 
 (setq warning-minimum-level :emergency)
 
+
+;; 1. Package Management Optimization
+(setq package-native-compile t)  ; Enable native compilation for better performance
+(setq package-install-upgrade-built-in t)  ; Auto-upgrade built-in packages
+
+;; 2. Better Performance Settings
+(setq gc-cons-threshold 100000000)  ; Increase garbage collection threshold
+(setq read-process-output-max (* 1024 1024))  ; Increase read chunk size for better LSP performance
+
+
+
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
