@@ -43,7 +43,7 @@ unsetopt share_history
 
 # User configuration
 # Set the homebrew paths.
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH="~/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 # emacs
 export EDITOR="emacsclient -nw"

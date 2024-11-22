@@ -40,7 +40,13 @@
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
-
+  (if init-file-debug
+      (setq use-package-verbose t
+            use-package-expand-minimally nil
+            use-package-compute-statistics t
+            debug-on-error t)
+    (setq use-package-verbose nil
+          use-package-expand-minimally t))
 ;;; Code:
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -130,9 +136,10 @@
 
 
 ;; I don't think we need this anymore
-;;(use-package exec-path-from-shell)
-;;(when (memq window-system '(mac ns x))
-;;  (exec-path-from-shell-initialize))
+;(use-package exec-path-from-shell)
+;; (require 'exec-path-from-shell)
+;(when (memq window-system '(mac ns x))
+;  (exec-path-from-shell-initialize))
 
 ;; (global-set-key (kbd "C-h") 'delete-backward-char)
 ; (global-set-key (kbd "C-?") 'help-command)
@@ -244,18 +251,6 @@
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-dark t))
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom
-  (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
-  ;; set the height
-
-  (doom-modeline-battery t)
-  (doom-modeline-height 36)
-
-;; Whether display the `lsp' state. Non-nil to display in the mode-line.
-  (doom-modeline-lsp t)
-  (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 ;; FIXME: get rid of this if we don't have a battery
 ;; (use-package battery
@@ -297,47 +292,7 @@
 (use-package avy
   :bind
   ("C-/" . 'avy-goto-char-2 )
-  ("M-j" . 'avy-goto-char-timer )
-  :config
-  (defun avy-action-kill-whole-line (pt)
-    (save-excursion
-      (goto-char pt)
-      (kill-whole-line))
-    (select-window
-     (cdr
-      (ring-ref avy-ring 0)))
-    t)
-
-  (setf (vyalist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
-        (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
-
-  (defun avy-action-copy-whole-line (pt)
-    (save-excursion
-      ((goto-char pt)
-       (cl-destructuring-bind (start . end)
-           (bounds-of-thing-at-point 'line)
-         (copy-region-as-kill start end)))
-      (select-window
-       (cdr
-        (ring-ref avy-ring 0)))
-      t))
-
-  (defun avy-action-yank-whole-line (pt)
-    (avy-action-copy-whole-line pt)
-    (save-excursion (yank))
-    t)
-
-  (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
-        (alist-get ?w avy-dispatch-alist) 'avy-action-copy
-        (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line
-        (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line)
-
-  (defun avy-action-mark-to-char (pt)
-    (activate-mark)
-    (goto-char pt))
-
-  (setf (alist-get ?M  avy-dispatch-alist) 'avy-action-mark-to-char)
-  )
+  ("M-j" . 'avy-goto-char-timer ))
 
 
 ;; Is this how I should do this? I don't know.
@@ -386,46 +341,6 @@
 
 (set-frame-font "Monaco 14")
 
-(use-package ivy-rich)
-(use-package nerd-icons)
-
-(use-package nerd-icons-ivy-rich
-  :ensure t
-  :init
-  (nerd-icons-ivy-rich-mode 1)
-  (ivy-rich-mode 1))
-
-(use-package nerd-icons-ibuffer
-  :ensure t
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
-
-(use-package nerd-icons-dired
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
-
-(use-package ivy
-  :bind
-  (("C-o" . 'swiper))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-initial-inputs-alist nil)
-  :config
-  (ivy-mode nil))
-
-(use-package counsel
-  :config
-  ;; Ignore some files when doing file searches `C-x C-f`
-  ;; Just start typing the file name to show the hidden file(s)
-  (setq counsel-find-file-ignore-regexp "\\(?:\\`[#.]\\)\\|\\(?:[#~]\\'\\)")
-  :bind
-  (
-   ("C-x b" . 'ivy-switch-buffer)
-   ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-x d" . 'counsel-dired)
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
-   ("M-y" . 'counsel-yank-pop)))
 
 (use-package npm-mode)
 
@@ -507,6 +422,51 @@
   :bind (("C-' 9" . 'mc/mark-next-like-this)
 		 ("C-' 0" . 'mc/unmark-next-like-this)))
 
+;; keep this above org
+(use-package counsel
+  :config
+  ;; Ignore some files when doing file searches `C-x C-f`
+  ;; Just start typing the file name to show the hidden file(s)
+  (setq counsel-find-file-ignore-regexp "\\(?:\\`[#.]\\)\\|\\(?:[#~]\\'\\)")
+  :bind
+  (
+   ("C-x b" . 'ivy-switch-buffer)
+   ("M-x" . 'counsel-M-x)
+   ("C-x C-f" . 'counsel-find-file)
+   ("C-x d" . 'counsel-dired)
+   ("C-h f" . 'counsel-describe-function)
+   ("C-h v" . 'counsel-describe-variable)
+   ("M-y" . 'counsel-yank-pop)))
+
+(use-package ivy-rich)
+(use-package nerd-icons)
+
+(use-package nerd-icons-ivy-rich
+  :ensure t
+  :init
+  (nerd-icons-ivy-rich-mode 1)
+  (ivy-rich-mode 1))
+
+(use-package nerd-icons-ibuffer
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+(use-package nerd-icons-dired
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
+(use-package ivy
+  :bind
+  (("C-o" . 'swiper))
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-initial-inputs-alist nil)
+  :config
+  (ivy-mode nil))
+
+
+
+
 (setq org-directory (file-truename "~/Dropbox/Org"))
 (setq the-list-file (concat org-directory "/the-list.org"))
 (defun open-the-list ()
@@ -514,46 +474,35 @@
   (interactive)
   (find-file the-list-file))
 
-(require 'org)
 (use-package org
   :ensure t
   :demand t
   :bind (("C-c a" . org-agenda)
-		 ("C-c c" . org-capture)
+         ("C-c c" . org-capture)
          ("C-' o" . open-the-list)
-		 :map org-mode-map
-
-		 (("M-F" . org-metaright)
-		  ("M-B" . org-metaleft)
-
-		  ("C-c i t" . counsel-org-tag)
-
-		  ;; take these back from co-pillot
-		  ("<tab>" . org-cycle)
-		  ("S-<tab>" . org-shifttab)
-		  ("C-<tab>" . org-global-cycle)
-
-		  ("M-P" . org-metaup)
-		  ("M-N" . org-metadown)
-
-		  ("C-c o" . org-table-insert-row)
-
-		  ("C-c t i" . org-table-insert-row)
-		  ("C-c t p" . org-table-move-row-up)
-		  ("C-c t n" . org-table-move-row-down)
-		  ("C-c X" . org-latex-export-to-pdf)
-		  ))
-
+         :map org-mode-map
+         (("M-F" . org-metaright)
+          ("M-B" . org-metaleft)
+          ("C-c i t" . counsel-org-tag)
+          ;; take these back from co-pillot
+          ("<tab>" . org-cycle)
+          ("S-<tab>" . org-shifttab)
+          ("C-<tab>" . org-global-cycle)
+          ("M-P" . org-metaup)
+          ("M-N" . org-metadown)
+          ("C-c o" . org-table-insert-row)
+          ("C-c t i" . org-table-insert-row)
+          ("C-c t p" . org-table-move-row-up)
+          ("C-c t n" . org-table-move-row-down)
+          ("C-c X" . org-latex-export-to-pdf)))
   :init
-  (unbind-key "C-'" org-mode-map)
-  (unbind-key "C-," org-mode-map)
+;  (unbind-key "C-'" org-mode-map)
+;  (unbind-key "C-," org-mode-map)
   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
   (setq org-archive-location "archive/%s_archive::")
   (setq org-agenda-files (list org-directory))
   (setq org-agenda-remove-tags nil)
-
-
   :config
   ;; Don't do any of that visual indenting
   (setq org-startup-indented nil)
@@ -561,76 +510,74 @@
   (setq org-hide-leading-stars nil)
   ;; Start fully expanded
   (setq org-startup-folded 'nofold)
-
   (setq org-blank-before-new-entry '((heading . nil)
-                                     (plain-list-item . nil))
-
+                                    (plain-list-item . nil)))  ; Added closing parenthesis here
   (setq org-capture-templates
-	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?\n  %i\n  %a")
-		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?%(org-set-tags \"BUY\")\n")
-		  ))
-  (require 'org-agenda)))
+        '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+           "* TODO %?%(org-set-tags \"BUY\")\n")))
+  (require 'org-agenda))
 
-
-;; (use-package md-roam
-;;   :ensure t
-;;   :vc (:url "https://github.com/nobiot/md-roam.git"
-;;             :rev :newest
-;;             :branch "main")
-;;   :config
-;;     (require 'md-roam)
-;;     (md-roam-mode 1)
-;;     (md-roam-use-markdown-file-links t)
-;;     (md-roam-node-insert-type 'org-roam-node-insert))
+(use-package md-roam
+  :ensure t
+  :vc (:url "https://github.com/nobiot/md-roam.git"
+            :rev :newest
+            :branch "main")
+  :config
+    (require 'md-roam)
+    (md-roam-mode 1)
+    )
 
 (use-package org-roam
   :ensure t
   :init
   (setq org-roam-v2-ack t)
   :custom
-
-  (org-roam-directory (file-truename"~/Dropbox/mem"))
+  (org-roam-directory (file-truename "~/Dropbox/mem"))
   (org-roam-dailies-directory "daily/")
   (org-roam-completion-everywhere t)
   (org-startup-folded 'nofold)
-  ; (org-roam-file-extensions '("md" "org"))
-
+  (org-roam-file-extensions '("md" "org"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
-		 ("C-c n f" . org-roam-node-find)
-		 ("C-c n i" . org-roam-node-insert)
-		 ("C-c n c" . org-roam-capture)
-		 ("C-c n j" . org-roam-dailies-capture-today)
-		 :map org-roam-dailies-map
-		 ("Y" . org-roam-dailies-capture-yesterday)
-		 ("T" . org-roam-dailies-capture-tomorrow)
-		 )
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today))
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
-
   :config
-  (require 'org-roam-dailies) ;; Ensure the keymap is available
+  (require 'org-roam-dailies)
+  (require 'org-id)
+
+  (defun my-org-roam-create-id ()
+    "Create a UUID for org-roam capture template."
+    (org-id-new))
 
   (org-roam-db-autosync-enable)
 
-  ;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
-  (setq org-id-locations-file  (concat dotfiles-dir ".org-id-locations"))
+  (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
+
   (setq org-roam-node-display-template
-		(concat "${title:*} "
-				(propertize "${tags:10}" 'face 'org-tag)))
+        (concat "${title:*} "
+                (propertize "${tags:10}" 'face 'org-tag)))
 
   (setq org-roam-dailies-capture-templates
-		'(("d" "default" entry
-		   "* %?"
-		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+title: Daily Notes %<%Y-%m-%d>\n#+created: %U\n\n"))))
+        '(("d" "default" entry ""
+           :if-new (file+head "%<%Y-%m-%d>.md"
+                             (lambda ()
+                               (concat "---\nid: "
+                                      (org-id-new)
+                                      "\ntitle: Daily Notes %<%Y-%m-%d>\n---\n%?"))))))
 
   (setq org-roam-capture-templates
-		'(("d" "default" plain "* %?"
-		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+title: ${title}\n#+created: %U\n\n")
-		   :unnarrowed t))))
+        '(("d" "default" plain ""
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.md"
+                             (lambda ()
+                               (concat "---\nid: "
+                                      (org-id-new)
+                                      "\ntitle: ${title}\n---\n\n")))
+           :unnarrowed t))))
 
 ;;;;
 ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
@@ -825,6 +772,7 @@
   ; (lsp-ui-doc-side 'right)
   )
 
+
 ;; if you are helm user
 ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
@@ -842,6 +790,18 @@
   ;; :global/:workspace/:file
   (setq lsp-modeline-diagnostics-scope :workspace))
 
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-icon (display-graphic-p) "icons if we're not in a terminal")
+  ;; set the height
+
+  (doom-modeline-battery t)
+  (doom-modeline-height 36)
+
+;; Whether display the `lsp' state. Non-nil to display in the mode-line.
+  (doom-modeline-lsp t)
+  (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
 
 (use-package treesit-auto
