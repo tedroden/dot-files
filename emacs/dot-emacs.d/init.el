@@ -165,25 +165,6 @@
    (insert (if ARG
                (format-time-string "%Y-%m-%d %H:%M %p")
              (format-time-string "%Y-%m-%d"))))
-;; Debug load path
-(defun debug-package-load-path ()
-  (interactive)
-  (with-current-buffer (get-buffer-create "*package-debug*")
-    (erase-buffer)
-    (insert "===== Load Path =====\n")
-    (dolist (path load-path)
-      (insert (format "%s\n" path)))
-    (insert "\n===== Package Directory =====\n")
-    (insert (format "package-user-dir: %s\n" package-user-dir))
-    (insert "\n===== Looking for demap =====\n")
-    (dolist (path load-path)
-      (let ((potential-file (expand-file-name "demap.el" path)))
-        (when (file-exists-p potential-file)
-          (insert (format "Found demap at: %s\n" potential-file)))))
-    (display-buffer (current-buffer))))
-
-;; Run it during startup
-(debug-package-load-path)
 
 ;; This provides a cute little mini-map (just like a modern editor)
 (use-package demap
@@ -266,9 +247,9 @@
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
             :rev :newest
             :branch "main")
-  :hook (prog-mode . copilot-mode))
-  ;; :bind (("<tab>" . copilot-accept-completion)
-  ;;   	 ("C-TAB" . copilot-accept-completion)))
+  :hook (prog-mode . copilot-mode)
+  :bind (("<tab>" . copilot-accept-completion)
+    	 ("C-TAB" . copilot-accept-completion)))
 
 
 
@@ -494,6 +475,7 @@
   :bind
   (
    ("C-x b" . 'ivy-switch-buffer)
+   ("C-x C-b" . 'ivy-switch-buffer)
    ("M-x" . 'counsel-M-x)
    ("C-x C-f" . 'counsel-find-file)
    ("C-x d" . 'counsel-dired)
@@ -505,6 +487,31 @@
   :ensure t)
 (use-package nerd-icons
   :ensure t)
+
+
+(use-package ibuffer-projectile
+  :ensure t
+  :custom
+  ;; By default it puts "Projectile:" in front of the project name.
+  ;; Let's clear that out.
+      (ibuffer-projectile-prefix "")
+    :config
+    (add-hook 'ibuffer-hook
+                (lambda ()
+                (ibuffer-projectile-set-filter-groups)
+                (unless (eq ibuffer-sorting-mode 'alphabetic)
+                    (ibuffer-do-sort-by-alphabetic)))))
+
+
+(use-package counsel-projectile
+  :config
+  (counsel-projectile-mode)
+
+  :bind
+  (("C-c k" . 'counsel-projectile-rg)
+   ("M-p" . 'counsel-projectile-find-file) ;; i think this is close to vs code, right?
+   ("C-c 4 f" . 'projectile-find-file-other-window)
+   ("C-c C-f" . 'counsel-projectile-find-file)))
 
 
 ;; 
@@ -616,216 +623,189 @@
 ;; (use-package nerd-icons-dired
 ;;   :hook
 ;;   (dired-mode . nerd-icons-dired-mode))
+;;
+
+(use-package ivy
+  :bind
+  (("C-o" . 'swiper))
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-initial-inputs-alist nil)
+  :config
+  (ivy-mode nil))
+
+
+
+
+(setq org-directory (file-truename "~/Dropbox/Org"))
+(setq the-list-file (concat org-directory "/the-list.org"))
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
+
+(use-package org
+  :ensure t
+  :demand t
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-' o" . open-the-list)
+         :map org-mode-map
+         (("M-F" . org-metaright)
+          ("M-B" . org-metaleft)
+          ("C-c i t" . counsel-org-tag)
+          ;; take these back from co-pillot
+          ("<tab>" . org-cycle)
+          ("S-<tab>" . org-shifttab)
+          ("C-<tab>" . org-global-cycle)
+          ("M-P" . org-metaup)
+          ("M-N" . org-metadown)
+          ("C-c o" . org-table-insert-row)
+          ("C-c t i" . org-table-insert-row)
+          ("C-c t p" . org-table-move-row-up)
+          ("C-c t n" . org-table-move-row-down)
+          ("C-c X" . org-latex-export-to-pdf)))
+  :init
+;  (unbind-key "C-'" org-mode-map)
+;  (unbind-key "C-," org-mode-map)
+  (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
+  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
+  (setq org-archive-location "archive/%s_archive::")
+  (setq org-agenda-files (list org-directory))
+  (setq org-agenda-remove-tags nil)
+  :config
+  ;; Don't do any of that visual indenting
+  (setq org-startup-indented nil)
+  ;; Show everything
+  (setq org-hide-leading-stars nil)
+  ;; Start fully expanded
+  (setq org-startup-folded 'nofold)
+  (setq org-blank-before-new-entry '((heading . nil)
+                                    (plain-list-item . nil)))  ; Added closing parenthesis here
+  (setq org-capture-templates
+        '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+           "* TODO %?%(org-set-tags \"BUY\")\n")))
+  (require 'org-agenda))
+
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory (file-truename "~/Dropbox/mem"))
+  (org-roam-dailies-directory "daily/")
+  (org-roam-completion-everywhere t)
+  (org-startup-folded 'nofold)
+  (org-roam-file-extensions '("org" "md"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies)
+  (require 'org-id)
+
+  (defun my-org-roam-create-id ()
+    "Create a UUID for org-roam capture template."
+    (org-id-new))
+
+  (org-roam-db-autosync-enable)
+
+  (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
+
+  (setq org-roam-node-display-template
+        (concat "${title:*} "
+                (propertize "${tags:10}" 'face 'org-tag)))
+
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry ""
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                             (lambda ()
+                               (concat "---\nid: "
+                                      (org-id-new)
+                                      "\ntitle: Daily Notes %<%Y-%m-%d>\n---\n%?"))))))
+
+  (setq org-roam-capture-templates
+        '(("d" "default" plain ""
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                             (lambda ()
+                               (concat "---\nid: "
+                                      (org-id-new)
+                                      "\ntitle: ${title}\n---\n\n")))
+           :unnarrowed t))))
+
+
+;;;;
+;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
+(defun tedroden/force-org-rebuild-cache ()
+  "Rebuild the `org-mode' and `org-roam' cache."
+  (interactive)
+  (org-id-update-id-locations)
+  (org-roam-db-clear-all)
+  (org-roam-db-sync)
+  (org-roam-update-org-id-locations))
+
+
+(use-package org-roam-ui
+  :bind
+  (("C-c n g" . org-roam-ui-open))
+  :config
+  (setq org-roam-ui-sync-theme t
+		org-roam-ui-follow t
+		org-roam-ui-update-on-save t
+		org-roam-ui-open-on-start t))
+
+
+(use-package dotenv-mode)
 ;; 
-;; (use-package ivy
-;;   :bind
-;;   (("C-o" . 'swiper))
-;;   :custom
-;;   (ivy-use-virtual-buffers t)
-;;   (ivy-initial-inputs-alist nil)
+(use-package dired-narrow
+  :bind (:map dired-mode-map
+			  ("F" . dired-narrow))
+  :config
+  (put 'dired-find-alternate-file 'disabled nil))
+
+
+(defun ok-goto-line (line)
+  "Go to the specified LINE."
+  (goto-char (point-min))
+  (forward-line (1- line)))
+
+(defun goto-line-with-feedback ()
+  "Show line numbers temporarily, while prompting for the line number input"
+  (interactive)
+  (unwind-protect
+      (progn
+        (display-line-numbers-mode 1)
+        (let ((num (read-number "Goto line: ")))
+          (ok-goto-line num)))
+    (display-line-numbers-mode -1)))
+
+(global-set-key (kbd "M-g") 'goto-line-with-feedback)
+
+;; 
+(use-package treemacs)
+(use-package treemacs-projectile)
+
+;; (use-package git-gutter
+;;   :hook (prog-mode . git-gutter-mode)
 ;;   :config
-;;   (ivy-mode nil))
-;; 
-;; 
-;; 
+;;   (setq git-gutter:update-interval 0.02))
 
-;; (setq org-directory (file-truename "~/Dropbox/Org"))
-;; (setq the-list-file (concat org-directory "/the-list.org"))
-;; (defun open-the-list ()
-;;   "Quickly edit my ~/Org/the-list.org file."
-;;   (interactive)
-;;   (find-file the-list-file))
-
-;; (use-package org
-;;   :ensure t
-;;   :demand t
-;;   :bind (("C-c a" . org-agenda)
-;;          ("C-c c" . org-capture)
-;;          ("C-' o" . open-the-list)
-;;          :map org-mode-map
-;;          (("M-F" . org-metaright)
-;;           ("M-B" . org-metaleft)
-;;           ("C-c i t" . counsel-org-tag)
-;;           ;; take these back from co-pillot
-;;           ("<tab>" . org-cycle)
-;;           ("S-<tab>" . org-shifttab)
-;;           ("C-<tab>" . org-global-cycle)
-;;           ("M-P" . org-metaup)
-;;           ("M-N" . org-metadown)
-;;           ("C-c o" . org-table-insert-row)
-;;           ("C-c t i" . org-table-insert-row)
-;;           ("C-c t p" . org-table-move-row-up)
-;;           ("C-c t n" . org-table-move-row-down)
-;;           ("C-c X" . org-latex-export-to-pdf)))
-;;   :init
-;; ;  (unbind-key "C-'" org-mode-map)
-;; ;  (unbind-key "C-," org-mode-map)
-;;   (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
-;;   (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-;;   (setq org-archive-location "archive/%s_archive::")
-;;   (setq org-agenda-files (list org-directory))
-;;   (setq org-agenda-remove-tags nil)
-;;   :config
-;;   ;; Don't do any of that visual indenting
-;;   (setq org-startup-indented nil)
-;;   ;; Show everything
-;;   (setq org-hide-leading-stars nil)
-;;   ;; Start fully expanded
-;;   (setq org-startup-folded 'nofold)
-;;   (setq org-blank-before-new-entry '((heading . nil)
-;;                                     (plain-list-item . nil)))  ; Added closing parenthesis here
-;;   (setq org-capture-templates
-;;         '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-;;            "* TODO %?\n  %i\n  %a")
-;;           ("s" "Shopping" entry (file+headline tasks-file "Tasks")
-;;            "* TODO %?%(org-set-tags \"BUY\")\n")))
-;;   (require 'org-agenda))
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+  (diff-hl-flydiff-mode)
+  (diff-hl-margin-mode))
+(global-diff-hl-mode)
 
 
-;; (use-package org-roam
-;;   :ensure t
-;;   :init
-;;   (setq org-roam-v2-ack t)
-;;   :custom
-;;   (org-roam-directory (file-truename "~/Dropbox/mem"))
-;;   (org-roam-dailies-directory "daily/")
-;;   (org-roam-completion-everywhere t)
-;;   (org-startup-folded 'nofold)
-;;   (org-roam-file-extensions '("md" "org"))
-;;   :bind (("C-c n l" . org-roam-buffer-toggle)
-;;          ("C-c n f" . org-roam-node-find)
-;;          ("C-c n i" . org-roam-node-insert)
-;;          ("C-c n c" . org-roam-capture)
-;;          ("C-c n j" . org-roam-dailies-capture-today))
-;;   :bind-keymap
-;;   ("C-c n d" . org-roam-dailies-map)
-;;   :config
-;;   (require 'org-roam-dailies)
-;;   (require 'org-id)
-
-;;   (defun my-org-roam-create-id ()
-;;     "Create a UUID for org-roam capture template."
-;;     (org-id-new))
-
-;;   (org-roam-db-autosync-enable)
-
-;;   (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
-
-;;   (setq org-roam-node-display-template
-;;         (concat "${title:*} "
-;;                 (propertize "${tags:10}" 'face 'org-tag)))
-
-;;   (setq org-roam-dailies-capture-templates
-;;         '(("d" "default" entry ""
-;;            :if-new (file+head "%<%Y-%m-%d>.md"
-;;                              (lambda ()
-;;                                (concat "---\nid: "
-;;                                       (org-id-new)
-;;                                       "\ntitle: Daily Notes %<%Y-%m-%d>\n---\n%?"))))))
-
-;;   (setq org-roam-capture-templates
-;;         '(("d" "default" plain ""
-;;            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.md"
-;;                              (lambda ()
-;;                                (concat "---\nid: "
-;;                                       (org-id-new)
-;;                                       "\ntitle: ${title}\n---\n\n")))
-;;            :unnarrowed t))))
-
-;; (use-package md-roam
-;;   :ensure t
-;;   :vc (:url "https://github.com/nobiot/md-roam.git"
-;;             :rev :newest
-;;             :branch "main")
-;;   :after org-roam
-;;   :config
-;;   (md-roam-mode 1))
-
-;; ;;;;
-;; ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
-;; (defun tedroden/force-org-rebuild-cache ()
-;;   "Rebuild the `org-mode' and `org-roam' cache."
-;;   (interactive)
-;;   (org-id-update-id-locations)
-;;   (org-roam-db-clear-all)
-;;   (org-roam-db-sync)
-;;   (org-roam-update-org-id-locations))
-
-
-
-;; ;; (use-package activity-watch-mode
-;; ;;   :ensure t
-;; ;;   :config
-;; ;;   (global-activity-watch-mode t))
-;; 
-;; (use-package dotenv-mode)
-;; 
-;; (use-package dired-narrow
-;;   :bind (:map dired-mode-map
-;; 			  ("F" . dired-narrow))
-;;   :config
-;;   (put 'dired-find-alternate-file 'disabled nil))
-;; 
-;; 
-;; 
-;; (use-package ibuffer-projectile
-;;   :ensure t
-;;   :custom
-;;   ;; By default it puts "Projectile:" in front of the project name.
-;;   ;; Let's clear that out.
-;;       (ibuffer-projectile-prefix "")
-;;     :config
-;;     (add-hook 'ibuffer-hook
-;;                 (lambda ()
-;;                 (ibuffer-projectile-set-filter-groups)
-;;                 (unless (eq ibuffer-sorting-mode 'alphabetic)
-;;                     (ibuffer-do-sort-by-alphabetic)))))
-;; 
-;; 
-;; (use-package counsel-projectile
-;;   :config
-;;   (counsel-projectile-mode)
-;; 
-;;   :bind
-;;   (("C-c k" . 'counsel-projectile-rg)
-;;    ("M-p" . 'counsel-projectile-find-file) ;; i think this is close to vs code, right?
-;;    ("C-c 4 f" . 'projectile-find-file-other-window)
-;;    ("C-c C-f" . 'counsel-projectile-find-file)))
-;; 
-;; (use-package org-roam-ui
-;;   :bind
-;;   (("C-c n g" . org-roam-ui-open))
-;;   :config
-;;   (setq org-roam-ui-sync-theme t
-;; 		org-roam-ui-follow t
-;; 		org-roam-ui-update-on-save t
-;; 		org-roam-ui-open-on-start t))
-;; 
-;; 
-;; ;; (use-package pdf-tools
-;; ;;   :ensure t
-;; ;;   :config
-;; ;;   (pdf-tools-install))
-;; 
-;; (defun ok-goto-line (line)
-;;   "Go to the specified LINE."
-;;   (goto-char (point-min))
-;;   (forward-line (1- line)))
-;; 
-;; (defun goto-line-with-feedback ()
-;;   "Show line numbers temporarily, while prompting for the line number input"
-;;   (interactive)
-;;   (unwind-protect
-;;       (progn
-;;         (display-line-numbers-mode 1)
-;;         (let ((num (read-number "Goto line: ")))
-;;           (ok-goto-line num)))
-;;     (display-line-numbers-mode -1)))
-;; 
-;; (global-set-key (kbd "M-g") 'goto-line-with-feedback)
-;; 
-;; (use-package treemacs)
-;; (use-package treemacs-projectile)
 ;; (use-package dockerfile-mode)
 ;; 
 ;; (use-package emojify
@@ -964,9 +944,9 @@
 ;; 
 ;; ;; Finally
 ;; ;; Start the server if it's not already started.
-;; (require 'server)
-;; (unless (server-running-p)
-;;   (server-start))
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 ;; 
 ;; ;; Worth putting in .zshrc
 ;; ;; # emacs
