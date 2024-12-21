@@ -36,6 +36,8 @@
 ;; Initialize package.el
 (package-initialize)
 
+(setq create-lockfiles nil)
+
 
 ;; Debug helper function
 (defun ensure-package-installed (package)
