@@ -18,6 +18,55 @@
 ;; DO NOT reinstall, uninstall and install again.
 ;; Do this: `brew uninstall emacs-plus@30 && brew unlink emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
 
+
+;; Move this section to the very top of your init.el, right after the initial comments
+(require 'package)
+(setq package-archives
+      '(("elpa" . "https://elpa.gnu.org/packages/")
+        ("elpa-devel" . "https://elpa.gnu.org/devel/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+
+(setq package-archive-priorities
+      '(("elpa-devel" . 4)
+        ("melpa" . 3)
+        ("elpa" . 2)
+        ("nongnu" . 1)))
+
+;; Initialize package.el
+(package-initialize)
+
+
+;; Debug helper function
+(defun ensure-package-installed (package)
+  "Make sure PACKAGE is installed."
+  (unless (package-installed-p package)
+    (message "Installing %s..." package)
+    (condition-case err
+        (progn
+          (package-refresh-contents)
+          (package-install package))
+      (error (message "Failed to install %s: %s" package err)))))
+
+
+;; Report package directory state
+(message "Package directory: %s" package-user-dir)
+(message "Package directory exists: %s" (file-exists-p package-user-dir))
+(when (file-exists-p package-user-dir)
+  (message "Package directory contents: %s" 
+           (directory-files package-user-dir)))
+
+
+;; Force package refresh and install use-package
+(package-refresh-contents)
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+
+;; Configure use-package to auto-install packages
+(require 'use-package)
+(setq use-package-always-ensure t)
+
 ;; Disable the splash screen.
 (setq inhibit-splash-screen t)
 
@@ -26,10 +75,27 @@
 
 (setq warning-minimum-level :emergency)
 
+
+;; 1. Package Management Optimization
+(setq package-native-compile t)  ; Enable native compilation for better performance
+(setq package-install-upgrade-built-in t)  ; Auto-upgrade built-in packages
+
+;; 2. Better Performance Settings
+(setq gc-cons-threshold 100000000)  ; Increase garbage collection threshold
+(setq read-process-output-max (* 1024 1024))  ; Increase read chunk size for better LSP performance
+
+
+
 ;; Remember: you can press [F4] to open this file from emacs.
 ;; (info "(eintr) Top")   ; lisp tutorial
 
-
+  (if init-file-debug
+      (setq use-package-verbose t
+            use-package-expand-minimally nil
+            use-package-compute-statistics t
+            debug-on-error t)
+    (setq use-package-verbose nil
+          use-package-expand-minimally t))
 ;;; Code:
 ;; turn off a lot of the UI
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -46,23 +112,12 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
-;; get package stuff ready
-(require 'package)
-(setq package-archives
-      '(("elpa" . "https://elpa.gnu.org/packages/")
-        ("elpa-devel" . "https://elpa.gnu.org/devel/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ("melpa" . "https://melpa.org/packages/")))
-;; Highest number gets priority (what is not mentioned gets priority 0)
-(setq package-archive-priorities
-      '(("elpa-devel" . 4)
-        ("melpa" . 3)
-        ("elpa" . 2)
-        ("nongnu" . 1)))
 
-(unless (bound-and-true-p package--initialized)
-  (setq package-enable-at-startup nil)
-  (package-initialize))
+(when (memq window-system '(mac ns))
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize)))
 
 ;; setup custom/personal/etc.
 (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
@@ -113,16 +168,24 @@
 
 ;; This provides a cute little mini-map (just like a modern editor)
 (use-package demap
+  :ensure t
+  :init
+  ;; Debug info
+  (message "Attempting to load demap from: %s" 
+           (locate-library "demap"))
   :bind
-  ;; Turn it on/off with.
   (("C-' m" . demap-toggle)))
 
 
-;; I don't think we need this anymore
-;;(use-package exec-path-from-shell)
-;;(when (memq window-system '(mac ns x))
-;;  (exec-path-from-shell-initialize))
 
+;; ;; I don't think we need this anymore
+;; (use-package exec-path-from-shell
+;;   :ensure t)
+;; 
+;; ;; (require 'exec-path-from-shell)
+;; (when (memq window-system '(mac ns x))
+;;   (exec-path-from-shell-initialize))
+;; 
 ;; (global-set-key (kbd "C-h") 'delete-backward-char)
 ; (global-set-key (kbd "C-?") 'help-command)
 
@@ -180,28 +243,15 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; ;; (require 'use-package)
 (use-package copilot
-  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :ensure t
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")
   :hook (prog-mode . copilot-mode)
   :bind (("<tab>" . copilot-accept-completion)
-		 ("C-TAB" . copilot-accept-completion)))
+    	 ("C-TAB" . copilot-accept-completion)))
 
 
-
-;; (use-package copilot
-;;   :vc (:url "https://github.com/copilot-emacs/copilot.el"
-;;             :rev :newest
-;;             :branch "main")
-;;   :hook (prog-mode . copilot-mode)
-;;   :bind (("<tab>" . copilot-accept-completion)
-;; 		 ("C-TAB" . copilot-accept-completion)))
-
-
-
-;; previously, I did `:ensure t` for every `use-package` module
-(setq use-package-always-ensure t)
 
 (defun tedroden/no-suspend ()
   "Don't minimize the frame if we hit control-z."
@@ -229,9 +279,8 @@
   :custom
   (catppuccin-enlarge-headings nil)
   )
-;; kind of nice too. but doesn't play well with magit.
-;; (use-package ayu-theme
-;;   :config (load-theme 'ayu-dark t))
+
+(set-frame-font "Monaco 14")
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
@@ -246,540 +295,9 @@
   (doom-modeline-lsp t)
   (doom-modeline-buffer-encoding nil "don't show 'UTF-8' everywhere"))
 
-;; FIXME: get rid of this if we don't have a battery
-;; (use-package battery
-;;   :ensure t
-;;   :config
-;;   (display-battery-mode nil))
 
-(use-package time
-  :ensure t
-  :custom
-  (display-time-default-load-average nil "Don't show load average")
-
-  :config
-  (display-time-mode))
-
-(use-package yaml-mode
-  :mode (("\\.yaml$'" . yaml-mode)
-		 ("\\.yml$'" . yaml-mode)))
-
-;;; end theme related
-;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package ws-butler
-  :ensure t
-  :config
-  (ws-butler-global-mode))
-
-;; great for quickly switching windows if you've got more than 2
-;; (use-package ace-window
-;;   :ensure t
-;;   :bind ("M-o" . ace-window))
-(use-package switch-window
-  :bind (("M-o" . switch-window))
-  :custom
-  (switch-window-shortcut-style 'qwerty "use letters instead of numbers"))
-;; (eval-buffer)
-
-;; super cool search if you can see where you want to go.
-(use-package avy
-  :bind
-  ("C-/" . 'avy-goto-char-2 )
-  ("M-j" . 'avy-goto-char-timer )
-  :config
-  (defun avy-action-kill-whole-line (pt)
-    (save-excursion
-      (goto-char pt)
-      (kill-whole-line))
-    (select-window
-     (cdr
-      (ring-ref avy-ring 0)))
-    t)
-
-  (setf (vyalist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
-        (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
-
-  (defun avy-action-copy-whole-line (pt)
-    (save-excursion
-      ((goto-char pt)
-       (cl-destructuring-bind (start . end)
-           (bounds-of-thing-at-point 'line)
-         (copy-region-as-kill start end)))
-      (select-window
-       (cdr
-        (ring-ref avy-ring 0)))
-      t))
-
-  (defun avy-action-yank-whole-line (pt)
-    (avy-action-copy-whole-line pt)
-    (save-excursion (yank))
-    t)
-
-  (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
-        (alist-get ?w avy-dispatch-alist) 'avy-action-copy
-        (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line
-        (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line)
-
-  (defun avy-action-mark-to-char (pt)
-    (activate-mark)
-    (goto-char pt))
-
-  (setf (alist-get ?M  avy-dispatch-alist) 'avy-action-mark-to-char)
-  )
-
-
-;; Is this how I should do this? I don't know.
-(use-package python
-  :mode ("\\.py\\'" . python-ts-mode)
-  :interpreter ("python" . python-ts-mode))
-
-
-;;;; show icons in dired! (requires all-theicons-dired)
-;; (use-package all-the-icons-dired
-;; :hook ((dired-mode . all-the-icons-dired-mode)))
-
-(use-package all-the-icons-ibuffer
-  :ensure t
-  :init (all-the-icons-ibuffer-mode 1))
-
-;;;;
-;;;;;; magit setup. Is this right?
-(use-package magit
-  :bind (("C-c m" . magit-status))
-  :custom
-  (git-commit-major-mode 'markdown-mode)
-  (magit-save-repository-buffers 'dontask)
-  )
-
-(use-package magit-todos
-  :after magit
-  :config (magit-todos-mode 1))
-
-(use-package rainbow-mode
-  :hook ((css-mode . rainbow-mode)
-		 (sass-mode . rainbow-mode)))
-
-;; setup-x p goes to the previous window (opposite of C-x o)
-(defun tedroden/prev-window ()
-  "Go to the previous window."
-  (interactive)
-  (other-window -1))
-
-
-(use-package eshell)
-
-;; show eshell right under the current window
-(use-package eshell-toggle
-  :bind (("C-' e" . eshell-toggle)))
-
-(set-frame-font "Monaco 14")
-
-(use-package ivy-rich)
-(use-package nerd-icons)
-
-(use-package nerd-icons-ivy-rich
-  :ensure t
-  :init
-  (nerd-icons-ivy-rich-mode 1)
-  (ivy-rich-mode 1))
-
-(use-package nerd-icons-ibuffer
-  :ensure t
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
-
-(use-package nerd-icons-dired
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
-
-(use-package ivy
-  :bind
-  (("C-o" . 'swiper))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-initial-inputs-alist nil)
-  :config
-  (ivy-mode nil))
-
-(use-package counsel
-  :config
-  ;; Ignore some files when doing file searches `C-x C-f`
-  ;; Just start typing the file name to show the hidden file(s)
-  (setq counsel-find-file-ignore-regexp "\\(?:\\`[#.]\\)\\|\\(?:[#~]\\'\\)")
-  :bind
-  (
-   ("C-x b" . 'ivy-switch-buffer)
-   ("M-x" . 'counsel-M-x)
-   ("C-x C-f" . 'counsel-find-file)
-   ("C-x d" . 'counsel-dired)
-   ("C-h f" . 'counsel-describe-function)
-   ("C-h v" . 'counsel-describe-variable)
-   ("M-y" . 'counsel-yank-pop)))
-
-(use-package npm-mode)
-
-
-
-;; (use-package 'exec-path-from-shell)
-
-(use-package ibuffer
-  :bind (("C-x B" . ibuffer))
-  :custom
-  (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
-  (ibuffer-saved-filter-groups
-   '(("Home"
-      ("GIT" (name . "^magit-mode"))
-      ("Org" (mode . org-mode))
-      ("Eshell" (mode . eshell-mode))
-      ("Man" (name . "*Man")))))
-  :config
-  (add-hook 'ibuffer-mode-hook
-            (lambda ()
-              (ibuffer-switch-to-saved-filter-groups "Home"))))
-
-
-;; this is useful if pair programming or demoing
-;;(use-package beacon
-;;  :init
-;;  (beacon-mode nil))
-
-(use-package expand-region
-  :bind ("C-=" . er/expand-region))
-
-(use-package js2-mode
-  :mode (("\\.js$" . js2-mode))
-  :interpreter ("node" . js2-mode))
-
-;; put the cursor where it was last time you visited a file
-(use-package saveplace
-  :init (save-place-mode 1)
-  :config
-  (progn
-	(setq-default save-place t)
-	(setq save-place-limit nil)))
-
-(use-package rjsx-mode
-  :defer t)
-
-;; "control-c left arrow" brings you bakc to your
-;; last window configuration
-(use-package winner
-  :init (winner-mode))
-
-(use-package markdown-mode
-  :ensure t
-  :mode ("\\.md\\'" . gfm-mode)
-  :bind ;; make sure TAB does the defauljt
-    (:map markdown-mode-map
-            ("<tab>" . markdown-cycle)
-            ("S-<tab>" . markdown-shifttab))
-  :init (setq markdown-hide-markup-in-view-modes t))
-
-(use-package dumb-jump
-  :init
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
-
-(use-package google-this
-  :bind (("C-x g" . google-this)))
-
-(use-package chatgpt-shell
-  :ensure t
-  :bind (("C-c g" . chatgpt-shell))
-  :custom
-
-  ((chatgpt-shell-openai-key
-	(lambda ()
-	  (auth-source-pass-get 'secret "openai-key")))))
-
-;; I do not like these key bindings. What does VS code do?
-(use-package multiple-cursors
-  :bind (("C-' 9" . 'mc/mark-next-like-this)
-		 ("C-' 0" . 'mc/unmark-next-like-this)))
-
-(setq org-directory (file-truename "~/Dropbox/Org"))
-(setq the-list-file (concat org-directory "/the-list.org"))
-(defun open-the-list ()
-  "Quickly edit my ~/Org/the-list.org file."
-  (interactive)
-  (find-file the-list-file))
-
-(require 'org)
-(use-package org
-  :ensure t
-  :demand t
-  :bind (("C-c a" . org-agenda)
-		 ("C-c c" . org-capture)
-         ("C-' o" . open-the-list)
-		 :map org-mode-map
-
-		 (("M-F" . org-metaright)
-		  ("M-B" . org-metaleft)
-
-		  ("C-c i t" . counsel-org-tag)
-
-		  ;; take these back from co-pillot
-		  ("<tab>" . org-cycle)
-		  ("S-<tab>" . org-shifttab)
-		  ("C-<tab>" . org-global-cycle)
-
-		  ("M-P" . org-metaup)
-		  ("M-N" . org-metadown)
-
-		  ("C-c o" . org-table-insert-row)
-
-		  ("C-c t i" . org-table-insert-row)
-		  ("C-c t p" . org-table-move-row-up)
-		  ("C-c t n" . org-table-move-row-down)
-		  ("C-c X" . org-latex-export-to-pdf)
-		  ))
-
-  :init
-  (unbind-key "C-'" org-mode-map)
-  (unbind-key "C-," org-mode-map)
-  (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
-  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-  (setq org-archive-location "archive/%s_archive::")
-  (setq org-agenda-files (list org-directory))
-  (setq org-agenda-remove-tags nil)
-
-
-  :config
-  ;; Don't do any of that visual indenting
-  (setq org-startup-indented nil)
-  ;; Show everything
-  (setq org-hide-leading-stars nil)
-  ;; Start fully expanded
-  (setq org-startup-folded 'nofold)
-
-  (setq org-blank-before-new-entry '((heading . nil)
-                                     (plain-list-item . nil))
-
-  (setq org-capture-templates
-	    '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?\n  %i\n  %a")
-		  ("s" "Shopping" entry (file+headline tasks-file "Tasks")
-		   "* TODO %?%(org-set-tags \"BUY\")\n")
-		  ))
-  (require 'org-agenda)))
-
-
-;; (use-package md-roam
-;;   :ensure t
-;;   :vc (:url "https://github.com/nobiot/md-roam.git"
-;;             :rev :newest
-;;             :branch "main")
-;;   :config
-;;     (require 'md-roam)
-;;     (md-roam-mode 1)
-;;     (md-roam-use-markdown-file-links t)
-;;     (md-roam-node-insert-type 'org-roam-node-insert))
-
-(use-package org-roam
-  :ensure t
-  :init
-  (setq org-roam-v2-ack t)
-  :custom
-
-  (org-roam-directory (file-truename"~/Dropbox/mem"))
-  (org-roam-dailies-directory "daily/")
-  (org-roam-completion-everywhere t)
-  (org-startup-folded 'nofold)
-  ; (org-roam-file-extensions '("md" "org"))
-
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-		 ("C-c n f" . org-roam-node-find)
-		 ("C-c n i" . org-roam-node-insert)
-		 ("C-c n c" . org-roam-capture)
-		 ("C-c n j" . org-roam-dailies-capture-today)
-		 :map org-roam-dailies-map
-		 ("Y" . org-roam-dailies-capture-yesterday)
-		 ("T" . org-roam-dailies-capture-tomorrow)
-		 )
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-
-  :config
-  (require 'org-roam-dailies) ;; Ensure the keymap is available
-
-  (org-roam-db-autosync-enable)
-
-  ;;  (setq org-roam-graph-executable "/usr/local/bin/dot")
-  (setq org-id-locations-file  (concat dotfiles-dir ".org-id-locations"))
-  (setq org-roam-node-display-template
-		(concat "${title:*} "
-				(propertize "${tags:10}" 'face 'org-tag)))
-
-  (setq org-roam-dailies-capture-templates
-		'(("d" "default" entry
-		   "* %?"
-		   :if-new (file+head "%<%Y-%m-%d>.org"
-							  "#+title: Daily Notes %<%Y-%m-%d>\n#+created: %U\n\n"))))
-
-  (setq org-roam-capture-templates
-		'(("d" "default" plain "* %?"
-		   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-							  "#+title: ${title}\n#+created: %U\n\n")
-		   :unnarrowed t))))
-
-;;;;
-;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
-(defun tedroden/force-org-rebuild-cache ()
-  "Rebuild the `org-mode' and `org-roam' cache."
-  (interactive)
-  (org-id-update-id-locations)
-  (org-roam-db-clear-all)
-  (org-roam-db-sync)
-  (org-roam-update-org-id-locations))
-
-;; (use-package activity-watch-mode
-;;   :ensure t
-;;   :config
-;;   (global-activity-watch-mode t))
-
-(use-package dotenv-mode)
-
-(use-package dired-narrow
-  :bind (:map dired-mode-map
-			  ("F" . dired-narrow))
-  :config
-  (put 'dired-find-alternate-file 'disabled nil))
-
-(use-package typescript-ts-mode
-  :ensure t)
-
-(use-package projectile
-  :ensure t
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :config
-  (projectile-mode +1)
-  (setq projectile-project-search-path '("~/code")))
-
-
-(use-package ibuffer-projectile
-  :ensure t
-  :custom
-  ;; By default it puts "Projectile:" in front of the project name.
-  ;; Let's clear that out.
-      (ibuffer-projectile-prefix "")
-    :config
-    (add-hook 'ibuffer-hook
-                (lambda ()
-                (ibuffer-projectile-set-filter-groups)
-                (unless (eq ibuffer-sorting-mode 'alphabetic)
-                    (ibuffer-do-sort-by-alphabetic)))))
-
-
-(use-package counsel-projectile
-  :config
-  (counsel-projectile-mode)
-
-  :bind
-  (("C-c k" . 'counsel-projectile-rg)
-   ("M-p" . 'counsel-projectile-find-file) ;; i think this is close to vs code, right?
-   ("C-c 4 f" . 'projectile-find-file-other-window)
-   ("C-c C-f" . 'counsel-projectile-find-file)))
-
-(use-package org-roam-ui
-  :bind
-  (("C-c n g" . org-roam-ui-open))
-  :config
-  (setq org-roam-ui-sync-theme t
-		org-roam-ui-follow t
-		org-roam-ui-update-on-save t
-		org-roam-ui-open-on-start t))
-
-
-;; (use-package pdf-tools
-;;   :ensure t
-;;   :config
-;;   (pdf-tools-install))
-
-(defun ok-goto-line (line)
-  "Go to the specified LINE."
-  (goto-char (point-min))
-  (forward-line (1- line)))
-
-(defun goto-line-with-feedback ()
-  "Show line numbers temporarily, while prompting for the line number input"
-  (interactive)
-  (unwind-protect
-      (progn
-        (display-line-numbers-mode 1)
-        (let ((num (read-number "Goto line: ")))
-          (ok-goto-line num)))
-    (display-line-numbers-mode -1)))
-
-(global-set-key (kbd "M-g") 'goto-line-with-feedback)
-
-(use-package treemacs)
-(use-package treemacs-projectile)
-(use-package dockerfile-mode)
-
-(use-package emojify
-  :bind
-  (("C-c E" . emojify-insert-emoji)))
-
-
-
-
-;; (use-package eglot
-;;   :ensure t)
-
-;; (setq major-mode-remap-alist
-;;       '((python-mode . python-ts-mode)))
-
-;; built in
-(require 'treesit)
-(use-package treesit-auto
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
-;; (setq major-mode-remap-alist
-;;  '((yaml-mode . yaml-ts-mode)
-;;    (bash-mode . bash-ts-mode)
-;;    (js2-mode . js-ts-mode)
-;;    (typescript-mode . typescript-ts-mode)
-;;    (json-mode . json-ts-mode)
-;;    (css-mode . css-ts-mode)
-;;    (python-mode . python-ts-mode)))
-
-                                        ;(use-package eat)
-
-;; built in stuff...
-(defun open-current-file-with-sudo-tramp ()
-  "Open the currently visited file with sudo:: method in TRAMP,
-   but refuse to open files in the home directory.
-   (A copilot/chatgpt colab... )"
-  (interactive)
-  (when buffer-file-name
-	(let ((file-path (buffer-file-name)))
-	  (unless (string-prefix-p (expand-file-name "~") file-path)
-		(find-alternate-file ;; this will kill the current buffer, use switch-to-buffer if you don't want that.
-		 (concat "/sudo::" file-path)))
-	  (when (string-prefix-p (expand-file-name "~") file-path)
-		(message "Don't bring sudo into your home directory")))))
-
-(global-set-key (kbd "C-' s") 'open-current-file-with-sudo-tramp)
-(setq tramp-auto-save-directory (expand-file-name "~/.emacs.d/tramp-autosave"))
-
-;; (use-package which-key                 ;
-;;   :config
-;;   (which-key-mode)
-;;   (which-key-setup-minibuffer)
-;;   )
-
-
-;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
-(custom-set-variables
- '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
- '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
-
-;; create the autosave dir if necessary, since emacs won't.
-(make-directory "~/.emacs.d/autosaves/" t)
+;; end of looks
+;;;;;;;;;;;;;
 
 (use-package lsp-mode
   :ensure t
@@ -814,9 +332,6 @@
   ; (lsp-ui-doc-side 'right)
   )
 
-;; if you are helm user
-;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-
 ;; if you are ivy user
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
@@ -833,21 +348,117 @@
 
 
 
+(require 'treesit)
 (use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
   :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode 1))
 
-;; (use-package eglot)
+(setq major-mode-remap-alist
+ '((yaml-mode . yaml-ts-mode)
+   (bash-mode . bash-ts-mode)
+   (js2-mode . js-ts-mode)
+   (typescript-mode . typescript-ts-mode)
+   (json-mode . json-ts-mode)
+   (css-mode . css-ts-mode)
+   (python-mode . python-ts-mode)))
 
-(use-package flycheck
-  :init (global-flycheck-mode))
+(use-package typescript-ts-mode
+  :ensure t)
 
-
-(use-package vundo
+(use-package projectile
   :ensure t
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode +1)
+  (setq projectile-project-search-path '("~/code")))
+
+
+(use-package time
+  :ensure t
+  :custom
+  (display-time-default-load-average nil "Don't show load average")
+
+  :config
+  (display-time-mode))
+
+;; ;; 
+;; (use-package yaml-mode
+;;   :mode (("\\.yaml$'" . yaml-mode)
+;; 		 ("\\.yml$'" . yaml-mode)))
+;; 
+;; ;;; end theme related
+;; ;;;;;;;;;;;;;;;;;;;;;;
+;; 
+(use-package ws-butler
+  :ensure t
+  :config
+  (ws-butler-global-mode))
+;; 
+;; ;; great for quickly switching windows if you've got more than 2
+;; ;; (use-package ace-window
+;; ;;   :ensure t
+;; ;;   :bind ("M-o" . ace-window))
+
+(use-package switch-window
+  :bind (("M-o" . switch-window))
+  :custom
+  (switch-window-shortcut-style 'qwerty "use letters instead of numbers"))
+
+;; ;; super cool search if you can see where you want to go.
+(use-package avy
   :bind
-  (("C-' v" . vundo)
-   ("C-' r" . redo)))
+  ("C-/" . 'avy-goto-char-2 )
+  ("M-j" . 'avy-goto-char-timer ))
+
+;; Is this how I should do this? I don't know.
+(use-package python
+  :mode ("\\.py\\'" . python-ts-mode)
+  :interpreter ("python" . python-ts-mode))
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("\\.md\\'" . gfm-mode)
+  :bind ;; make sure TAB does the defauljt
+    (:map markdown-mode-map
+            ("<tab>" . markdown-cycle)
+            ("S-<tab>" . markdown-shifttab))
+  :init (setq markdown-hide-markup-in-view-modes t))
+
+(use-package magit
+  :ensure t
+  :bind (("C-c m" . magit-status))
+  :custom
+  (git-commit-major-mode 'markdown-mode)
+  (magit-save-repository-buffers 'dontask))
+
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
+
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
+;; put the cursor where it was last time you visited a file
+(use-package saveplace
+  :init (save-place-mode 1)
+  :config
+  (progn
+	(setq-default save-place t)
+	(setq save-place-limit nil)))
+
+(use-package chatgpt-shell
+  :ensure t
+  :bind (("C-c g" . chatgpt-shell))
+  :custom
+
+  ((chatgpt-shell-openai-key
+	(lambda ()
+	  (auth-source-pass-get 'secret "openai-key")))))
+
 
 (use-package company
   :init (global-company-mode)
@@ -855,90 +466,500 @@
   (setq company-idle-delay 0.5) ; Set the delay to 0.5 seconds
   :bind (:map company-active-map ("<enter>" . company-complete-selection)))
 
-(use-package dash)
-;; ;; With use-package:
-(use-package company-box
-   :hook (company-mode . company-box-mode))
 
-
-;; (use-package kbd-mode
-;;   :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
-
-(use-package password-store
-  :ensure t
-  :bind (("C-' p" . password-store-copy)))
-
-
-(use-package wrap-region
-  :ensure t
+(use-package counsel
   :config
-  (wrap-region-global-mode t))
-
-(use-package pinentry
-  :ensure t
-  :config
-  (pinentry-start))
-
-(use-package buffer-move
+  ;; Ignore some files when doing file searches `C-x C-f`
+  ;; Just start typing the file name to show the hidden file(s)
+  (setq counsel-find-file-ignore-regexp "\\(?:\\`[#.]\\)\\|\\(?:[#~]\\'\\)")
   :bind
-  (("C-c <up>" . buf-move-up)
-   ("C-c <down>" . buf-move-down)
-   ("C-c <left>" . buf-move-left)
-   ("C-c <right>" . buf-move-right)))
+  (
+   ("C-x b" . 'ivy-switch-buffer)
+   ("C-x C-b" . 'ivy-switch-buffer)
+   ("M-x" . 'counsel-M-x)
+   ("C-x C-f" . 'counsel-find-file)
+   ("C-x d" . 'counsel-dired)
+   ("C-h f" . 'counsel-describe-function)
+   ("C-h v" . 'counsel-describe-variable)
+   ("M-y" . 'counsel-yank-pop)))
+
+(use-package ivy-rich
+  :ensure t)
+(use-package nerd-icons
+  :ensure t)
 
 
-(use-package ready-player
+(use-package ibuffer-projectile
+  :ensure t
+  :custom
+  ;; By default it puts "Projectile:" in front of the project name.
+  ;; Let's clear that out.
+      (ibuffer-projectile-prefix "")
+    :config
+    (add-hook 'ibuffer-hook
+                (lambda ()
+                (ibuffer-projectile-set-filter-groups)
+                (unless (eq ibuffer-sorting-mode 'alphabetic)
+                    (ibuffer-do-sort-by-alphabetic)))))
+
+
+(use-package counsel-projectile
+  :config
+  (counsel-projectile-mode)
+
+  :bind
+  (("C-c k" . 'counsel-projectile-rg)
+   ("M-p" . 'counsel-projectile-find-file) ;; i think this is close to vs code, right?
+   ("C-c 4 f" . 'projectile-find-file-other-window)
+   ("C-c C-f" . 'counsel-projectile-find-file)))
+
+
+;; 
+;; 
+;; ;;;; show icons in dired! (requires all-theicons-dired)
+;; ;; (use-package all-the-icons-dired
+;; ;; :hook ((dired-mode . all-the-icons-dired-mode)))
+;; 
+;; (use-package all-the-icons-ibuffer
+;;   :ensure t
+;;   :init (all-the-icons-ibuffer-mode 1))
+
+;; 
+;; 
+;; ;;;;
+;; ;;;;;; magit setup. Is this right?
+;; 
+;; (use-package rainbow-mode
+;;   :hook ((css-mode . rainbow-mode)
+;; 		 (sass-mode . rainbow-mode)))
+;; 
+;; ;; setup-x p goes to the previous window (opposite of C-x o)
+;; (defun tedroden/prev-window ()
+;;   "Go to the previous window."
+;;   (interactive)
+;;   (other-window -1))
+;; 
+;; 
+;; (use-package eshell)
+;; 
+;; ;; show eshell right under the current window
+;; (use-package eshell-toggle
+;;   :bind (("C-' e" . eshell-toggle)))
+;; 
+
+;; 
+;; 
+;; (use-package npm-mode)
+;; 
+;; 
+;; 
+;; ;; (use-package 'exec-path-from-shell)
+;; 
+;; (use-package ibuffer
+;;   :bind (("C-x B" . ibuffer))
+;;   :custom
+;;   (ibuffer-show-empty-filter-groups nil "Don't show empty groups")
+;;   (ibuffer-saved-filter-groups
+;;    '(("Home"
+;;       ("GIT" (name . "^magit-mode"))
+;;       ("Org" (mode . org-mode))
+;;       ("Eshell" (mode . eshell-mode))
+;;       ("Man" (name . "*Man")))))
+;;   :config
+;;   (add-hook 'ibuffer-mode-hook
+;;             (lambda ()
+;;               (ibuffer-switch-to-saved-filter-groups "Home"))))
+
+;; 
+;; ;; this is useful if pair programming or demoing
+;; ;;(use-package beacon
+;; ;;  :init
+;; ;;  (beacon-mode nil))
+;; 
+;; 
+;; (use-package js2-mode
+;;   :mode (("\\.js$" . js2-mode))
+;;   :interpreter ("node" . js2-mode))
+;; 
+;; 
+;; (use-package rjsx-mode
+;;   :defer t)
+;; 
+;; ;; "control-c left arrow" brings you bakc to your
+;; ;; last window configuration
+;; (use-package winner
+;;   :init (winner-mode))
+;; 
+;; 
+;; (use-package dumb-jump
+;;   :init
+;;   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+;; 
+;; (use-package google-this
+;;   :bind (("C-x g" . google-this)))
+;; 
+;; 
+;; ;; I do not like these key bindings. What does VS code do?
+;; (use-package multiple-cursors
+;;   :bind (("C-' 9" . 'mc/mark-next-like-this)
+;; 		 ("C-' 0" . 'mc/unmark-next-like-this)))
+;; 
+;; ;; keep this above org
+
+
+;; 
+;; (use-package nerd-icons-ivy-rich
+;;   :ensure t
+;; :after (ivy-rich nerd-icons)
+;;   :init
+;;   
+;;   (nerd-icons-ivy-rich-mode 1)
+;;   (ivy-rich-mode 1))
+;; 
+;; (use-package nerd-icons-ibuffer
+;;   :ensure t
+;;   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+;; 
+;; (use-package nerd-icons-dired
+;;   :hook
+;;   (dired-mode . nerd-icons-dired-mode))
+;;
+
+(use-package ivy
+  :bind
+  (("C-o" . 'swiper))
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-initial-inputs-alist nil)
+  :config
+  (ivy-mode nil))
+
+
+
+
+(setq org-directory (file-truename "~/Dropbox/Org"))
+(setq the-list-file (concat org-directory "/the-list.org"))
+(defun open-the-list ()
+  "Quickly edit my ~/Org/the-list.org file."
+  (interactive)
+  (find-file the-list-file))
+
+(use-package org
+  :ensure t
+  :demand t
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-' o" . open-the-list)
+         :map org-mode-map
+         (("M-F" . org-metaright)
+          ("M-B" . org-metaleft)
+          ("C-c i t" . counsel-org-tag)
+          ;; take these back from co-pillot
+          ("<tab>" . org-cycle)
+          ("S-<tab>" . org-shifttab)
+          ("C-<tab>" . org-global-cycle)
+          ("M-P" . org-metaup)
+          ("M-N" . org-metadown)
+          ("C-c o" . org-table-insert-row)
+          ("C-c t i" . org-table-insert-row)
+          ("C-c t p" . org-table-move-row-up)
+          ("C-c t n" . org-table-move-row-down)
+          ("C-c X" . org-latex-export-to-pdf)))
+  :init
+;  (unbind-key "C-'" org-mode-map)
+;  (unbind-key "C-," org-mode-map)
+  (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
+  (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
+  (setq org-archive-location "archive/%s_archive::")
+  (setq org-agenda-files (list org-directory))
+  (setq org-agenda-remove-tags nil)
+  :config
+  ;; Don't do any of that visual indenting
+  (setq org-startup-indented nil)
+  ;; Show everything
+  (setq org-hide-leading-stars nil)
+  ;; Start fully expanded
+  (setq org-startup-folded 'nofold)
+  (setq org-blank-before-new-entry '((heading . nil)
+                                    (plain-list-item . nil)))  ; Added closing parenthesis here
+  (setq org-capture-templates
+        '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+           "* TODO %?\n  %i\n  %a")
+          ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+           "* TODO %?%(org-set-tags \"BUY\")\n")))
+  (require 'org-agenda))
+
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory (file-truename "~/Dropbox/mem"))
+  (org-roam-dailies-directory "daily/")
+  (org-roam-completion-everywhere t)
+  (org-startup-folded 'nofold)
+  (org-roam-file-extensions '("org" "md"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies)
+  (require 'org-id)
+
+  (defun my-org-roam-create-id ()
+    "Create a UUID for org-roam capture template."
+    (org-id-new))
+
+  (org-roam-db-autosync-enable)
+
+  (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
+
+  (setq org-roam-node-display-template
+        (concat "${title:*} "
+                (propertize "${tags:10}" 'face 'org-tag)))
+
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry ""
+           :if-new (file+head "%<%Y-%m-%d>.org"
+                             (lambda ()
+                               (concat "---\nid: "
+                                      (org-id-new)
+                                      "\ntitle: Daily Notes %<%Y-%m-%d>\n---\n%?"))))))
+
+  (setq org-roam-capture-templates
+        '(("d" "default" plain ""
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                             (lambda ()
+                               (concat "---\nid: "
+                                      (org-id-new)
+                                      "\ntitle: ${title}\n---\n\n")))
+           :unnarrowed t))))
+
+
+;;;;
+;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
+(defun tedroden/force-org-rebuild-cache ()
+  "Rebuild the `org-mode' and `org-roam' cache."
+  (interactive)
+  (org-id-update-id-locations)
+  (org-roam-db-clear-all)
+  (org-roam-db-sync)
+  (org-roam-update-org-id-locations))
+
+
+(use-package org-roam-ui
+  :bind
+  (("C-c n g" . org-roam-ui-open))
+  :config
+  (setq org-roam-ui-sync-theme t
+		org-roam-ui-follow t
+		org-roam-ui-update-on-save t
+		org-roam-ui-open-on-start t))
+
+
+(use-package dotenv-mode)
+;; 
+(use-package dired-narrow
+  :bind (:map dired-mode-map
+			  ("F" . dired-narrow))
+  :config
+  (put 'dired-find-alternate-file 'disabled nil))
+
+
+(defun ok-goto-line (line)
+  "Go to the specified LINE."
+  (goto-char (point-min))
+  (forward-line (1- line)))
+
+(defun goto-line-with-feedback ()
+  "Show line numbers temporarily, while prompting for the line number input"
+  (interactive)
+  (unwind-protect
+      (progn
+        (display-line-numbers-mode 1)
+        (let ((num (read-number "Goto line: ")))
+          (ok-goto-line num)))
+    (display-line-numbers-mode -1)))
+
+(global-set-key (kbd "M-g") 'goto-line-with-feedback)
+
+;; 
+(use-package treemacs)
+(use-package treemacs-projectile)
+
+;; (use-package git-gutter
+;;   :hook (prog-mode . git-gutter-mode)
+;;   :config
+;;   (setq git-gutter:update-interval 0.02))
+
+(use-package diff-hl
   :ensure t
   :config
-  (ready-player-mode +1))
-
-(use-package embark
-  :ensure t
-  :bind
-  (("C-." . embark-act)
-   ("C-;" . embark-dwim)
-   ("C-h B" . embark-bindings)))
-
-(setenv "GPG_AGENT_INFO" nil)
+  (global-diff-hl-mode)
+  (diff-hl-flydiff-mode)
+  (diff-hl-margin-mode))
+(global-diff-hl-mode)
 
 
-;;;; start chat
-(defun my-xref-customizations ()
-  ;; Disable copilot-mode first, ensure this matches how you disable it.
-  ;; Check if copilot-mode is available before trying to disable.
-  (when (featurep 'copilot)
-    (copilot-mode -1))
+;; (use-package dockerfile-mode)
+;; 
+;; (use-package emojify
+;;   :bind
+;;   (("C-c E" . emojify-insert-emoji)))
+;; 
+;; 
+;; 
+;; 
+;; ;; (use-package eglot
+;; ;;   :ensure t)
+;; 
+;; ;; (setq major-mode-remap-alist
+;; ;;       '((python-mode . python-ts-mode)))
+;; 
+;; ;; built in
+;; 
+;;                                         ;(use-package eat)
+;; 
+;; ;; built in stuff...
+;; (defun open-current-file-with-sudo-tramp ()
+;;   "Open the currently visited file with sudo:: method in TRAMP,
+;;    but refuse to open files in the home directory.
+;;    (A copilot/chatgpt colab... )"
+;;   (interactive)
+;;   (when buffer-file-name
+;; 	(let ((file-path (buffer-file-name)))
+;; 	  (unless (string-prefix-p (expand-file-name "~") file-path)
+;; 		(find-alternate-file ;; this will kill the current buffer, use switch-to-buffer if you don't want that.
+;; 		 (concat "/sudo::" file-path)))
+;; 	  (when (string-prefix-p (expand-file-name "~") file-path)
+;; 		(message "Don't bring sudo into your home directory")))))
+;; 
+;; (global-set-key (kbd "C-' s") 'open-current-file-with-sudo-tramp)
+;; (setq tramp-auto-save-directory (expand-file-name "~/.emacs.d/tramp-autosave"))
+;; 
+;; ;; (use-package which-key                 ;
+;; ;;   :config
+;; ;;   (which-key-mode)
+;; ;;   (which-key-setup-minibuffer)
+;; ;;   )
+;; 
+;; 
+;; ;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
+;; (custom-set-variables
+;;  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
+;;  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+;; 
+;; ;; create the autosave dir if necessary, since emacs won't.
+;; (make-directory "~/.emacs.d/autosaves/" t)
+;; 
+;;
 
-  ;; Customize TAB behavior in Xref buffers
-  ;; Replace `'desired-tab-function` with the actual function you want for TAB.
-  ;; For example, `xref-next-line` could be a useful default for navigating references.
-  (local-set-key (kbd "RET") 'xref-quit-and-goto-xref)
-  (local-set-key (kbd "TAB") 'xref-goto-xref)
-  ;; Optionally, set SHIFT-TAB to go to the previous line, mirroring TABs navigation.
-  (local-set-key (kbd "<backtab>") 'xref-previous-line))
-
-;; Add the custom function to xref buffer mode hook.
-(add-hook 'xref--xref-buffer-mode-hook 'my-xref-customizations)
-
-;;; end chapt gpt
-
-
-;; Finally
-;; Start the server if it's not already started.
+;; 
+;; 
+;; ;; (use-package eglot)
+;; 
+;; (use-package flycheck
+;;   :init (global-flycheck-mode))
+;; 
+;; 
+;; (use-package vundo
+;;   :ensure t
+;;   :bind
+;;   (("C-' v" . vundo)
+;;    ("C-' r" . redo)))
+;; 
+;; 
+;; (use-package dash)
+;; ;; ;; With use-package:
+;; (use-package company-box
+;;    :hook (company-mode . company-box-mode))
+;; 
+;; 
+;; ;; (use-package kbd-mode
+;; ;;   :vc (:url "https://github.com/kmonad/kbd-mode" :rev :newest))
+;; 
+;; (use-package password-store
+;;   :ensure t
+;;   :bind (("C-' p" . password-store-copy)))
+;; 
+;; 
+;; (use-package wrap-region
+;;   :ensure t
+;;   :config
+;;   (wrap-region-global-mode t))
+;; 
+;; (use-package pinentry
+;;   :ensure t
+;;   :config
+;;   (pinentry-start))
+;; 
+;; (use-package buffer-move
+;;   :bind
+;;   (("C-c <up>" . buf-move-up)
+;;    ("C-c <down>" . buf-move-down)
+;;    ("C-c <left>" . buf-move-left)
+;;    ("C-c <right>" . buf-move-right)))
+;; 
+;; 
+;; (use-package ready-player
+;;   :ensure t
+;;   :config
+;;   (ready-player-mode +1))
+;; 
+;; (use-package embark
+;;   :ensure t
+;;   :bind
+;;   (("C-." . embark-act)
+;;    ("C-;" . embark-dwim)
+;;    ("C-h B" . embark-bindings)))
+;; 
+;; (setenv "GPG_AGENT_INFO" nil)
+;; 
+;; 
+;; ;;;; start chat
+;; (defun my-xref-customizations ()
+;;   ;; Disable copilot-mode first, ensure this matches how you disable it.
+;;   ;; Check if copilot-mode is available before trying to disable.
+;;   (when (featurep 'copilot)
+;;     (copilot-mode -1))
+;; 
+;;   ;; Customize TAB behavior in Xref buffers
+;;   ;; Replace `'desired-tab-function` with the actual function you want for TAB.
+;;   ;; For example, `xref-next-line` could be a useful default for navigating references.
+;;   (local-set-key (kbd "RET") 'xref-quit-and-goto-xref)
+;;   (local-set-key (kbd "TAB") 'xref-goto-xref)
+;;   ;; Optionally, set SHIFT-TAB to go to the previous line, mirroring TABs navigation.
+;;   (local-set-key (kbd "<backtab>") 'xref-previous-line))
+;; 
+;; ;; Add the custom function to xref buffer mode hook.
+;; (add-hook 'xref--xref-buffer-mode-hook 'my-xref-customizations)
+;; 
+;; ;;; end chapt gpt
+;; 
+;; 
+;; ;; Finally
+;; ;; Start the server if it's not already started.
 (require 'server)
 (unless (server-running-p)
   (server-start))
+;; 
+;; ;; Worth putting in .zshrc
+;; ;; # emacs
+;; ;; export EDITOR="emacsclient -nw"
+;; ;; alias e="emacsclient -n"   # open in existing frame, no waiting
+;; ;; alias et="emacsclient -t"  # open in terminal
+;; ;; alias ew="emacsclient"     # open regular, but wait for close
+;; 
+;; 
+;; 
+;; 
+;; ;; (org-roam-dailies-goto-today)
+;; 
+;; ;;; init.el ends here
+;; 
 
-;; Worth putting in .zshrc
-;; # emacs
-;; export EDITOR="emacsclient -nw"
-;; alias e="emacsclient -n"   # open in existing frame, no waiting
-;; alias et="emacsclient -t"  # open in terminal
-;; alias ew="emacsclient"     # open regular, but wait for close
-
-
-
-
-;; (org-roam-dailies-goto-today)
-
-;;; init.el ends here
