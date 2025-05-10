@@ -71,3 +71,8 @@ if [ -f "${CLOUDSDK_HOME}/path.zsh.inc" ]; then . "${CLOUDSDK_HOME}/path.zsh.inc
 
 # The next line enables shell command completion for gcloud.
 if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/completion.zsh.inc"; fi
+
+if [[ "$TERM" == "xterm-ghostty" ]]; then
+    echo "Setting term to xterm-256color"
+    export TERM=xterm-256color
+fi
