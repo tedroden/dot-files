@@ -5,8 +5,6 @@
 ;; Requires Emacs 30+ (due to: `use-package :vc`)
 ;;
 ;; add this to your .bashrc or .zshrc
-
-;; export EDITOR="emacsclient -nw"
 ;;
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
@@ -14,7 +12,6 @@
 ;;
 ;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
-
 ;; DO NOT reinstall, uninstall and install again.
 ;; Do this: `brew uninstall emacs-plus@30 && brew unlink emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
 
