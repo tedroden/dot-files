@@ -43,6 +43,9 @@
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
         ("melpa" . "https://melpa.org/packages/")))
 
+;; Suppress font-lock warning messages
+(setq byte-compile-warnings '(not obsolete cl-functions interactive-only))
+
 (setq package-archive-priorities
       '(("elpa-devel" . 4)
         ("melpa" . 3)
@@ -72,6 +75,14 @@
 ;; Performance settings
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
+
+;; Replace deprecated font-lock-fontify-buffer with font-lock-ensure
+(when (fboundp 'advice-add)
+  (advice-add 'font-lock-fontify-buffer :around
+              (lambda (orig-fun &rest args)
+                (if (fboundp 'font-lock-ensure)
+                    (apply 'font-lock-ensure args)
+                  (apply orig-fun args)))))
 
 ;; Automatically follow symlinks to git-controlled files without prompting
 (setq vc-follow-symlinks t)
@@ -168,12 +179,22 @@
       (add-to-list 'default-frame-alist '(ns-appearance . dark)))
     
     ;; UI enhancements
+    (use-package ayu-theme
+      :ensure t
+      :config
+      (load-theme 'ayu-dark t))
+    
+    ;; Other theme options (commented out)
     ;; (use-package catppuccin-theme
+    ;;   :ensure t
     ;;   :config
     ;;   (load-theme 'catppuccin t)
     ;;   :custom
     ;;   (catppuccin-enlarge-headings nil))
-
+    ;; (use-package doom-themes
+    ;;   :ensure t
+    ;;   :config
+    ;;   (load-theme 'doom-one t))
 
     (when (display-graphic-p)
       (set-frame-font "Monaco 14")
@@ -310,9 +331,9 @@
                 :rev :newest
                 :branch "main")
       :hook (prog-mode . copilot-mode)
-;;       :bind (("<tab>" . copilot-accept-completion)
-;;              ("C-TAB" . copilot-accept-completion)))
-       :bind (:map copilot-completion-map
+      :custom
+      (copilot-node-executable (executable-find "node"))  ;; Use system node
+      :bind (:map copilot-completion-map
                    ("<tab>" . 'copilot-accept-completion)
                    ("TAB" . 'copilot-accept-completion)
                    ("C-TAB" . 'copilot-accept-completion-by-word)
@@ -384,6 +405,13 @@
     (use-package treemacs)
     (use-package treemacs-projectile)
     
+    ;; Helper function to safely refresh font-lock
+    (defun ted/safe-refresh-font-lock ()
+      "Refresh font lock safely using font-lock-ensure."
+      (interactive)
+      (when (fboundp 'font-lock-ensure)
+        (font-lock-ensure)))
+    
     ;; Set flag to indicate full config is loaded
     (setq ted/full-config-loaded t)
     (message "Full configuration loaded successfully.")))
@@ -454,6 +482,7 @@
     :bind (("C-c m" . magit-status)))
 
   (use-package ayu-theme
+    :ensure t
     :config (load-theme 'ayu-dark t))
   
   ;; Maybe add a lightweight completion framework
