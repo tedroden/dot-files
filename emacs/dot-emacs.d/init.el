@@ -291,6 +291,23 @@
       ("C-/" . 'avy-goto-char-2)
       ("M-j" . 'avy-goto-char-timer))
 
+    (use-package python
+      :mode ("\\.py\\'" . python-ts-mode)
+      :interpreter ("python" . python-ts-mode))
+
+    (use-package markdown-mode
+      :ensure t
+      :mode ("\\.md\\'" . gfm-mode)
+      :bind
+      (:map markdown-mode-map
+            ("<tab>" . markdown-cycle)
+            ("S-<tab>" . markdown-shifttab))
+      :init
+      (setq markdown-hide-markup-in-view-modes t)
+      (setq markdown-fontify-code-blocks-natively t)
+      :config
+      (add-hook 'markdown-mode-hook #'font-lock-mode))
+
     ;; Git integration
     (use-package magit
       :ensure t
@@ -503,21 +520,7 @@
     :config (load-theme 'ayu-dark t))
 
 
-    (use-package python
-      :mode ("\\.py\\'" . python-ts-mode)
-      :interpreter ("python" . python-ts-mode))
 
-    (use-package markdown-mode
-      :ensure t
-      :mode ("\\.md\\'" . gfm-mode)
-      :bind
-      (:map markdown-mode-map
-            ("<tab>" . markdown-cycle)
-            ("S-<tab>" . markdown-shifttab))
-      :init
-      (setq markdown-hide-markup-in-view-modes t)
-      (setq markdown-fontify-code-blocks-natively t))
-  
   ;; Maybe add a lightweight completion framework
   (use-package counsel
     :config
