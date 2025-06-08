@@ -5,8 +5,6 @@
 ;; Requires Emacs 30+ (due to: `use-package :vc`)
 ;;
 ;; add this to your .bashrc or .zshrc
-
-;; export EDITOR="emacsclient -nw"
 ;;
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
@@ -14,28 +12,8 @@
 ;;
 ;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
-
 ;; DO NOT reinstall, uninstall and install again.
 ;; Do this: `brew uninstall emacs-plus@30 && brew unlink emacs-plus@30 && rm /Applications/Emacs.app` and reinstall it.
-
-
-
-;; macs session through this interface. To test your new configuration, you should:
-
-;;   1. Open a terminal on your system
-;;   2. Run: emacs -nw
-
-;;   This will launch Emacs in terminal mode with your new minimal configuration. You should see:
-;;   - A message saying "Terminal mode - minimal config loaded. Press C-c L to load full config."
-;;   - Minimal interface without org-mode, LSP, or other heavy packages
-;;   - Basic editing capabilities
-
-;;   When you're ready to load the full configuration, just press C-c L and it will load all the remaining packages.
-
-;;   To verify the configuration is working correctly, you can check:
-;;   1. Startup speed (should be much faster in terminal mode)
-;;   2. Basic editing functionality works
-;;   3. Press C-c L to load the full config and confirm everything else loads
 
 ;; Let me know how it performs for you!
 
@@ -64,6 +42,9 @@
         ("elpa-devel" . "https://elpa.gnu.org/devel/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
         ("melpa" . "https://melpa.org/packages/")))
+
+;; Suppress font-lock warning messages
+(setq byte-compile-warnings '(not obsolete cl-functions interactive-only))
 
 (setq package-archive-priorities
       '(("elpa-devel" . 4)
@@ -94,6 +75,14 @@
 ;; Performance settings
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
+
+;; Replace deprecated font-lock-fontify-buffer with font-lock-ensure
+(when (fboundp 'advice-add)
+  (advice-add 'font-lock-fontify-buffer :around
+              (lambda (orig-fun &rest args)
+                (if (fboundp 'font-lock-ensure)
+                    (apply 'font-lock-ensure args)
+                  (apply orig-fun args)))))
 
 ;; Automatically follow symlinks to git-controlled files without prompting
 (setq vc-follow-symlinks t)
@@ -190,12 +179,22 @@
       (add-to-list 'default-frame-alist '(ns-appearance . dark)))
     
     ;; UI enhancements
+    (use-package ayu-theme
+      :ensure t
+      :config
+      (load-theme 'ayu-dark t))
+    
+    ;; Other theme options (commented out)
     ;; (use-package catppuccin-theme
+    ;;   :ensure t
     ;;   :config
     ;;   (load-theme 'catppuccin t)
     ;;   :custom
     ;;   (catppuccin-enlarge-headings nil))
-
+    ;; (use-package doom-themes
+    ;;   :ensure t
+    ;;   :config
+    ;;   (load-theme 'doom-one t))
 
     (when (display-graphic-p)
       (set-frame-font "Monaco 14")
@@ -332,9 +331,9 @@
                 :rev :newest
                 :branch "main")
       :hook (prog-mode . copilot-mode)
-;;       :bind (("<tab>" . copilot-accept-completion)
-;;              ("C-TAB" . copilot-accept-completion)))
-       :bind (:map copilot-completion-map
+      :custom
+      (copilot-node-executable (executable-find "node"))  ;; Use system node
+      :bind (:map copilot-completion-map
                    ("<tab>" . 'copilot-accept-completion)
                    ("TAB" . 'copilot-accept-completion)
                    ("C-TAB" . 'copilot-accept-completion-by-word)
@@ -388,51 +387,6 @@
       :config
       (ivy-mode nil))
     
-    ;; Org mode (if needed)
-    (use-package org
-      :ensure t
-      :demand t
-      :bind (("C-c a" . org-agenda)
-             ("C-c c" . org-capture)
-             ("C-' o" . open-the-list)
-             :map org-mode-map
-             (("M-F" . org-metaright)
-              ("M-B" . org-metaleft)
-              ("C-c i t" . counsel-org-tag)
-              ("<tab>" . org-cycle)
-              ("S-<tab>" . org-shifttab)
-              ("C-<tab>" . org-global-cycle)
-              ("M-P" . org-metaup)
-              ("M-N" . org-metadown)
-              ("C-c o" . org-table-insert-row)
-              ("C-c t i" . org-table-insert-row)
-              ("C-c t p" . org-table-move-row-up)
-              ("C-c t n" . org-table-move-row-down)
-              ("C-c X" . org-latex-export-to-pdf)))
-      :config
-      (setq org-directory (file-truename "~/Dropbox/Org"))
-      (setq the-list-file (concat org-directory "/the-list.org"))
-      (defun open-the-list ()
-        "Quickly edit my ~/Org/the-list.org file."
-        (interactive)
-        (find-file the-list-file))
-      
-      (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
-      (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-      (setq org-archive-location "archive/%s_archive::")
-      (setq org-agenda-files (list org-directory))
-      (setq org-agenda-remove-tags nil)
-      (setq org-startup-indented nil)
-      (setq org-hide-leading-stars nil)
-      (setq org-startup-folded 'nofold)
-      (setq org-blank-before-new-entry '((heading . nil)
-                                          (plain-list-item . nil)))
-      (setq org-capture-templates
-            '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-               "* TODO %?\n  %i\n  %a")
-              ("s" "Shopping" entry (file+headline tasks-file "Tasks")
-               "* TODO %?%(org-set-tags \"BUY\")\n")))
-      (require 'org-agenda))
     
     ;; Other tools
     (use-package expand-region
@@ -451,6 +405,13 @@
     (use-package treemacs)
     (use-package treemacs-projectile)
     
+    ;; Helper function to safely refresh font-lock
+    (defun ted/safe-refresh-font-lock ()
+      "Refresh font lock safely using font-lock-ensure."
+      (interactive)
+      (when (fboundp 'font-lock-ensure)
+        (font-lock-ensure)))
+    
     ;; Set flag to indicate full config is loaded
     (setq ted/full-config-loaded t)
     (message "Full configuration loaded successfully.")))
@@ -462,7 +423,56 @@
 (unless ted/is-terminal
   (ted/load-full-config))
 
+;; key command to insert current date
+(defun ted/insert-date ()
+  "Insert current date in format YYYY-MM-DD at point."
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d")))
+
+(global-set-key (kbd "C-c D") 'ted/insert-date)
+
 ;; If you want to load certain packages even in terminal mode, add them here
+
+;; Daily notes configuration
+(defvar ted/daily-notes-directory (file-truename "~/Dropbox/Notes/daily")
+  "Directory for storing daily notes.")
+
+(defun ted/daily-note-filename (&optional offset)
+  "Generate a filename for a daily note with optional OFFSET in days."
+  (let* ((offset (or offset 0))
+         (time (time-add (current-time) (days-to-time offset)))
+         (date-str (format-time-string "%Y-%m-%d" time)))
+    (expand-file-name (concat date-str ".md") ted/daily-notes-directory)))
+
+(defun ted/ensure-daily-notes-dir ()
+  "Ensure the daily notes directory exists."
+  (unless (file-exists-p ted/daily-notes-directory)
+    (make-directory ted/daily-notes-directory t)))
+
+(defun ted/open-daily-note (&optional offset)
+  "Open the daily note for today or with optional OFFSET in days."
+  (interactive)
+  (ted/ensure-daily-notes-dir)
+  (let ((note-file (ted/daily-note-filename offset)))
+    (find-file note-file)
+    (when (= (buffer-size) 0)
+      (markdown-mode))))
+
+(defun ted/open-todays-note ()
+  "Open today's daily note."
+  (interactive)
+  (ted/open-daily-note 0))
+
+(defun ted/open-yesterdays-note ()
+  "Open yesterday's daily note."
+  (interactive)
+  (ted/open-daily-note -1))
+
+;; Define keybindings for daily notes with C-c n prefix
+(define-prefix-command 'ted/notes-map)
+(global-set-key (kbd "C-c n") 'ted/notes-map)
+(define-key ted/notes-map (kbd "t") 'ted/open-todays-note)
+(define-key ted/notes-map (kbd "y") 'ted/open-yesterdays-note)
 
 ;; Minimal terminal packages
 (when ted/is-terminal
@@ -472,6 +482,7 @@
     :bind (("C-c m" . magit-status)))
 
   (use-package ayu-theme
+    :ensure t
     :config (load-theme 'ayu-dark t))
   
   ;; Maybe add a lightweight completion framework
