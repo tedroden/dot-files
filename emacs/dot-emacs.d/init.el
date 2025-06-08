@@ -46,6 +46,10 @@
 ;; Suppress font-lock warning messages
 (setq byte-compile-warnings '(not obsolete cl-functions interactive-only))
 
+;; Suppress warning popups - send to *Messages* instead
+(setq warning-minimum-level :error)
+(setq warning-minimum-log-level :warning)
+
 (setq package-archive-priorities
       '(("elpa-devel" . 4)
         ("melpa" . 3)
@@ -286,11 +290,11 @@
       :bind
       ("C-/" . 'avy-goto-char-2)
       ("M-j" . 'avy-goto-char-timer))
-    
+
     (use-package python
       :mode ("\\.py\\'" . python-ts-mode)
       :interpreter ("python" . python-ts-mode))
-    
+
     (use-package markdown-mode
       :ensure t
       :mode ("\\.md\\'" . gfm-mode)
@@ -298,8 +302,12 @@
       (:map markdown-mode-map
             ("<tab>" . markdown-cycle)
             ("S-<tab>" . markdown-shifttab))
-      :init (setq markdown-hide-markup-in-view-modes t))
-    
+      :init
+      (setq markdown-hide-markup-in-view-modes t)
+      (setq markdown-fontify-code-blocks-natively t)
+      :config
+      (add-hook 'markdown-mode-hook #'font-lock-mode))
+
     ;; Git integration
     (use-package magit
       :ensure t
@@ -419,8 +427,11 @@
 ;; Bind key to load full configuration
 (global-set-key (kbd "C-c L") 'ted/load-full-config)
 
-;; Load full config immediately for GUI mode
-(unless ted/is-terminal
+;; Load full config immediately for GUI mode, or delayed for terminal
+(if ted/is-terminal
+    ;; In terminal mode, load full config in background after a delay
+    (run-with-idle-timer 2.0 nil 'ted/load-full-config)
+  ;; In GUI mode, load immediately
   (ted/load-full-config))
 
 ;; key command to insert current date
@@ -441,22 +452,35 @@
   "Generate a filename for a daily note with optional OFFSET in days."
   (let* ((offset (or offset 0))
          (time (time-add (current-time) (days-to-time offset)))
-         (date-str (format-time-string "%Y-%m-%d" time)))
-    (expand-file-name (concat date-str ".md") ted/daily-notes-directory)))
+         (date-str (format-time-string "%Y-%m-%d" time))
+         (date-dir (expand-file-name date-str ted/daily-notes-directory)))
+    (expand-file-name "daily-notes.md" date-dir)))
 
-(defun ted/ensure-daily-notes-dir ()
-  "Ensure the daily notes directory exists."
-  (unless (file-exists-p ted/daily-notes-directory)
-    (make-directory ted/daily-notes-directory t)))
+(defun ted/ensure-daily-notes-dir (&optional offset)
+  "Ensure the daily notes directory exists for the given OFFSET."
+  (let* ((offset (or offset 0))
+         (time (time-add (current-time) (days-to-time offset)))
+         (date-str (format-time-string "%Y-%m-%d" time))
+         (date-dir (expand-file-name date-str ted/daily-notes-directory)))
+    (unless (file-exists-p ted/daily-notes-directory)
+      (make-directory ted/daily-notes-directory t))
+    (unless (file-exists-p date-dir)
+      (make-directory date-dir t))
+    date-dir))
 
 (defun ted/open-daily-note (&optional offset)
   "Open the daily note for today or with optional OFFSET in days."
   (interactive)
-  (ted/ensure-daily-notes-dir)
-  (let ((note-file (ted/daily-note-filename offset)))
+  (let* ((offset (or offset 0))
+         (time (time-add (current-time) (days-to-time offset)))
+         (date-str (format-time-string "%Y-%m-%d" time))
+         (date-dir (ted/ensure-daily-notes-dir offset))
+         (note-file (ted/daily-note-filename offset)))
     (find-file note-file)
     (when (= (buffer-size) 0)
-      (markdown-mode))))
+      (markdown-mode)
+      (insert (concat "# " date-str "\n\n")))))
+
 
 (defun ted/open-todays-note ()
   "Open today's daily note."
@@ -468,11 +492,21 @@
   (interactive)
   (ted/open-daily-note -1))
 
+(defun ted/open-daily-file (&optional offset)
+  "Prompt for a filename and open it in today's daily notes directory."
+  (interactive)
+  (let* ((offset (or offset 0))
+         (date-dir (ted/ensure-daily-notes-dir offset))
+         (filename (read-string "Filename: "))
+         (full-path (expand-file-name filename date-dir)))
+    (find-file full-path)))
+
 ;; Define keybindings for daily notes with C-c n prefix
 (define-prefix-command 'ted/notes-map)
 (global-set-key (kbd "C-c n") 'ted/notes-map)
 (define-key ted/notes-map (kbd "t") 'ted/open-todays-note)
 (define-key ted/notes-map (kbd "y") 'ted/open-yesterdays-note)
+(define-key ted/notes-map (kbd "f") 'ted/open-daily-file)
 
 ;; Minimal terminal packages
 (when ted/is-terminal
@@ -484,7 +518,9 @@
   (use-package ayu-theme
     :ensure t
     :config (load-theme 'ayu-dark t))
-  
+
+
+
   ;; Maybe add a lightweight completion framework
   (use-package counsel
     :config
