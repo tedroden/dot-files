@@ -501,12 +501,32 @@
          (full-path (expand-file-name filename date-dir)))
     (find-file full-path)))
 
+(defun ted/search-notes ()
+  "Search through daily notes using ripgrep and open selected file."
+  (interactive)
+  (let ((search-term (read-string "Search notes for: ")))
+    (if (string-empty-p search-term)
+        (message "Search cancelled")
+      (let* ((rg-command (format "rg -l -i '%s' %s" search-term ted/daily-notes-directory))
+             (files (split-string (shell-command-to-string rg-command) "\n" t)))
+        (if files
+            (if (fboundp 'counsel-find-file)
+                ;; Use counsel if available
+                (ivy-read "Open file: " files
+                         :action (lambda (file) (find-file file))
+                         :caller 'ted/search-notes)
+              ;; Fallback to completing-read if counsel not available
+              (let ((selected-file (completing-read "Open file: " files)))
+                (find-file selected-file)))
+          (message "No files found containing '%s'" search-term))))))
+
 ;; Define keybindings for daily notes with C-c n prefix
 (define-prefix-command 'ted/notes-map)
 (global-set-key (kbd "C-c n") 'ted/notes-map)
 (define-key ted/notes-map (kbd "t") 'ted/open-todays-note)
 (define-key ted/notes-map (kbd "y") 'ted/open-yesterdays-note)
 (define-key ted/notes-map (kbd "f") 'ted/open-daily-file)
+(define-key ted/notes-map (kbd "s") 'ted/search-notes)
 
 ;; Minimal terminal packages
 (when ted/is-terminal
