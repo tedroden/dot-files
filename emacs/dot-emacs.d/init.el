@@ -419,10 +419,144 @@
       (interactive)
       (when (fboundp 'font-lock-ensure)
         (font-lock-ensure)))
-    
+
+    ;;;;;;;;;;;;;
+    ;; start org
+    (setq org-directory (file-truename "~/Dropbox/Org"))
+    (setq the-list-file (concat org-directory "/the-list.org"))
+    (defun open-the-list ()
+      "Quickly edit my ~/Org/the-list.org file."
+      (interactive)
+      (find-file the-list-file))
+
+    (require 'org-tempo)
+
+    (use-package org
+      :ensure t
+      :demand t
+      :bind (("C-c a" . org-agenda)
+             ("C-c c" . org-capture)
+             ("C-' o" . open-the-list)
+             :map org-mode-map
+             (("M-F" . org-metaright)
+              ("M-B" . org-metaleft)
+              ("C-c i t" . counsel-org-tag)
+              ;; take these back from co-pillot
+              ("<tab>" . org-cycle)
+              ("S-<tab>" . org-shifttab)
+              ("C-<tab>" . org-global-cycle)
+              ("M-P" . org-metaup)
+              ("M-N" . org-metadown)
+              ("C-c o" . org-table-insert-row)
+              ("C-c t i" . org-table-insert-row)
+              ("C-c t p" . org-table-move-row-up)
+              ("C-c t n" . org-table-move-row-down)
+              ("C-c X" . org-latex-export-to-pdf)))
+      :init
+                                        ;  (unbind-key "C-'" org-mode-map)
+                                        ;  (unbind-key "C-," org-mode-map)
+      (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
+      (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
+      (setq org-archive-location "archive/%s_archive::")
+      (setq org-agenda-files (list org-directory))
+      (setq org-agenda-remove-tags nil)
+      :config
+      ;; Don't do any of that visual indenting
+      (setq org-startup-indented nil)
+      ;; Show everything
+      (setq org-hide-leading-stars nil)
+      ;; Start fully expanded
+      (setq org-startup-folded 'nofold)
+      (setq org-blank-before-new-entry '((heading . nil)
+                                         (plain-list-item . nil)))  ; Added closing parenthesis here
+      (setq org-capture-templates
+            '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+               "* TODO %?\n  %i\n  %a")
+              ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+               "* TODO %?%(org-set-tags \"BUY\")\n")))
+      (require 'org-agenda))
+
+
+    (use-package org-roam
+      :ensure t
+      :init
+      (setq org-roam-v2-ack t)
+      :custom
+      (org-roam-directory (file-truename "~/Dropbox/mem"))
+      (org-roam-dailies-directory "daily/")
+      (org-roam-completion-everywhere t)
+      (org-startup-folded 'nofold)
+      (org-roam-file-extensions '("org" "md"))
+      :bind (("C-c n l" . org-roam-buffer-toggle)
+             ("C-c n f" . org-roam-node-find)
+             ("C-c n i" . org-roam-node-insert)
+             ("C-c n c" . org-roam-capture)
+             ("C-c n t" . org-roam-dailies-goto-today)
+             ("C-c n y" . org-roam-dailies-goto-yesterday)
+             ("C-c n j" . org-roam-dailies-capture-today))
+      :bind-keymap
+      ("C-c n d" . org-roam-dailies-map)
+      :config
+      (require 'org-roam-dailies)
+      (require 'org-id)
+
+      (defun my-org-roam-create-id ()
+        "Create a UUID for org-roam capture template."
+        (org-id-new))
+
+      (org-roam-db-autosync-enable)
+
+      (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
+
+      (setq org-roam-node-display-template
+            (concat "${title:*} "
+                    (propertize "${tags:10}" 'face 'org-tag)))
+
+      (setq org-roam-dailies-capture-templates
+            '(("d" "default" entry ""
+               :if-new (file+head "%<%Y-%m-%d>.org"
+                                  (lambda ()
+                                    (concat ":PROPERTIES:\n:ID: "
+                                            (org-id-new)
+                                            "\n:END:\n#+TITLE: Daily Notes %<%Y-%m-%d>\n\n%?"))))))
+
+      (setq org-roam-capture-templates
+            '(("d" "default" plain "%?"
+               :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                  (lambda ()
+                                    (concat ":PROPERTIES:\n:ID: "
+                                            (org-id-new)
+                                            "\n:END:\n#+TITLE: ${title}\n\n")))
+               :unnarrowed t))))
+
+
+;;;;
+    ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
+    (defun tedroden/force-org-rebuild-cache ()
+      "Rebuild the `org-mode' and `org-roam' cache."
+      (interactive)
+      (org-id-update-id-locations)
+      (org-roam-db-clear-all)
+      (org-roam-db-sync)
+      (org-roam-update-org-id-locations))
+
+
+    (use-package org-roam-ui
+      :bind
+      (("C-c n g" . org-roam-ui-open))
+      :config
+      (setq org-roam-ui-sync-theme t
+		    org-roam-ui-follow t
+		    org-roam-ui-update-on-save t
+		    org-roam-ui-open-on-start t))
+    ;; end org
+    ;;;;;;;;;;;;;
+
+
     ;; Set flag to indicate full config is loaded
     (setq ted/full-config-loaded t)
-    (message "Full configuration loaded successfully.")))
+    (message "Full configuration loaded successfully."))
+  )
 
 ;; Bind key to load full configuration
 (global-set-key (kbd "C-c L") 'ted/load-full-config)
@@ -444,89 +578,118 @@
 
 ;; If you want to load certain packages even in terminal mode, add them here
 
-;; Daily notes configuration
-(defvar ted/daily-notes-directory (file-truename "~/Dropbox/Notes/daily")
-  "Directory for storing daily notes.")
+;; ;; Daily notes configuration
+;; (defvar ted/daily-notes-directory (file-truename "~/Dropbox/Notes/daily")
+;;   "Directory for storing daily notes.")
 
-(defun ted/daily-note-filename (&optional offset)
-  "Generate a filename for a daily note with optional OFFSET in days."
-  (let* ((offset (or offset 0))
-         (time (time-add (current-time) (days-to-time offset)))
-         (date-str (format-time-string "%Y-%m-%d" time))
-         (date-dir (expand-file-name date-str ted/daily-notes-directory)))
-    (expand-file-name "daily-notes.md" date-dir)))
+;; (defun ted/daily-note-filename (&optional offset)
+;;   "Generate a filename for a daily note with optional OFFSET in days."
+;;   (let* ((offset (or offset 0))
+;;          (time (time-add (current-time) (days-to-time offset)))
+;;          (date-str (format-time-string "%Y-%m-%d" time))
+;;          (date-dir (expand-file-name date-str ted/daily-notes-directory)))
+;;     (expand-file-name "daily-notes.md" date-dir)))
 
-(defun ted/ensure-daily-notes-dir (&optional offset)
-  "Ensure the daily notes directory exists for the given OFFSET."
-  (let* ((offset (or offset 0))
-         (time (time-add (current-time) (days-to-time offset)))
-         (date-str (format-time-string "%Y-%m-%d" time))
-         (date-dir (expand-file-name date-str ted/daily-notes-directory)))
-    (unless (file-exists-p ted/daily-notes-directory)
-      (make-directory ted/daily-notes-directory t))
-    (unless (file-exists-p date-dir)
-      (make-directory date-dir t))
-    date-dir))
+;; (defun ted/ensure-daily-notes-dir (&optional offset)
+;;   "Ensure the daily notes directory exists for the given OFFSET."
+;;   (let* ((offset (or offset 0))
+;;          (time (time-add (current-time) (days-to-time offset)))
+;;          (date-str (format-time-string "%Y-%m-%d" time))
+;;          (date-dir (expand-file-name date-str ted/daily-notes-directory)))
+;;     (unless (file-exists-p ted/daily-notes-directory)
+;;       (make-directory ted/daily-notes-directory t))
+;;     (unless (file-exists-p date-dir)
+;;       (make-directory date-dir t))
+;;     date-dir))
 
-(defun ted/open-daily-note (&optional offset)
-  "Open the daily note for today or with optional OFFSET in days."
-  (interactive)
-  (let* ((offset (or offset 0))
-         (time (time-add (current-time) (days-to-time offset)))
-         (date-str (format-time-string "%Y-%m-%d" time))
-         (date-dir (ted/ensure-daily-notes-dir offset))
-         (note-file (ted/daily-note-filename offset)))
-    (find-file note-file)
-    (when (= (buffer-size) 0)
-      (markdown-mode)
-      (insert (concat "# " date-str "\n\n")))))
+;; (defun ted/open-daily-note (&optional offset)
+;;   "Open the daily note for today or with optional OFFSET in days."
+;;   (interactive)
+;;   (let* ((offset (or offset 0))
+;;          (time (time-add (current-time) (days-to-time offset)))
+;;          (date-str (format-time-string "%Y-%m-%d" time))
+;;          (date-dir (ted/ensure-daily-notes-dir offset))
+;;          (note-file (ted/daily-note-filename offset)))
+;;     (find-file note-file)
+;;     (when (= (buffer-size) 0)
+;;       (markdown-mode)
+;;       (insert (concat "# " date-str "\n\n")))))
 
 
-(defun ted/open-todays-note ()
-  "Open today's daily note."
-  (interactive)
-  (ted/open-daily-note 0))
+;; (defun ted/open-todays-note ()
+;;   "Open today's daily note."
+;;   (interactive)
+;;   (ted/open-daily-note 0))
 
-(defun ted/open-yesterdays-note ()
-  "Open yesterday's daily note."
-  (interactive)
-  (ted/open-daily-note -1))
+;; (defun ted/open-yesterdays-note ()
+;;   "Open yesterday's daily note."
+;;   (interactive)
+;;   (ted/open-daily-note -1))
 
-(defun ted/open-daily-file (&optional offset)
-  "Prompt for a filename and open it in today's daily notes directory."
-  (interactive)
-  (let* ((offset (or offset 0))
-         (date-dir (ted/ensure-daily-notes-dir offset))
-         (filename (read-string "Filename: "))
-         (full-path (expand-file-name filename date-dir)))
-    (find-file full-path)))
+;; (defun ted/open-daily-file (&optional offset)
+;;   "Prompt for a filename and open it in today's daily notes directory."
+;;   (interactive)
+;;   (let* ((offset (or offset 0))
+;;          (date-dir (ted/ensure-daily-notes-dir offset))
+;;          (filename (read-string "Filename: "))
+;;          (full-path (expand-file-name filename date-dir)))
+;;     (find-file full-path)))
 
-(defun ted/search-notes ()
-  "Search through daily notes using ripgrep and open selected file."
-  (interactive)
-  (let ((search-term (read-string "Search notes for: ")))
-    (if (string-empty-p search-term)
-        (message "Search cancelled")
-      (let* ((rg-command (format "rg -l -i '%s' %s" search-term ted/daily-notes-directory))
-             (files (split-string (shell-command-to-string rg-command) "\n" t)))
-        (if files
-            (if (fboundp 'counsel-find-file)
-                ;; Use counsel if available
-                (ivy-read "Open file: " files
-                         :action (lambda (file) (find-file file))
-                         :caller 'ted/search-notes)
-              ;; Fallback to completing-read if counsel not available
-              (let ((selected-file (completing-read "Open file: " files)))
-                (find-file selected-file)))
-          (message "No files found containing '%s'" search-term))))))
+;; (defun ted/search-notes ()
+;;   "Search through daily notes using ripgrep and open selected file."
+;;   (interactive)
+;;   (let ((search-term (read-string "Search notes for: ")))
+;;     (if (string-empty-p search-term)
+;;         (message "Search cancelled")
+;;       (let* ((rg-command (format "rg -l -i '%s' %s" search-term ted/daily-notes-directory))
+;;              (files (split-string (shell-command-to-string rg-command) "\n" t)))
+;;         (if files
+;;             (if (fboundp 'counsel-find-file)
+;;                 ;; Use counsel if available
+;;                 (ivy-read "Open file: " files
+;;                          :action (lambda (file) (find-file file))
+;;                          :caller 'ted/search-notes)
+;;               ;; Fallback to completing-read if counsel not available
+;;               (let ((selected-file (completing-read "Open file: " files)))
+;;                 (find-file selected-file)))
+;;           (message "No files found containing '%s'" search-term))))))
 
-;; Define keybindings for daily notes with C-c n prefix
-(define-prefix-command 'ted/notes-map)
-(global-set-key (kbd "C-c n") 'ted/notes-map)
-(define-key ted/notes-map (kbd "t") 'ted/open-todays-note)
-(define-key ted/notes-map (kbd "y") 'ted/open-yesterdays-note)
-(define-key ted/notes-map (kbd "f") 'ted/open-daily-file)
-(define-key ted/notes-map (kbd "s") 'ted/search-notes)
+;; ;; Define keybindings for daily notes with C-c n prefix
+;; (define-prefix-command 'ted/notes-map)
+;; (global-set-key (kbd "C-c n") 'ted/notes-map)
+;; (define-key ted/notes-map (kbd "t") 'ted/open-todays-note)
+;; (define-key ted/notes-map (kbd "y") 'ted/open-yesterdays-note)
+;; (define-key ted/notes-map (kbd "f") 'ted/open-daily-file)
+;; (define-key ted/notes-map (kbd "s") 'ted/search-notes)
+
+;; Config file editing - idiomatic Lisp approach
+(defvar ted/config-files
+  '(("t" "tmux" "~/code/dot-files/tmux/.tmux.conf")
+    ("z" "zsh" "~/code/dot-files/zsh/.zshrc")
+    ("e" "emacs" "~/code/dot-files/emacs/dot-emacs.d/init.el"))
+  "List of config files with (key description path) format.")
+
+(defun ted/edit-config-file (path)
+  "Edit config file at PATH."
+  (find-file (expand-file-name path)))
+
+(defun ted/create-config-commands ()
+  "Create interactive commands and keybindings for config files."
+  (define-prefix-command 'ted/config-map)
+  (global-set-key (kbd "C-c c") 'ted/config-map)
+  (dolist (config ted/config-files)
+    (let* ((key (nth 0 config))
+           (name (nth 1 config))
+           (path (nth 2 config))
+           (func-name (intern (concat "ted/edit-" name "-config"))))
+      (defalias func-name
+        `(lambda ()
+           ,(format "Edit %s configuration file." name)
+           (interactive)
+           (ted/edit-config-file ,path)))
+      (define-key ted/config-map (kbd key) func-name))))
+
+(ted/create-config-commands)
 
 ;; Minimal terminal packages
 (when ted/is-terminal
