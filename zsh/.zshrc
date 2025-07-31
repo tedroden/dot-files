@@ -46,10 +46,8 @@ unsetopt share_history
 export PATH="~/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 # emacs
-export EDITOR="emacsclient -nw"
-alias e="emacsclient -n"   # open in existing frame, no waiting
-alias et="emacsclient -t"  # open in terminal
-alias ew="emacsclient"     # open regular, but wait for close
+export EDITOR="emacs -nw"
+export emacs="emacs -nw"
 
 # ls
 alias ls="ls --color=auto -F"
@@ -61,7 +59,7 @@ export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # works with zsh
 
 # pyenv
-eval "$(pyenv init -)"
+# eval "$(pyenv init -)"
 
 # gcloud
 CLOUDSDK_HOME="${HOME}/code/deps/google-cloud-sdk"
@@ -71,3 +69,12 @@ if [ -f "${CLOUDSDK_HOME}/path.zsh.inc" ]; then . "${CLOUDSDK_HOME}/path.zsh.inc
 
 # The next line enables shell command completion for gcloud.
 if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/completion.zsh.inc"; fi
+
+# if [[ "$TERM" == "xterm-ghostty" ]]; then
+#     echo "Setting term to xterm-256color"
+#     export TERM=xterm-256color
+# fi
+# 
+alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
+
+set -o physical
