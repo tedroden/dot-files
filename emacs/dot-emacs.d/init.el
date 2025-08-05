@@ -467,6 +467,8 @@
       (setq org-hide-leading-stars nil)
       ;; Start fully expanded
       (setq org-startup-folded 'nofold)
+      ;; Enable visual-line-mode for better line wrapping
+      (add-hook 'org-mode-hook 'visual-line-mode)
       (setq org-blank-before-new-entry '((heading . nil)
                                          (plain-list-item . nil)))  ; Added closing parenthesis here
       (setq org-capture-templates
