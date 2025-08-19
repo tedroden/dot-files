@@ -295,6 +295,10 @@
       :mode ("\\.py\\'" . python-ts-mode)
       :interpreter ("python" . python-ts-mode))
 
+    (use-package rust-mode
+      :ensure t
+      :mode "\\.rs\\'")
+
     (use-package markdown-mode
       :ensure t
       :mode ("\\.md\\'" . gfm-mode)
