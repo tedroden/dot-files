@@ -471,6 +471,9 @@
       (setq org-hide-leading-stars nil)
       ;; Start fully expanded
       (setq org-startup-folded 'nofold)
+      ;; Preserve code block indentation
+      (setq org-src-preserve-indentation t
+            org-edit-src-content-indentation 0)
       ;; Enable visual-line-mode for better line wrapping
       (add-hook 'org-mode-hook 'visual-line-mode)
       (setq org-blank-before-new-entry '((heading . nil)
@@ -519,12 +522,12 @@
                     (propertize "${tags:10}" 'face 'org-tag)))
 
       (setq org-roam-dailies-capture-templates
-            '(("d" "default" entry ""
+            '(("d" "default" entry "%?"
                :if-new (file+head "%<%Y-%m-%d>.org"
                                   (lambda ()
                                     (concat ":PROPERTIES:\n:ID: "
                                             (org-id-new)
-                                            "\n:END:\n#+TITLE: Daily Notes %<%Y-%m-%d>\n\n%?"))))))
+                                            "\n:END:\n#+TITLE: Daily Notes %<%Y-%m-%d>\n\n"))))))
 
       (setq org-roam-capture-templates
             '(("d" "default" plain "%?"
@@ -532,8 +535,7 @@
                                   (lambda ()
                                     (concat ":PROPERTIES:\n:ID: "
                                             (org-id-new)
-                                            "\n:END:\n#+TITLE: ${title}\n\n")))
-               :unnarrowed t))))
+                                            "\n:END:\n#+TITLE: ${title}\n\n")))))))
 
 
 ;;;;
