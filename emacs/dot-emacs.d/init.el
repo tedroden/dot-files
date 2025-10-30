@@ -8,7 +8,7 @@
 ;;
 ;;; I'm currently intalling this emacs:
 ;; brew tap d12frosted/emacs-plus
-;; brew install emacs-plus@30 --with-native-comp
+;; brew install emacs-plus@31
 ;;
 ;; osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@30/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 ;;
@@ -67,6 +67,13 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; setup path
+(when (memq window-system '(mac ns))
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize))
+
 ;; Turn off UI elements
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -103,12 +110,14 @@
 (global-set-key (kbd "C-c |") 'split-window-right)
 (global-set-key (kbd "C-c -") 'split-window-below)
 (global-set-key (kbd "C-c r") 'query-replace)
+(global-set-key (kbd "C-c s") 'ispell-word)
 (global-set-key (kbd "C-z") (lambda () (interactive) (message "Not suspending frame.")))
 (global-set-key [f4] 'ted/edit-dot-emacs)
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
 ;; meta-; for comment uncomment
 
 
+      
 ;; Edit init.el function (essential)
 (defun ted/edit-dot-emacs ()
   "Quickly edit my dot Emacs file."
@@ -171,12 +180,6 @@
           (eval-print-last-sexp)))
       (load bootstrap-file nil 'nomessage))
     
-    ;; Mac-specific settings
-    (when (memq window-system '(mac ns))
-      (use-package exec-path-from-shell
-        :ensure t
-        :config
-        (exec-path-from-shell-initialize))
       
       (setq ns-command-modifier 'meta)
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
