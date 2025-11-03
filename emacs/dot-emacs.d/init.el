@@ -401,8 +401,11 @@
       (ivy-initial-inputs-alist nil)
       :config
       (ivy-mode nil))
-    
-    
+
+    ;; Daily notes (requires counsel)
+    (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+    (require 'noted)
+
     ;; Other tools
     (use-package expand-region
       :bind ("C-=" . er/expand-region))
@@ -499,15 +502,6 @@
       (org-roam-completion-everywhere t)
       (org-startup-folded 'nofold)
       (org-roam-file-extensions '("org" "md"))
-      :bind (("C-c n l" . org-roam-buffer-toggle)
-             ("C-c n f" . org-roam-node-find)
-             ("C-c n i" . org-roam-node-insert)
-             ("C-c n c" . org-roam-capture)
-             ("C-c n t" . org-roam-dailies-goto-today)
-             ("C-c n y" . org-roam-dailies-goto-yesterday)
-             ("C-c n j" . org-roam-dailies-capture-today))
-      :bind-keymap
-      ("C-c n d" . org-roam-dailies-map)
       :config
       (require 'org-roam-dailies)
       (require 'org-id)
@@ -586,92 +580,6 @@
   (insert (format-time-string "%Y-%m-%d")))
 
 (global-set-key (kbd "C-c D") 'ted/insert-date)
-
-;; If you want to load certain packages even in terminal mode, add them here
-
-;; ;; Daily notes configuration
-;; (defvar ted/daily-notes-directory (file-truename "~/Dropbox/Notes/daily")
-;;   "Directory for storing daily notes.")
-
-;; (defun ted/daily-note-filename (&optional offset)
-;;   "Generate a filename for a daily note with optional OFFSET in days."
-;;   (let* ((offset (or offset 0))
-;;          (time (time-add (current-time) (days-to-time offset)))
-;;          (date-str (format-time-string "%Y-%m-%d" time))
-;;          (date-dir (expand-file-name date-str ted/daily-notes-directory)))
-;;     (expand-file-name "daily-notes.md" date-dir)))
-
-;; (defun ted/ensure-daily-notes-dir (&optional offset)
-;;   "Ensure the daily notes directory exists for the given OFFSET."
-;;   (let* ((offset (or offset 0))
-;;          (time (time-add (current-time) (days-to-time offset)))
-;;          (date-str (format-time-string "%Y-%m-%d" time))
-;;          (date-dir (expand-file-name date-str ted/daily-notes-directory)))
-;;     (unless (file-exists-p ted/daily-notes-directory)
-;;       (make-directory ted/daily-notes-directory t))
-;;     (unless (file-exists-p date-dir)
-;;       (make-directory date-dir t))
-;;     date-dir))
-
-;; (defun ted/open-daily-note (&optional offset)
-;;   "Open the daily note for today or with optional OFFSET in days."
-;;   (interactive)
-;;   (let* ((offset (or offset 0))
-;;          (time (time-add (current-time) (days-to-time offset)))
-;;          (date-str (format-time-string "%Y-%m-%d" time))
-;;          (date-dir (ted/ensure-daily-notes-dir offset))
-;;          (note-file (ted/daily-note-filename offset)))
-;;     (find-file note-file)
-;;     (when (= (buffer-size) 0)
-;;       (markdown-mode)
-;;       (insert (concat "# " date-str "\n\n")))))
-
-
-;; (defun ted/open-todays-note ()
-;;   "Open today's daily note."
-;;   (interactive)
-;;   (ted/open-daily-note 0))
-
-;; (defun ted/open-yesterdays-note ()
-;;   "Open yesterday's daily note."
-;;   (interactive)
-;;   (ted/open-daily-note -1))
-
-;; (defun ted/open-daily-file (&optional offset)
-;;   "Prompt for a filename and open it in today's daily notes directory."
-;;   (interactive)
-;;   (let* ((offset (or offset 0))
-;;          (date-dir (ted/ensure-daily-notes-dir offset))
-;;          (filename (read-string "Filename: "))
-;;          (full-path (expand-file-name filename date-dir)))
-;;     (find-file full-path)))
-
-;; (defun ted/search-notes ()
-;;   "Search through daily notes using ripgrep and open selected file."
-;;   (interactive)
-;;   (let ((search-term (read-string "Search notes for: ")))
-;;     (if (string-empty-p search-term)
-;;         (message "Search cancelled")
-;;       (let* ((rg-command (format "rg -l -i '%s' %s" search-term ted/daily-notes-directory))
-;;              (files (split-string (shell-command-to-string rg-command) "\n" t)))
-;;         (if files
-;;             (if (fboundp 'counsel-find-file)
-;;                 ;; Use counsel if available
-;;                 (ivy-read "Open file: " files
-;;                          :action (lambda (file) (find-file file))
-;;                          :caller 'ted/search-notes)
-;;               ;; Fallback to completing-read if counsel not available
-;;               (let ((selected-file (completing-read "Open file: " files)))
-;;                 (find-file selected-file)))
-;;           (message "No files found containing '%s'" search-term))))))
-
-;; ;; Define keybindings for daily notes with C-c n prefix
-;; (define-prefix-command 'ted/notes-map)
-;; (global-set-key (kbd "C-c n") 'ted/notes-map)
-;; (define-key ted/notes-map (kbd "t") 'ted/open-todays-note)
-;; (define-key ted/notes-map (kbd "y") 'ted/open-yesterdays-note)
-;; (define-key ted/notes-map (kbd "f") 'ted/open-daily-file)
-;; (define-key ted/notes-map (kbd "s") 'ted/search-notes)
 
 ;; Config file editing - idiomatic Lisp approach
 (defvar ted/config-files
