@@ -72,7 +72,7 @@
   (use-package exec-path-from-shell
     :ensure t
     :config
-    (exec-path-from-shell-initialize))
+    (exec-path-from-shell-initialize)))
 
 ;; Turn off UI elements
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -179,12 +179,13 @@
           (goto-char (point-max))
           (eval-print-last-sexp)))
       (load bootstrap-file nil 'nomessage))
-    
-      
+
+    ;; Mac-specific settings
+    (when (memq window-system '(mac ns))
       (setq ns-command-modifier 'meta)
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . dark)))
-    
+
     ;; UI enhancements
     (use-package ayu-theme
       :ensure t
@@ -560,18 +561,20 @@
 
     ;; Set flag to indicate full config is loaded
     (setq ted/full-config-loaded t)
-    (message "Full configuration loaded successfully."))
-  )
+    (message "Full configuration loaded successfully.")))
 
 ;; Bind key to load full configuration
 (global-set-key (kbd "C-c L") 'ted/load-full-config)
 
 ;; Load full config immediately for GUI mode, or delayed for terminal
 (if ted/is-terminal
-    ;; In terminal mode, load full config in background after a delay
-    (run-with-idle-timer 2.0 nil 'ted/load-full-config)
+    ;; In terminal mode, load full config after init completes
+    (add-hook 'after-init-hook
+              (lambda ()
+                (run-with-idle-timer 1.0 nil #'ted/load-full-config)))
   ;; In GUI mode, load immediately
   (ted/load-full-config))
+
 
 ;; key command to insert current date
 (defun ted/insert-date ()
