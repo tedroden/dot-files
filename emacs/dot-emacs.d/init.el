@@ -431,133 +431,140 @@
       (when (fboundp 'font-lock-ensure)
         (font-lock-ensure)))
 
-    ;;;;;;;;;;;;;
-    ;; start org
-    (setq org-directory (file-truename "~/Dropbox/Org"))
-    (setq the-list-file (concat org-directory "/the-list.org"))
-    (defun open-the-list ()
-      "Quickly edit my ~/Org/the-list.org file."
-      (interactive)
-      (find-file the-list-file))
+;;     ;;;;;;;;;;;;;
+;;     ;; start org
+;;     (setq org-directory (file-truename "~/Dropbox/Org"))
+;;     (setq the-list-file (concat org-directory "/the-list.org"))
+;;     (defun open-the-list ()
+;;       "Quickly edit my ~/Org/the-list.org file."
+;;       (interactive)
+;;       (find-file the-list-file))
 
-    (require 'org-tempo)
+;;     (require 'org-tempo)
 
-    (use-package org
-      :ensure t
-      :demand t
-      :bind (("C-c a" . org-agenda)
-             ("C-c c" . org-capture)
-             ("C-' o" . open-the-list)
-             :map org-mode-map
-             (("M-F" . org-metaright)
-              ("M-B" . org-metaleft)
-              ("C-c i t" . counsel-org-tag)
-              ;; take these back from co-pillot
-              ("<tab>" . org-cycle)
-              ("S-<tab>" . org-shifttab)
-              ("C-<tab>" . org-global-cycle)
-              ("M-P" . org-metaup)
-              ("M-N" . org-metadown)
-              ("C-c o" . org-table-insert-row)
-              ("C-c t i" . org-table-insert-row)
-              ("C-c t p" . org-table-move-row-up)
-              ("C-c t n" . org-table-move-row-down)
-              ("C-c X" . org-latex-export-to-pdf)))
-      :init
-                                        ;  (unbind-key "C-'" org-mode-map)
-                                        ;  (unbind-key "C-," org-mode-map)
-      (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
-      (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
-      (setq org-archive-location "archive/%s_archive::")
-      (setq org-agenda-files (list org-directory))
-      (setq org-agenda-remove-tags nil)
+;;     (use-package org
+;;       :ensure t
+;;       :demand t
+;;       :bind (("C-c a" . org-agenda)
+;;              ("C-c c" . org-capture)
+;;              ("C-' o" . open-the-list)
+;;              :map org-mode-map
+;;              (("M-F" . org-metaright)
+;;               ("M-B" . org-metaleft)
+;;               ("C-c i t" . counsel-org-tag)
+;;               ;; take these back from co-pillot
+;;               ("<tab>" . org-cycle)
+;;               ("S-<tab>" . org-shifttab)
+;;               ("C-<tab>" . org-global-cycle)
+;;               ("M-P" . org-metaup)
+;;               ("M-N" . org-metadown)
+;;               ("C-c o" . org-table-insert-row)
+;;               ("C-c t i" . org-table-insert-row)
+;;               ("C-c t p" . org-table-move-row-up)
+;;               ("C-c t n" . org-table-move-row-down)
+;;               ("C-c X" . org-latex-export-to-pdf)))
+;;       :init
+;;                                         ;  (unbind-key "C-'" org-mode-map)
+;;                                         ;  (unbind-key "C-," org-mode-map)
+;;       (setq org-latex-pdf-process '("pdflatex -output-directory=pdfs %f"))
+;;       (setq org-time-stamp-formats '("%Y-%m-%d %a" . "%Y-%m-%d %a %I:%M%p"))
+;;       (setq org-archive-location "archive/%s_archive::")
+;;       (setq org-agenda-files (list org-directory))
+;;       (setq org-agenda-remove-tags nil)
+;;       :config
+;;       ;; Don't do any of that visual indenting
+;;       (setq org-startup-indented nil)
+;;       ;; Show everything
+;;       (setq org-hide-leading-stars nil)
+;;       ;; Start fully expanded
+;;       (setq org-startup-folded 'nofold)
+;;       ;; Preserve code block indentation
+;;       (setq org-src-preserve-indentation t
+;;             org-edit-src-content-indentation 0)
+;;       ;; Enable visual-line-mode for better line wrapping
+;;       (add-hook 'org-mode-hook 'visual-line-mode)
+;;       (setq org-blank-before-new-entry '((heading . nil)
+;;                                          (plain-list-item . nil)))  ; Added closing parenthesis here
+;;       (setq org-capture-templates
+;;             '(("t" "TODO" entry (file+headline tasks-file "Tasks")
+;;                "* TODO %?\n  %i\n  %a")
+;;               ("s" "Shopping" entry (file+headline tasks-file "Tasks")
+;;                "* TODO %?%(org-set-tags \"BUY\")\n")))
+;;       (require 'org-agenda))
+
+
+;;     (use-package org-roam
+;;       :ensure t
+;;       :init
+;;       (setq org-roam-v2-ack t)
+;;       :custom
+;;       (org-roam-directory (file-truename "~/Dropbox/mem"))
+;;       (org-roam-dailies-directory "daily/")
+;;       (org-roam-completion-everywhere t)
+;;       (org-startup-folded 'nofold)
+;;       (org-roam-file-extensions '("org" "md"))
+;;       :config
+;;       (require 'org-roam-dailies)
+;;       (require 'org-id)
+
+;;       (defun my-org-roam-create-id ()
+;;         "Create a UUID for org-roam capture template."
+;;         (org-id-new))
+
+;;       (org-roam-db-autosync-enable)
+
+;;       (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
+
+;;       (setq org-roam-node-display-template
+;;             (concat "${title:*} "
+;;                     (propertize "${tags:10}" 'face 'org-tag)))
+
+;;       (setq org-roam-dailies-capture-templates
+;;             '(("d" "default" entry "%?"
+;;                :if-new (file+head "%<%Y-%m-%d>.org"
+;;                                   (lambda ()
+;;                                     (concat ":PROPERTIES:\n:ID: "
+;;                                             (org-id-new)
+;;                                             "\n:END:\n#+TITLE: Daily Notes %<%Y-%m-%d>\n\n"))))))
+
+;;       (setq org-roam-capture-templates
+;;             '(("d" "default" plain "%?"
+;;                :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+;;                                   (lambda ()
+;;                                     (concat ":PROPERTIES:\n:ID: "
+;;                                             (org-id-new)
+;;                                             "\n:END:\n#+TITLE: ${title}\n\n")))))))
+
+
+;; ;;;;
+;;     ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
+;;     (defun tedroden/force-org-rebuild-cache ()
+;;       "Rebuild the `org-mode' and `org-roam' cache."
+;;       (interactive)
+;;       (org-id-update-id-locations)
+;;       (org-roam-db-clear-all)
+;;       (org-roam-db-sync)
+;;       (org-roam-update-org-id-locations))
+
+
+;;     (use-package org-roam-ui
+;;       :bind
+;;       (("C-c n g" . org-roam-ui-open))
+;;       :config
+;;       (setq org-roam-ui-sync-theme t
+;; 		    org-roam-ui-follow t
+;; 		    org-roam-ui-update-on-save t
+;; 		    org-roam-ui-open-on-start t))
+;;     ;; end org
+;;     ;;;;;;;;;;;;;
+
+    (use-package claude-code-ide
+      :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+      :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
       :config
-      ;; Don't do any of that visual indenting
-      (setq org-startup-indented nil)
-      ;; Show everything
-      (setq org-hide-leading-stars nil)
-      ;; Start fully expanded
-      (setq org-startup-folded 'nofold)
-      ;; Preserve code block indentation
-      (setq org-src-preserve-indentation t
-            org-edit-src-content-indentation 0)
-      ;; Enable visual-line-mode for better line wrapping
-      (add-hook 'org-mode-hook 'visual-line-mode)
-      (setq org-blank-before-new-entry '((heading . nil)
-                                         (plain-list-item . nil)))  ; Added closing parenthesis here
-      (setq org-capture-templates
-            '(("t" "TODO" entry (file+headline tasks-file "Tasks")
-               "* TODO %?\n  %i\n  %a")
-              ("s" "Shopping" entry (file+headline tasks-file "Tasks")
-               "* TODO %?%(org-set-tags \"BUY\")\n")))
-      (require 'org-agenda))
+      (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP toolsbngin
 
-
-    (use-package org-roam
-      :ensure t
-      :init
-      (setq org-roam-v2-ack t)
-      :custom
-      (org-roam-directory (file-truename "~/Dropbox/mem"))
-      (org-roam-dailies-directory "daily/")
-      (org-roam-completion-everywhere t)
-      (org-startup-folded 'nofold)
-      (org-roam-file-extensions '("org" "md"))
-      :config
-      (require 'org-roam-dailies)
-      (require 'org-id)
-
-      (defun my-org-roam-create-id ()
-        "Create a UUID for org-roam capture template."
-        (org-id-new))
-
-      (org-roam-db-autosync-enable)
-
-      (setq org-id-locations-file (concat dotfiles-dir ".org-id-locations"))
-
-      (setq org-roam-node-display-template
-            (concat "${title:*} "
-                    (propertize "${tags:10}" 'face 'org-tag)))
-
-      (setq org-roam-dailies-capture-templates
-            '(("d" "default" entry "%?"
-               :if-new (file+head "%<%Y-%m-%d>.org"
-                                  (lambda ()
-                                    (concat ":PROPERTIES:\n:ID: "
-                                            (org-id-new)
-                                            "\n:END:\n#+TITLE: Daily Notes %<%Y-%m-%d>\n\n"))))))
-
-      (setq org-roam-capture-templates
-            '(("d" "default" plain "%?"
-               :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                  (lambda ()
-                                    (concat ":PROPERTIES:\n:ID: "
-                                            (org-id-new)
-                                            "\n:END:\n#+TITLE: ${title}\n\n")))))))
-
-
-;;;;
-    ;; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
-    (defun tedroden/force-org-rebuild-cache ()
-      "Rebuild the `org-mode' and `org-roam' cache."
-      (interactive)
-      (org-id-update-id-locations)
-      (org-roam-db-clear-all)
-      (org-roam-db-sync)
-      (org-roam-update-org-id-locations))
-
-
-    (use-package org-roam-ui
-      :bind
-      (("C-c n g" . org-roam-ui-open))
-      :config
-      (setq org-roam-ui-sync-theme t
-		    org-roam-ui-follow t
-		    org-roam-ui-update-on-save t
-		    org-roam-ui-open-on-start t))
-    ;; end org
-    ;;;;;;;;;;;;;
-
+    (use-package nginx-mode)
 
     ;; Set flag to indicate full config is loaded
     (setq ted/full-config-loaded t)

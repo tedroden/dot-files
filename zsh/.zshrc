@@ -60,7 +60,7 @@ export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # works with zsh
 
 # pyenv
-# eval "$(pyenv init -)"
+eval "$(pyenv init -)"
 
 # gcloud
 CLOUDSDK_HOME="${HOME}/code/deps/google-cloud-sdk"
@@ -77,5 +77,9 @@ if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/comple
 # fi
 # 
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
+export PATH="$HOME/code/mem:$PATH"
+
+# Shell completion for mem command
+eval "$(_MEM_COMPLETE=zsh_source mem)"
 
 set -o physical

@@ -9,7 +9,7 @@
 
 ;;; Code:
 
-(defvar noted-root "~/Dropbox/noted"
+(defvar noted-root "~/Dropbox/mem"
   "Root directory for daily notes.")
 
 (defun noted--format-date-full (time)
@@ -35,8 +35,9 @@
   (let* ((time (or time (current-time)))
          (year (format-time-string "%Y" time))
          (month (format-time-string "%m" time))
+         (day (format-time-string "%d" time))
          (date (format-time-string "%Y-%m-%d" time))
-         (dir (expand-file-name (concat year "/" month) noted-root))
+         (dir (expand-file-name (concat year "/" month "/" day) noted-root))
          (file (expand-file-name (concat date ".md") dir)))
     (list dir file)))
 
@@ -81,11 +82,24 @@
   (let ((default-directory (expand-file-name noted-root)))
     (call-interactively 'counsel-rg)))
 
+(defun noted-goto-today-directory ()
+  "Open today's daily note directory in dired."
+  (interactive)
+  (let* ((time (current-time))
+         (path-info (noted--get-file-path time))
+         (dir (car path-info)))
+    ;; Ensure directory exists
+    (unless (file-exists-p dir)
+      (make-directory dir t))
+    ;; Open in dired
+    (dired dir)))
+
 ;; Set up keybindings under C-c d prefix
 (define-prefix-command 'noted-map)
 (global-set-key (kbd "C-c n") 'noted-map)
 (define-key noted-map (kbd "t") 'noted-goto-today)
 (define-key noted-map (kbd "r") 'noted-search)
+(define-key noted-map (kbd "d") 'noted-goto-today-directory)
 
 (provide 'noted)
 ;;; noted.el ends here
