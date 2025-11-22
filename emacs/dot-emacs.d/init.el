@@ -576,12 +576,8 @@
 ;; Bind key to load full configuration
 (global-set-key (kbd "C-c L") 'ted/load-full-config)
 
-;; Load full config immediately for GUI mode, or delayed for terminal
-(if ted/is-terminal
-    ;; In terminal mode, load full config after init completes
-    (add-hook 'after-init-hook
-              (lambda ()
-                (run-with-idle-timer 1.0 nil #'ted/load-full-config)))
+;; don't load everything if we're in terminal mode
+(unless ted/is-terminal
   ;; In GUI mode, load immediately
   (ted/load-full-config))
 
@@ -633,8 +629,6 @@
   (use-package ayu-theme
     :ensure t
     :config (load-theme 'ayu-dark t))
-
-
 
   ;; Maybe add a lightweight completion framework
   (use-package counsel
