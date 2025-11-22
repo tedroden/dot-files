@@ -373,6 +373,9 @@
     
     (use-package ivy-rich
       :ensure t)
+
+    (use-package ibuffer
+      :bind ("C-c b" . ibuffer))
     
     (use-package ibuffer-projectile
       :ensure t
