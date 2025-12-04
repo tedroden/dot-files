@@ -458,7 +458,14 @@
   (interactive)
   (insert (format-time-string "%Y-%m-%d")))
 
+(defun ted/insert-time ()
+  "Insert current date in format %I:%M%p at point."
+  (interactive)
+  (insert (format-time-string "%I:%M%p")))
+
 (global-set-key (kbd "C-c D") 'ted/insert-date)
+(global-set-key (kbd "C-c T") 'ted/insert-time)
+
 
 ;; Load config file commands module
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
