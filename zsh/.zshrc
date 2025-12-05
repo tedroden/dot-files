@@ -87,9 +87,6 @@ eval "$(_MEM_COMPLETE=zsh_source mem)"
 
 set -o physical
 
-# Added by Antigravity
-export PATH="/Users/tedroden/.antigravity/antigravity/bin:$PATH"
-
 ### BEGIN FILAMENT init.sh
 export PATH="/Users/tedroden/code/filament/devscripts/cli/bin:$PATH"
 ### END FILAMENT init.sh
