@@ -5,15 +5,15 @@
 # Goals:
 #
 # 1. disable the aliases.
-# 2. use the gaudiest themes possible.
-# 3. Setup nvm and penv (and gcloud sdk)
+# 2. Setup nvm and penv (and gcloud sdk)
 #
 
 # Path to your oh-my-zsh installation.
 ZSH="$HOME/.oh-my-zsh"
 
-ZSH_THEME="kphoen"
-
+# ZSH_THEME="kphoen"
+ZSH_THEME="agnoster"
+# ZSH_THEME="miloshadzic"
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -35,7 +35,9 @@ zstyle ':omz:*' aliases no
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(gnu-utils docker colored-man-pages gh)
+plugins=(gnu-utils docker colored-man-pages gh aws docker history-substring-search H-S-MW) # zsh-autosuggestions)
+
+zstyle ":history-search-multi-word" page-size "8"
 
 source $ZSH/oh-my-zsh.sh
 
@@ -48,7 +50,8 @@ export PATH="~/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 # emacs
 export EDITOR="emacs -nw"
 alias emacs="emacs -nw"
-alias e="emacsclient -nw"
+alias e="emacsclient -n"
+alias et="emacsclient -t"
 
 # ls
 alias ls="ls --color=auto -F"
@@ -71,15 +74,23 @@ if [ -f "${CLOUDSDK_HOME}/path.zsh.inc" ]; then . "${CLOUDSDK_HOME}/path.zsh.inc
 # The next line enables shell command completion for gcloud.
 if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/completion.zsh.inc"; fi
 
-# if [[ "$TERM" == "xterm-ghostty" ]]; then
-#     echo "Setting term to xterm-256color"
-#     export TERM=xterm-256color
-# fi
-# 
+# custom aliases
+alias tmfh='cd ~/code/fancyhands && tmux -L FH a || tmux -L FH'
+alias tfil='tmux -L filament a || tmux -L filament'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
+
+
 export PATH="$HOME/code/mem:$PATH"
 
 # Shell completion for mem command
 eval "$(_MEM_COMPLETE=zsh_source mem)"
 
 set -o physical
+
+# Added by Antigravity
+export PATH="/Users/tedroden/.antigravity/antigravity/bin:$PATH"
+
+### BEGIN FILAMENT init.sh
+export PATH="/Users/tedroden/code/filament/devscripts/cli/bin:$PATH"
+### END FILAMENT init.sh
+
