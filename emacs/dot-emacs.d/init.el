@@ -313,6 +313,7 @@
       :init
       (setq markdown-hide-markup-in-view-modes t)
       (setq markdown-fontify-code-blocks-natively t)
+      (setq markdown-spaces-after-code-fence 0)  ; No space before language name
       :config
       (add-hook 'markdown-mode-hook #'font-lock-mode))
 
