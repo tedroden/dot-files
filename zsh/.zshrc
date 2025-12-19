@@ -35,7 +35,7 @@ zstyle ':omz:*' aliases no
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(gnu-utils docker colored-man-pages gh aws docker history-substring-search H-S-MW) # zsh-autosuggestions)
+plugins=(gnu-utils docker colored-man-pages gh aws docker history-substring-search H-S-MW nvm)
 
 zstyle ":history-search-multi-word" page-size "8"
 
@@ -76,7 +76,7 @@ if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/comple
 
 # custom aliases
 alias tmfh='cd ~/code/fancyhands && tmux -L FH a || tmux -L FH'
-alias tfil='tmux -L filament a || tmux -L filament'
+alias tfil='cd ~/code/filament && tmux -L filament a || tmux -L filament'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
 
 
