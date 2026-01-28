@@ -114,10 +114,12 @@
 (global-set-key (kbd "C-z") (lambda () (interactive) (message "Not suspending frame.")))
 (global-set-key [f4] 'ted/edit-dot-emacs)
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
+(global-set-key (kbd "C-c P") 'package-list-packages)
 ;; meta-; for comment uncomment
 
 
-      
+
+
 ;; Edit init.el function (essential)
 (defun ted/edit-dot-emacs ()
   "Quickly edit my dot Emacs file."
@@ -214,7 +216,8 @@
         (doom-modeline-height 36)
         (doom-modeline-lsp t)
         (doom-modeline-buffer-encoding nil)))
-    
+
+
     ;; Programming tools
     (use-package lsp-mode
       :ensure t
@@ -224,15 +227,41 @@
       (setq lsp-modeline-code-actions-enable nil)
       (setq lsp-apply-edits-after-file-operations nil)
       (setq lsp-file-watch-threshold 5000)
-      (add-hook 'prog-mode-hook #'lsp)
+
       :hook ((typescript-ts-mode . lsp)
-             (python-mode . lsp)
+             ;;             (python-mode . lsp)
              (yaml-mode . lsp)
              (json-mode . lsp)
              (css-mode . lsp)
              (bash-mode . lsp)
              (sh-mode . lsp))
-      :commands lsp)
+
+      :commands lsp
+      :config
+      ;; This adds the "Organize Imports" and "Format" actions on save
+      (add-hook 'before-save-hook
+                (lambda ()
+                  (when (derived-mode-p 'typescript-ts-mode 'typescript-mode)
+                    (lsp-organize-imports)
+                    (lsp-format-buffer)))))
+
+    (use-package lsp-pyright
+      :after lsp-mode
+      :custom
+      ;; Tell lsp-pyright to use the basedpyright executable
+      (lsp-pyright-langserver-command "basedpyright")
+      :hook
+      ;; Automatically start lsp-mode for python buffers
+      (python-mode . (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred)))) ; Use lsp-deferred to start after a short delay
+
+
+    ;; Better formatting engine (mimics VS Code smoothness)
+    (use-package apheleia
+      :ensure t
+      :config
+      (apheleia-global-mode +1))
     
     (use-package lsp-ui
       :custom
@@ -259,14 +288,14 @@
       (global-treesit-auto-mode 1))
     
     (setq major-mode-remap-alist
-     '((yaml-mode . yaml-ts-mode)
-       (bash-mode . bash-ts-mode)
-       (js2-mode . js-ts-mode)
-       (typescript-mode . typescript-ts-mode)
-       (json-mode . json-ts-mode)
-       (css-mode . css-ts-mode)
-       (python-mode . python-ts-mode)))
-    
+          '((yaml-mode . yaml-ts-mode)
+            (bash-mode . bash-ts-mode)
+            (js2-mode . js-ts-mode)
+            (typescript-mode . typescript-ts-mode)
+            (json-mode . json-ts-mode)
+            (css-mode . css-ts-mode)
+            (python-mode . python-ts-mode)))
+
     (use-package typescript-ts-mode
       :ensure t)
     
@@ -351,12 +380,12 @@
       :custom
       (copilot-node-executable (executable-find "node"))  ;; Use system node
       :bind (:map copilot-completion-map
-                   ("<tab>" . 'copilot-accept-completion)
-                   ("TAB" . 'copilot-accept-completion)
-                   ("C-TAB" . 'copilot-accept-completion-by-word)
-                   ("C-<tab>" . 'copilot-accept-completion-by-word)
-                   ("C-n" . 'copilot-next-completion)
-                   ("C-p" . 'copilot-previous-completion)))
+                  ("<tab>" . 'copilot-accept-completion)
+                  ("TAB" . 'copilot-accept-completion)
+                  ("C-TAB" . 'copilot-accept-completion-by-word)
+                  ("C-<tab>" . 'copilot-accept-completion-by-word)
+                  ("C-n" . 'copilot-next-completion)
+                  ("C-p" . 'copilot-previous-completion)))
 
     ;; Search and file navigation
     (use-package counsel
@@ -432,11 +461,35 @@
       (when (fboundp 'font-lock-ensure)
         (font-lock-ensure)))
 
-    (use-package claude-code-ide
-      :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-      :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+
+    ;; install required inheritenv dependency:
+    (use-package inheritenv
+      :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+
+    ;; for eat terminal backend:
+    (use-package eat :ensure t)
+
+    ;; for vterm terminal backend:
+    (use-package vterm :ensure t)
+
+    ;; install claude-code.el
+    (use-package claude-code :ensure t
+      :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
       :config
-      (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP toolsbngin
+      ;; optional IDE integration with Monet
+      (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+      (monet-mode 1)
+
+      (claude-code-mode)
+      :bind-keymap ("C-c c" . claude-code-command-map)
+
+      ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+      :bind
+      (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
+
+    (use-package monet
+      :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+
 
     (use-package nginx-mode)
 
