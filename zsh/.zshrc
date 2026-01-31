@@ -35,7 +35,7 @@ zstyle ':omz:*' aliases no
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(gnu-utils docker colored-man-pages gh aws docker history-substring-search H-S-MW) # zsh-autosuggestions)
+plugins=(gnu-utils docker colored-man-pages gh aws docker history-substring-search H-S-MW nvm)
 
 zstyle ":history-search-multi-word" page-size "8"
 
@@ -75,9 +75,23 @@ if [ -f "${CLOUDSDK_HOME}/path.zsh.inc" ]; then . "${CLOUDSDK_HOME}/path.zsh.inc
 if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/completion.zsh.inc"; fi
 
 # custom aliases
-alias tmfh='cd ~/code/fancyhands/fh && tmux -L FH a || tmux -L FH'
-alias tfil='tmux -L filament a || tmux -L filament'
+
+# Function to start/attach tmux session for a project
+tmux_project() {
+    local project_path="$1"
+    local project_name=$(basename "$project_path")
+    local socket_name="./.tmux-${project_name}"
+
+    cd "$project_path" && tmux -S "$socket_name" a || tmux -S "$socket_name"
+}
+
+# Create tmux project aliases
+alias tmfh='tmux_project ~/code/fancyhands/orc'
+alias tfil='tmux_project ~/code/filament'
+alias tcut='tmux_project ~/code/crewcut'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
+
+alias git-undo-commit='git reset --soft HEAD~1'
 
 export PATH="$HOME/code/mem:$PATH"
 
@@ -90,3 +104,10 @@ set -o physical
 export PATH="/Users/tedroden/code/filament/devscripts/cli/bin:$PATH"
 ### END FILAMENT init.sh
 
+
+# bun completions
+[ -s "/Users/tedroden/.bun/_bun" ] && source "/Users/tedroden/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
