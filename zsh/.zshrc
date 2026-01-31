@@ -50,8 +50,8 @@ export PATH="${HOME}/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 # emacs
 export EDITOR="emacs -nw"
 alias emacs="emacs -nw"
-alias e="emacsclient -n"
-alias et="emacsclient -t"
+alias e="emacs -nw"
+alias ec="emacsclient -t"
 
 # ls
 alias ls="ls --color=auto -F"
