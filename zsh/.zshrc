@@ -45,7 +45,7 @@ unsetopt share_history
 
 # User configuration
 # Set the homebrew paths.
-export PATH="~/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH="${HOME}/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 # emacs
 export EDITOR="emacs -nw"
@@ -75,10 +75,9 @@ if [ -f "${CLOUDSDK_HOME}/path.zsh.inc" ]; then . "${CLOUDSDK_HOME}/path.zsh.inc
 if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/completion.zsh.inc"; fi
 
 # custom aliases
-alias tmfh='cd ~/code/fancyhands && tmux -L FH a || tmux -L FH'
+alias tmfh='cd ~/code/fancyhands/fh && tmux -L FH a || tmux -L FH'
 alias tfil='tmux -L filament a || tmux -L filament'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
-
 
 export PATH="$HOME/code/mem:$PATH"
 
