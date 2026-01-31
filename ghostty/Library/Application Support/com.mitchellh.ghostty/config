@@ -1,0 +1,39 @@
+keybind = cmd+a=text:\x1ba
+keybind = cmd+b=text:\x1bb
+# command shift c => copy
+keybind = performable:cmd+shift+c=copy_to_clipboard
+keybind = cmd+c=text:\x1bc
+keybind = cmd+d=text:\x1bd
+keybind = cmd+e=text:\x1be
+keybind = cmd+f=text:\x1bf
+keybind = cmd+g=text:\x1bg
+keybind = cmd+h=text:\x1bh
+keybind = cmd+i=text:\x1bi
+keybind = cmd+j=text:\x1bj
+keybind = cmd+k=text:\x1bk
+keybind = cmd+l=text:\x1bl
+keybind = cmd+m=text:\x1bm
+keybind = cmd+n=text:\x1bn
+keybind = cmd+o=text:\x1bo
+keybind = cmd+p=text:\x1bp
+keybind = cmd+q=text:\x1bq
+keybind = cmd+s=text:\x1bs
+keybind = cmd+t=text:\x1bt
+keybind = cmd+u=text:\x1bu
+keybind = cmd+v=text:\x1bv
+# command shift v => paste
+keybind = performable:cmd+shift+v=paste_from_clipboard
+keybind = cmd+w=text:\x1bw
+keybind = cmd+x=text:\x1bx
+keybind = cmd+y=text:\x1by
+keybind = cmd+z=text:\x1bz
+keybind = cmd+backspace=text:\x17
+
+
+macos-option-as-alt = true
+
+theme = ayu
+background-opacity = 0.95
+
+
+

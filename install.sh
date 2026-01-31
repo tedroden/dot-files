@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# List of all packages
-PACKAGES=("emacs" "gitignore" "tmux" "zsh")
+# Dynamically discover all package directories (non-hidden directories)
+PACKAGES=($(find . -maxdepth 1 -type d ! -name '.*' ! -name '.' | sed 's|^\./||' | sort))
 FLAGS="--verbose --no-fold --dotfiles --target=${HOME}"
 
 # Function to restow all packages
