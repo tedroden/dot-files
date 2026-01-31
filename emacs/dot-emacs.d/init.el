@@ -115,7 +115,7 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
 (global-set-key (kbd "C-c P") 'package-list-packages)
-(global-set-key (kbd "M-<backspace>") 'backward-kill-word)
+(global-set-key (kbd "C-w") 'backward-kill-word)
 
 ;; Edit init.el function (essential)
 (defun ted/edit-dot-emacs ()
