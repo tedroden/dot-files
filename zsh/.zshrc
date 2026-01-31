@@ -86,7 +86,7 @@ tmux_project() {
 }
 
 # Create tmux project aliases
-alias tmfh='tmux_project ~/code/fancyhands/orc'
+alias tmfh='tmux_project ~/code/fancyhands/fh'
 alias tfil='tmux_project ~/code/filament'
 alias tcut='tmux_project ~/code/crewcut'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
