@@ -1,8 +1,12 @@
+# Mostly turning command into meta for emacs related things
 keybind = cmd+a=text:\x1ba
 keybind = cmd+b=text:\x1bb
-# command shift c => copy
-keybind = performable:cmd+shift+c=copy_to_clipboard
-keybind = cmd+c=text:\x1bc
+
+# Special Case to keep cmd-c copy
+keybind = cmd+c=copy_to_clipboard
+# We'll make command-shift-c => cmd-c
+keybind = performable:cmd+shift+c=text:\x1bc
+
 keybind = cmd+d=text:\x1bd
 keybind = cmd+e=text:\x1be
 keybind = cmd+f=text:\x1bf
@@ -21,14 +25,25 @@ keybind = cmd+s=text:\x1bs
 keybind = cmd+t=text:\x1bt
 keybind = cmd+u=text:\x1bu
 keybind = cmd+v=text:\x1bv
-# command shift v => paste
-keybind = performable:cmd+shift+v=paste_from_clipboard
+
+# Special Case to keep cmd-v paste
+keybind = cmd+v=paste_from_clipboard
+
+# if you'd rather make cmd+shift+v => paste
+# keybind = performable:cmd+shift+v=paste_from_clipboard
+
+# and we'll make command-shift-v => cmd-v
+keybind = performable:shift+cmd+v=text:\x1bv
+
 keybind = cmd+w=text:\x1bw
 keybind = cmd+x=text:\x1bx
 keybind = cmd+y=text:\x1by
 keybind = cmd+z=text:\x1bz
-keybind = cmd+backspace=text:\x17
 
+# What was this?
+# turn command backspace into control-w?
+# keybind = cmd+backspace=text:\x17
+# keybind = cmd+backspace=text:\x1b\x7f
 
 macos-option-as-alt = true
 
