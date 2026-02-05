@@ -89,7 +89,11 @@ tmux_project() {
 alias tmfh='tmux_project ~/code/fancyhands/fh'
 alias tfil='tmux_project ~/code/filament'
 alias tcut='tmux_project ~/code/crewcut'
+
+
+# docker aliases
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
+alias dc='docker compose'
 
 alias git-undo-commit='git reset --soft HEAD~1'
 
