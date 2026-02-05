@@ -40,10 +40,8 @@ keybind = cmd+x=text:\x1bx
 keybind = cmd+y=text:\x1by
 keybind = cmd+z=text:\x1bz
 
-# What was this?
-# turn command backspace into control-w?
-# keybind = cmd+backspace=text:\x17
-# keybind = cmd+backspace=text:\x1b\x7f
+# Turn command backspace into control-w
+keybind = cmd+backspace=text:\x17
 
 macos-option-as-alt = true
 
