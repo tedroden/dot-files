@@ -49,6 +49,7 @@ export PATH="${HOME}/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 # emacs
 export EDITOR="emacs -nw"
+export VISUAL="emacs -nw"
 alias emacs="emacs -nw"
 alias e="emacs -nw"
 alias ec="emacsclient -t"
