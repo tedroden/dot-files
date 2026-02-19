@@ -115,7 +115,16 @@
 (global-set-key [f4] 'ted/edit-dot-emacs)
 (global-set-key (kbd "M-g") 'goto-line-with-feedback)
 (global-set-key (kbd "C-c P") 'package-list-packages)
-(global-set-key (kbd "C-w") 'backward-kill-word)
+
+;; fix cmd-backspace to do backward-kill-word
+(defun ted/kill-region-or-backward-word ()
+   "Kill region if active, otherwise kill the previous word."
+   (interactive)
+   (if (use-region-p)
+       (kill-region (region-beginning) (region-end))
+     (backward-kill-word 1)))
+
+(global-set-key (kbd "C-w") 'ted/kill-region-or-backward-word)
 
 ;; Edit init.el function (essential)
 (defun ted/edit-dot-emacs ()
@@ -150,7 +159,7 @@
   (interactive)
   (unless ted/full-config-loaded
     (message "Loading full configuration...")
-    
+
     ;; setup custom/personal/etc.
     (setq-default dotfiles-dir (file-truename "~/.emacs.d/")
                   custom-file (concat dotfiles-dir "custom.el")
@@ -161,7 +170,7 @@
           (progn (load f)
                  (message (concat "Loaded " f)))
         nil))
-    
+
     ;; Load straight.el bootstrap
     (defvar bootstrap-version)
     (let ((bootstrap-file
@@ -190,7 +199,7 @@
       :ensure t
       :config
       (load-theme 'ayu-dark t))
-    
+
     ;; Other theme options (commented out)
     ;; (use-package catppuccin-theme
     ;;   :ensure t
@@ -259,23 +268,23 @@
       :ensure t
       :config
       (apheleia-global-mode +1))
-    
+
     (use-package lsp-ui
       :custom
       (lsp-ui-sideline-enable t)
       (lsp-ui-doc-enable t)
       (lsp-ui-doc--sideline-pos-y 0)
       (lsp-ui-doc-delay 0.5))
-    
+
     (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
     (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-    
+
     (use-package lsp-pyright
       :ensure t
       :hook (python-mode . (lambda ()
                              (require 'lsp-pyright)
                              (lsp))))
-    
+
     (require 'treesit)
     (use-package treesit-auto
       :custom
@@ -283,7 +292,7 @@
       :config
       (treesit-auto-add-to-auto-mode-alist 'all)
       (global-treesit-auto-mode 1))
-    
+
     (setq major-mode-remap-alist
           '((yaml-mode . yaml-ts-mode)
             (bash-mode . bash-ts-mode)
@@ -295,7 +304,7 @@
 
     (use-package typescript-ts-mode
       :ensure t)
-    
+
     ;; Project management
     (use-package projectile
       :ensure t
@@ -304,18 +313,18 @@
       :config
       (projectile-mode +1)
       (setq projectile-project-search-path '("~/code")))
-    
+
     ;; Navigation and editing tools
     (use-package ws-butler
       :ensure t
       :config
       (ws-butler-global-mode))
-    
+
     (use-package switch-window
       :bind (("M-o" . switch-window))
       :custom
       (switch-window-shortcut-style 'qwerty))
-    
+
     (use-package avy
       :bind
       ("C-/" . 'avy-goto-char-2)
@@ -350,25 +359,25 @@
       :custom
       (git-commit-major-mode 'markdown-mode)
       (magit-save-repository-buffers 'dontask))
-    
+
     (use-package magit-todos
       :after magit
       :config (magit-todos-mode 1))
-    
+
     (use-package diff-hl
       :ensure t
       :config
       (global-diff-hl-mode)
       (diff-hl-flydiff-mode)
       (diff-hl-margin-mode))
-    
+
     ;; Code completion
     (use-package company
       :init (global-company-mode)
       :config
       (setq company-idle-delay 0.5)
       :bind (:map company-active-map ("<enter>" . company-complete-selection)))
-    
+
     (use-package copilot
       :vc (:url "https://github.com/copilot-emacs/copilot.el"
                 :rev :newest
@@ -397,13 +406,13 @@
        ("C-h f" . 'counsel-describe-function)
        ("C-h v" . 'counsel-describe-variable)
        ("M-y" . 'counsel-yank-pop)))
-    
+
     (use-package ivy-rich
       :ensure t)
 
     (use-package ibuffer
       :bind ("C-c b" . ibuffer))
-    
+
     (use-package ibuffer-projectile
       :ensure t
       :custom
@@ -414,7 +423,7 @@
                   (ibuffer-projectile-set-filter-groups)
                   (unless (eq ibuffer-sorting-mode 'alphabetic)
                     (ibuffer-do-sort-by-alphabetic)))))
-    
+
     (use-package counsel-projectile
       :config
       (counsel-projectile-mode)
@@ -423,7 +432,7 @@
        ("M-p" . 'counsel-projectile-find-file)
        ("C-c 4 f" . 'projectile-find-file-other-window)
        ("C-c C-f" . 'counsel-projectile-find-file)))
-    
+
     (use-package ivy
       :bind
       (("C-o" . 'swiper))
@@ -440,7 +449,7 @@
     ;; Other tools
     (use-package expand-region
       :bind ("C-=" . er/expand-region))
-    
+
     (use-package saveplace
       :init (save-place-mode 1)
       :config
@@ -450,7 +459,7 @@
 
     (use-package treemacs)
     (use-package treemacs-projectile)
-    
+
     ;; Helper function to safely refresh font-lock
     (defun ted/safe-refresh-font-lock ()
       "Refresh font lock safely using font-lock-ensure."
