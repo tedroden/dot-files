@@ -5,10 +5,8 @@
 
 ;;; Code:
 
-;; Turn off UI elements
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;; UI elements are disabled in early-init.el via frame parameters.
+;; Explicitly disable modes for terminal/daemon sessions.
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
 
 ;; Mac-specific settings
@@ -55,10 +53,10 @@
   (interactive)
   (set-face-attribute 'default (selected-frame) :height 140))
 
-(global-set-key (kbd "s-+") 'ted/increase-frame-font-size)
-(global-set-key (kbd "s-=") 'ted/increase-frame-font-size)
-(global-set-key (kbd "s--") 'ted/decrease-frame-font-size)
-(global-set-key (kbd "s-0") 'ted/reset-frame-font-size)
+(global-set-key (kbd "M-+") 'ted/increase-frame-font-size)
+(global-set-key (kbd "M-=") 'ted/increase-frame-font-size)
+(global-set-key (kbd "M--") 'ted/decrease-frame-font-size)
+(global-set-key (kbd "M-0") 'ted/reset-frame-font-size)
 
 (provide 'ted-ui)
 ;;; ted-ui.el ends here

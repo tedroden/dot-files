@@ -8,8 +8,7 @@
 ;; All "yes" or "no" questions should be y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Performance settings
-(setq gc-cons-threshold 100000000)
+;; Performance settings (gc-cons-threshold is set in early-init.el)
 (setq read-process-output-max (* 1024 1024))
 
 ;; Automatically follow symlinks to git-controlled files without prompting

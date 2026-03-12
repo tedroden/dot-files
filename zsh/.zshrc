@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # -*- mode: sh -*-
 
 # This uses oh-my-zsh, mostly for the built in completions and themes.
@@ -12,15 +13,18 @@
 ZSH="$HOME/.oh-my-zsh"
 
 # ZSH_THEME="kphoen"
+# shellcheck disable=SC2034
 ZSH_THEME="agnoster"
 # ZSH_THEME="miloshadzic"
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
+# shellcheck disable=SC2034
 ZSH_THEME_RANDOM_CANDIDATES=()
 
 # Case-sensitive completion.
+# shellcheck disable=SC2034
 CASE_SENSITIVE="true"
 
 # update automatically without asking
@@ -33,13 +37,15 @@ zstyle ':omz:*' aliases no
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# shellcheck disable=SC2034
 COMPLETION_WAITING_DOTS="true"
 
+# shellcheck disable=SC2034
 plugins=(gnu-utils docker colored-man-pages gh aws docker history-substring-search H-S-MW nvm)
 
 zstyle ":history-search-multi-word" page-size "8"
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
 unsetopt share_history
 
@@ -47,12 +53,13 @@ unsetopt share_history
 # Set the homebrew paths.
 export PATH="${HOME}/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
-# emacs
-export EDITOR="emacs -nw"
-export VISUAL="emacs -nw"
+# emacs — use emacsclient when daemon is running, fall back to emacs -nw
+export EDITOR="emacsclient -t -a 'emacs -nw'"
+export VISUAL="emacsclient -t -a 'emacs -nw'"
 alias emacs="emacs -nw"
-alias e="emacs -nw"
+alias e="emacsclient -t -a 'emacs -nw'"
 alias ec="emacsclient -t"
+alias emacs-daemon="emacs --daemon"
 
 # ls
 alias ls="ls --color=auto -F"
@@ -80,16 +87,20 @@ if [ -f "${CLOUDSDK_HOME}/completion.zsh.inc" ]; then . "${CLOUDSDK_HOME}/comple
 # Function to start/attach tmux session for a project
 tmux_project() {
     local project_path="$1"
-    local project_name=$(basename "$project_path")
+    local project_name
+    project_name=$(basename "$project_path")
     local socket_name="./.tmux-${project_name}"
 
-    cd "$project_path" && tmux -S "$socket_name" a || tmux -S "$socket_name"
+    cd "$project_path" || return
+    if ! tmux -S "$socket_name" a; then
+        tmux -S "$socket_name"
+    fi
 }
 
 # Create tmux project aliases
 alias tmfh='tmux_project ~/code/fancyhands/fh'
 alias tfil='tmux_project ~/code/filament'
-alias tcut='tmux_project ~/code/crewcut'
+alias tcode='tmux_project ~/code'
 
 
 # docker aliases

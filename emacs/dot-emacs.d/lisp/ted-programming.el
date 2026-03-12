@@ -50,8 +50,8 @@
 
 ;;; Tree-sitter
 
-(require 'treesit)
 (use-package treesit-auto
+  :hook (prog-mode . (lambda () (require 'treesit)))
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -84,8 +84,7 @@
 
 (use-package apheleia
   :ensure t
-  :config
-  (apheleia-global-mode +1))
+  :hook (prog-mode . apheleia-mode))
 
 ;;; AI completion
 

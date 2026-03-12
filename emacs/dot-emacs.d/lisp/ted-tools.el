@@ -16,6 +16,7 @@
   (setq projectile-project-search-path '("~/code")))
 
 (use-package counsel-projectile
+  :after (counsel projectile)
   :config
   (counsel-projectile-mode)
   :bind
@@ -49,7 +50,8 @@
    ("M-y" . 'counsel-yank-pop)))
 
 (use-package ivy-rich
-  :ensure t)
+  :ensure t
+  :after ivy)
 
 ;;; Git integration
 
@@ -66,15 +68,15 @@
 
 (use-package diff-hl
   :ensure t
+  :hook (prog-mode . diff-hl-mode)
   :config
-  (global-diff-hl-mode)
   (diff-hl-flydiff-mode)
   (diff-hl-margin-mode))
 
 ;;; Code completion
 
 (use-package company
-  :init (global-company-mode)
+  :hook (prog-mode . company-mode)
   :config
   (setq company-idle-delay 0.5)
   :bind (:map company-active-map ("<enter>" . company-complete-selection)))
@@ -140,20 +142,20 @@
 
 ;;; Tree sidebar
 
-(use-package treemacs)
-(use-package treemacs-projectile)
+(use-package treemacs :defer t)
+(use-package treemacs-projectile :defer t)
 
 ;;; Terminals
 
 (use-package inheritenv
   :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
 
-(use-package eat :ensure t)
-(use-package vterm :ensure t)
+(use-package eat :ensure t :defer t)
+(use-package vterm :ensure t :defer t)
 
 ;;; Misc
 
-(use-package nginx-mode)
+(use-package nginx-mode :defer t)
 
 (defun ted/safe-refresh-font-lock ()
   "Refresh font lock safely using font-lock-ensure."

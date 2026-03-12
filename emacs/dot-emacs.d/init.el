@@ -41,8 +41,9 @@
 (setq warning-minimum-level :error)
 (setq warning-minimum-log-level :warning)
 
-;; Setup PATH from shell on Mac
-(when (memq window-system '(mac ns))
+;; Setup PATH from shell on Mac (skip in terminal/batch mode for speed)
+(when (and (memq window-system '(mac ns))
+           (not noninteractive))
   (use-package exec-path-from-shell
     :ensure t
     :config
@@ -66,22 +67,23 @@
   (when (file-exists-p f)
     (load f)))
 
-;; Bootstrap straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; Bootstrap straight.el (skip in batch mode for speed)
+(unless noninteractive
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name
+          "straight/repos/straight.el/bootstrap.el"
+          (or (bound-and-true-p straight-base-dir)
+              user-emacs-directory)))
+        (bootstrap-version 7))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage)))
 
 ;; Config file quick-open commands
 (require 'config-file-commands)
@@ -93,6 +95,10 @@
   "List of config files with (key description path) format.")
 
 (create-config-commands ted/config-files "C-c c")
+
+;; Restore GC threshold after startup to avoid excess memory usage
+(add-hook 'emacs-startup-hook
+          (lambda () (setq gc-cons-threshold 800000)))
 
 (provide 'init)
 ;;; init.el ends here
