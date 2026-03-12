@@ -7,8 +7,8 @@ if status is-interactive
     fish_add_path $HOME/code/mem
 
     # Editor — emacsclient with fallback
-    set -gx EDITOR "emacsclient -t -a 'emacs -nw'"
-    set -gx VISUAL "emacsclient -t -a 'emacs -nw'"
+    set -gx EDITOR $HOME/.local/bin/editor
+    set -gx VISUAL $HOME/.local/bin/editor
 
     # Emacs aliases
     alias emacs="emacs -nw"
