@@ -27,6 +27,22 @@ if status is-interactive
     # Git
     alias git-undo-commit='git reset --soft HEAD~1'
 
+    # Tmux project sessions
+    function tmux_project
+        set -l project_path $argv[1]
+        set -l project_name (basename $project_path)
+        set -l socket_name "./.tmux-$project_name"
+
+        cd $project_path; or return
+        if not tmux -S $socket_name a
+            tmux -S $socket_name
+        end
+    end
+
+    alias tmfh='tmux_project ~/code/fancyhands/fh'
+    alias tfil='tmux_project ~/code/filament'
+    alias tcode='tmux_project ~/code'
+
     # pyenv
     if type -q pyenv
         pyenv init - | source
