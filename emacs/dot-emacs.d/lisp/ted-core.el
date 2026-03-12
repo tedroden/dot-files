@@ -22,6 +22,9 @@
 (setq-default typescript-ts-mode-indent-offset 4)
 (column-number-mode t)
 
+;; Start the Emacs server so emacsclient can connect
+(server-start)
+
 ;; Startup settings
 (setq initial-major-mode 'fundamental-mode)
 (setq inhibit-startup-screen t)
